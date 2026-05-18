@@ -1,0 +1,160 @@
+import { existsSync, readFileSync, statSync } from "node:fs";
+import path from "node:path";
+import { monitorGit } from "./gitMonitor.ts";
+import { classifyChangedFiles, collectRiskCategories, confidenceForRisks, confidenceNotes } from "./riskClassifier.ts";
+import { selectReviews } from "./reviewSelector.ts";
+import type { ClassifiedFile, RiskCategory } from "./riskClassifier.ts";
+
+export type ReviewResult = {
+  repoPath: string;
+  selectedSkill: string;
+  skillPath: string;
+  timestamp: string;
+  gitStatus: string;
+  diffNameOnly: string;
+  changedFiles: ClassifiedFile[];
+  riskCategories: RiskCategory[];
+  suggestedReviews: string[];
+  confidenceScore: number;
+  confidenceNotes: string[];
+  unknownRiskWarnings: string[];
+  detectedEnvVarNames: string[];
+  safetyNotes: string[];
+  nextActions: string[];
+};
+
+type RunReviewInput = {
+  repoPath: string;
+  selectedSkill: string;
+};
+
+const envNamePattern = /\b[A-Z][A-Z0-9_]{2,}\b/g;
+const envNameHints = [
+  "ENV",
+  "SECRET",
+  "TOKEN",
+  "KEY",
+  "PASSWORD",
+  "SUPABASE",
+  "STRIPE",
+  "TWILIO",
+  "RESEND",
+  "CLOUDFLARE",
+  "OPENAI",
+  "GOOGLE",
+  "META",
+  "WHATSAPP",
+];
+
+function repoRoot(): string {
+  return path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
+}
+
+function normalizeRepoPath(repoPath: string): string {
+  return path.resolve(process.cwd(), repoPath);
+}
+
+function assertDirectory(directoryPath: string, label: string): void {
+  if (!existsSync(directoryPath) || !statSync(directoryPath).isDirectory()) {
+    throw new Error(`${label} does not exist or is not a directory: ${directoryPath}`);
+  }
+}
+
+function skillPathFor(selectedSkill: string): string {
+  return path.join(repoRoot(), "docs", "skills", `${selectedSkill}.md`);
+}
+
+function isLikelyTextFile(filePath: string): boolean {
+  const ext = path.extname(filePath).toLowerCase();
+  if (!ext) return true;
+  return [
+    ".js",
+    ".jsx",
+    ".ts",
+    ".tsx",
+    ".json",
+    ".md",
+    ".mjs",
+    ".cjs",
+    ".yml",
+    ".yaml",
+    ".toml",
+    ".env",
+    ".example",
+  ].includes(ext);
+}
+
+function detectEnvVarNames(repoPath: string, changedFiles: ClassifiedFile[]): string[] {
+  const names = new Set<string>();
+
+  for (const file of changedFiles) {
+    const absolutePath = path.join(repoPath, file.path);
+    if (!existsSync(absolutePath) || !statSync(absolutePath).isFile()) continue;
+    if (!isLikelyTextFile(absolutePath)) continue;
+
+    const content = readFileSync(absolutePath, "utf8");
+    const matches = content.match(envNamePattern) || [];
+
+    for (const match of matches) {
+      if (envNameHints.some((hint) => match.includes(hint))) {
+        names.add(match);
+      }
+    }
+  }
+
+  return [...names].sort();
+}
+
+function buildUnknownRiskWarnings(changedFiles: ClassifiedFile[]): string[] {
+  return changedFiles
+    .filter((file) => file.riskCategories.includes("unknown"))
+    .map((file) => `${file.path} could not be classified by v1 Git Monitoring heuristics.`);
+}
+
+export function runReview(input: RunReviewInput): ReviewResult {
+  const repoPath = normalizeRepoPath(input.repoPath);
+  assertDirectory(repoPath, "Repo path");
+
+  const selectedSkill = input.selectedSkill.trim();
+  const skillPath = skillPathFor(selectedSkill);
+  if (!existsSync(skillPath) || !statSync(skillPath).isFile()) {
+    throw new Error(`Selected skill markdown does not exist: ${skillPath}`);
+  }
+
+  const gitMonitor = monitorGit(repoPath);
+  const changedFiles = classifyChangedFiles(gitMonitor.changedFiles);
+  const riskCategories = collectRiskCategories(changedFiles);
+  const suggestedReviews = selectReviews(riskCategories, selectedSkill);
+  const confidenceScore = confidenceForRisks(riskCategories);
+  const detectedEnvVarNames = detectEnvVarNames(repoPath, changedFiles);
+
+  return {
+    repoPath,
+    selectedSkill,
+    skillPath,
+    timestamp: new Date().toISOString(),
+    gitStatus: gitMonitor.gitStatus,
+    diffNameOnly: gitMonitor.diffNameOnly,
+    changedFiles,
+    riskCategories,
+    suggestedReviews,
+    confidenceScore,
+    confidenceNotes: confidenceNotes(riskCategories, confidenceScore),
+    unknownRiskWarnings: buildUnknownRiskWarnings(changedFiles),
+    detectedEnvVarNames,
+    safetyNotes: [
+      "Local-only review runner.",
+      "No external AI APIs were called.",
+      "Target repository was not modified.",
+      "Env var-like names were detected by name only; values were not read from environment variables or printed.",
+      "Git Monitoring does not auto-fix, auto-commit, auto-push, or deploy.",
+    ],
+    nextActions: [
+      "Review the selected skill checklist.",
+      "Review suggested reviews selected by Git Monitoring.",
+      "Investigate changed files with relevant risk tags.",
+      "Update documentation or code only after human review confirms the issue.",
+      "Rerun this command after fixes or documentation updates.",
+    ],
+  };
+}

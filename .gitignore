@@ -8,4 +8,5 @@ build
 .next
 .wrangler
 .DS_Store
-
+reports/*
+!reports/.gitkeep

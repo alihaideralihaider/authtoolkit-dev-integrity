@@ -23,6 +23,22 @@ The system is designed to make AI-assisted development safer by pairing fast imp
 
 This repository is the standalone foundation for the Dev Integrity Agent, Integrity Engine, and Control Room platform. It is documentation-first today and intended to become API-first product infrastructure that can support SaanaOS, Kepler, AuthToolkit, and future projects.
 
+## First CLI Runner
+
+The first local CLI runner accepts a repo path and selected skill, then writes a markdown integrity report into `reports/`.
+
+```sh
+npm run review -- --repo /path/to/repo --skill vault-secret-readiness-review
+```
+
+Example against this repo:
+
+```sh
+npm run review -- --repo . --skill vault-secret-readiness-review
+```
+
+The runner is local-only. It does not call external AI APIs, does not modify the target repo, and scans changed files for env var-like names only.
+
 ## Principles
 
 - Do not rely on memory for critical engineering decisions.
@@ -30,4 +46,3 @@ This repository is the standalone foundation for the Dev Integrity Agent, Integr
 - Prefer local-first evidence and deterministic review where possible.
 - Never store real secrets in Git.
 - Make findings actionable, reviewable, and auditable.
-
