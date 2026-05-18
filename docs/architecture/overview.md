@@ -40,7 +40,10 @@ Stores local or hosted evidence records, review reports, snapshots, history, and
 
 Produces human-readable and machine-readable reports for developers, founders, agencies, and future dashboards.
 
+### CLI Review Runner
+
+Accepts a repo path and selected skill, runs the local review flow, and produces a markdown integrity report. The first contract is documented in `docs/architecture/cli-review-runner-contract.md`.
+
 ### API Layer
 
 Future API-first interface for project registration, scan submission, review routing, findings retrieval, report generation, and Control Room data.
-
