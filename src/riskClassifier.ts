@@ -17,27 +17,39 @@ export type ClassifiedFile = FileChange & {
 const rules: Array<{ category: RiskCategory; patterns: RegExp[] }> = [
   {
     category: "payment",
-    patterns: [/stripe/i, /payment/i, /billing/i, /webhook/i],
+    patterns: [/stripe/i, /payment/i, /billing/i, /checkout/i],
   },
   {
     category: "sms-compliance",
-    patterns: [/twilio/i, /sms/i, /whatsapp/i, /message/i],
+    patterns: [/twilio/i, /sms/i, /whatsapp/i, /message/i, /voice/i],
   },
   {
     category: "vault",
-    patterns: [/\.env/i, /env/i, /wrangler/i, /config/i, /secret/i, /token/i, /credential/i],
+    patterns: [/\.env/i, /env/i, /wrangler/i, /config/i, /secret/i, /token/i, /credential/i, /vault/i],
   },
   {
     category: "runtime",
-    patterns: [/^src\//i, /^package\.json$/i, /worker/i, /open-next/i, /opennext/i, /runtime/i, /binding/i],
+    patterns: [
+      /^src\//i,
+      /^package\.json$/i,
+      /^scripts\/dev-integrity-/i,
+      /^tools\/dev-integrity-dashboard\//i,
+      /worker/i,
+      /cloudflare/i,
+      /supabase/i,
+      /open-next/i,
+      /opennext/i,
+      /runtime/i,
+      /binding/i,
+    ],
   },
   {
     category: "security",
-    patterns: [/auth/i, /admin/i, /api/i, /session/i],
+    patterns: [/auth/i, /admin/i, /api/i, /session/i, /webhook/i, /supabase/i, /service-role/i, /service_role/i, /rls/i],
   },
   {
     category: "ux",
-    patterns: [/ui/i, /page/i, /component/i, /menu/i, /hub/i, /storefront/i],
+    patterns: [/dashboard/i, /ui/i, /page/i, /component/i, /menu/i, /hub/i, /storefront/i, /\.html$/i, /\.css$/i, /styles/i],
   },
 ];
 
