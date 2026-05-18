@@ -1,0 +1,18 @@
+{
+  "project": "sample-project",
+  "stack": ["nextjs", "cloudflare", "supabase"],
+  "repo_path": "/path/to/project",
+  "environments": ["local", "preview", "production"],
+  "review_packs": [
+    "security",
+    "payment",
+    "sms-compliance",
+    "vault-secret-readiness",
+    "vault-runtime-binding",
+    "vault-recovery",
+    "post-deploy-canary"
+  ],
+  "critical_routes": ["/login", "/admin", "/api/orders"],
+  "providers": ["Supabase", "Cloudflare", "Stripe", "Twilio", "Resend"]
+}
+

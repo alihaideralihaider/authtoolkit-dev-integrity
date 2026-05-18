@@ -1,0 +1,63 @@
+{
+  "project": "sample-project",
+  "warning": "Secret names only. Do not store raw values in this file.",
+  "secrets": [
+    {
+      "name": "SUPABASE_URL",
+      "purpose": "Supabase project URL",
+      "source_of_truth": "Supabase project settings",
+      "runtime_consumers": ["web app"],
+      "rotation_cadence": "TBD",
+      "status": "required"
+    },
+    {
+      "name": "SUPABASE_SERVICE_ROLE_KEY",
+      "purpose": "Server-only privileged Supabase access",
+      "source_of_truth": "Supabase project settings",
+      "runtime_consumers": ["server APIs"],
+      "rotation_cadence": "TBD",
+      "status": "required"
+    },
+    {
+      "name": "CLOUDFLARE_ACCOUNT_ID",
+      "purpose": "Cloudflare deployment account identifier",
+      "source_of_truth": "Cloudflare dashboard",
+      "runtime_consumers": ["deploy process"],
+      "rotation_cadence": "TBD",
+      "status": "required"
+    },
+    {
+      "name": "CLOUDFLARE_API_TOKEN",
+      "purpose": "Cloudflare deployment token",
+      "source_of_truth": "Cloudflare dashboard or approved vault",
+      "runtime_consumers": ["CI/deploy process"],
+      "rotation_cadence": "TBD",
+      "status": "required"
+    },
+    {
+      "name": "STRIPE_SECRET_KEY",
+      "purpose": "Server-only Stripe API access",
+      "source_of_truth": "Stripe dashboard",
+      "runtime_consumers": ["billing APIs"],
+      "rotation_cadence": "TBD",
+      "status": "optional"
+    },
+    {
+      "name": "TWILIO_AUTH_TOKEN",
+      "purpose": "Server-only Twilio API access",
+      "source_of_truth": "Twilio console",
+      "runtime_consumers": ["messaging APIs"],
+      "rotation_cadence": "TBD",
+      "status": "optional"
+    },
+    {
+      "name": "RESEND_API_KEY",
+      "purpose": "Server-only email provider access",
+      "source_of_truth": "Resend dashboard",
+      "runtime_consumers": ["email APIs"],
+      "rotation_cadence": "TBD",
+      "status": "optional"
+    }
+  ]
+}
+
