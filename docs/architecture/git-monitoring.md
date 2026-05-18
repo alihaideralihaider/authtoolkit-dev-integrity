@@ -25,6 +25,17 @@ Git Monitoring v1:
 - Selects suggested reviews from risk categories.
 - Writes a markdown integrity report.
 
+## Risk, Severity, and Review-Pack Routing
+
+Git Monitoring now emits risk categories, severity per changed file, highest severity, and suggested review packs.
+
+This routing remains simple and local-first:
+
+- path/name heuristics classify risk
+- risk categories map to review skills and review packs
+- high or critical severity adds release readiness review-pack routing
+- unknown risk adds planning-pack routing
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:

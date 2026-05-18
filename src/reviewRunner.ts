@@ -1,9 +1,10 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { monitorGit } from "./gitMonitor.ts";
-import { classifyChangedFiles, collectRiskCategories, confidenceForRisks, confidenceNotes } from "./riskClassifier.ts";
-import { selectReviews } from "./reviewSelector.ts";
-import type { ClassifiedFile, RiskCategory } from "./riskClassifier.ts";
+import { classifyChangedFiles, collectRiskCategories, confidenceForRisks, confidenceNotes, criticalWarnings, highestSeverity } from "./riskClassifier.ts";
+import { selectReviewPacks, selectReviews } from "./reviewSelector.ts";
+import type { ClassifiedFile, RiskCategory, Severity } from "./riskClassifier.ts";
+import type { ReviewPack } from "./reviewSelector.ts";
 
 export type ReviewResult = {
   repoPath: string;
@@ -14,10 +15,13 @@ export type ReviewResult = {
   diffNameOnly: string;
   changedFiles: ClassifiedFile[];
   riskCategories: RiskCategory[];
+  highestSeverity: Severity;
   suggestedReviews: string[];
+  suggestedReviewPacks: ReviewPack[];
   confidenceScore: number;
   confidenceNotes: string[];
   unknownRiskWarnings: string[];
+  criticalWarnings: string[];
   detectedEnvVarNames: string[];
   safetyNotes: string[];
   nextActions: string[];
@@ -124,7 +128,9 @@ export function runReview(input: RunReviewInput): ReviewResult {
   const gitMonitor = monitorGit(repoPath);
   const changedFiles = classifyChangedFiles(gitMonitor.changedFiles);
   const riskCategories = collectRiskCategories(changedFiles);
+  const maxSeverity = highestSeverity(changedFiles);
   const suggestedReviews = selectReviews(riskCategories, selectedSkill);
+  const suggestedReviewPacks = selectReviewPacks(riskCategories, maxSeverity);
   const confidenceScore = confidenceForRisks(riskCategories);
   const detectedEnvVarNames = detectEnvVarNames(repoPath, changedFiles);
 
@@ -137,10 +143,13 @@ export function runReview(input: RunReviewInput): ReviewResult {
     diffNameOnly: gitMonitor.diffNameOnly,
     changedFiles,
     riskCategories,
+    highestSeverity: maxSeverity,
     suggestedReviews,
+    suggestedReviewPacks,
     confidenceScore,
     confidenceNotes: confidenceNotes(riskCategories, confidenceScore),
     unknownRiskWarnings: buildUnknownRiskWarnings(changedFiles),
+    criticalWarnings: criticalWarnings(changedFiles),
     detectedEnvVarNames,
     safetyNotes: [
       "Local-only review runner.",

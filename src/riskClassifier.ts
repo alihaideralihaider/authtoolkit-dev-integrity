@@ -10,8 +10,12 @@ export type RiskCategory =
   | "low-risk"
   | "unknown";
 
+export type Severity = "low" | "medium" | "high" | "critical";
+
 export type ClassifiedFile = FileChange & {
   riskCategories: RiskCategory[];
+  severity: Severity;
+  severityReason: string;
 };
 
 const rules: Array<{ category: RiskCategory; patterns: RegExp[] }> = [
@@ -60,6 +64,44 @@ function lowRiskPath(filePath: string): boolean {
     || filePath.endsWith(".md");
 }
 
+function criticalReason(filePath: string, categories: RiskCategory[]): string | null {
+  const text = filePath.toLowerCase();
+
+  if (/\.env($|\.|\/)/.test(text) || /secret.*(key|token)|token.*secret|private.*key/.test(text)) {
+    return "Secret leakage indicator in changed file path.";
+  }
+  if (/service-role|service_role|supabase_service_role_key/.test(text)) {
+    return "Service role exposure indicator in changed file path.";
+  }
+  if (/(production|prod|deploy|wrangler|cloudflare).*(config|toml|json|ya?ml)?$/.test(text)) {
+    return "Production deploy configuration change indicator.";
+  }
+  if (categories.includes("payment") && categories.includes("security") && /webhook/.test(text)) {
+    return "Payment webhook trust change indicator.";
+  }
+
+  return null;
+}
+
+function severityFor(filePath: string, categories: RiskCategory[]): { severity: Severity; reason: string } {
+  const critical = criticalReason(filePath, categories);
+  if (critical) return { severity: "critical", reason: critical };
+
+  if (categories.some((category) => ["security", "payment", "sms-compliance"].includes(category))) {
+    return { severity: "high", reason: "Security, payment, SMS compliance, auth, admin, API, or webhook risk." };
+  }
+
+  if (categories.some((category) => ["ux", "runtime", "vault"].includes(category))) {
+    return { severity: "medium", reason: "UX, runtime, config, script, package, or Vault-related change." };
+  }
+
+  if (categories.length && categories.every((category) => category === "low-risk")) {
+    return { severity: "low", reason: "Docs, examples, README, or markdown-only change." };
+  }
+
+  return { severity: "medium", reason: "Unknown file type requires review." };
+}
+
 export function classifyChangedFiles(changedFiles: FileChange[]): ClassifiedFile[] {
   return changedFiles.map((file) => {
     const categories = rules
@@ -74,9 +116,14 @@ export function classifyChangedFiles(changedFiles: FileChange[]): ClassifiedFile
       categories.push("unknown");
     }
 
+    const uniqueCategories = [...new Set(categories)];
+    const severity = severityFor(file.path, uniqueCategories);
+
     return {
       ...file,
-      riskCategories: [...new Set(categories)],
+      riskCategories: uniqueCategories,
+      severity: severity.severity,
+      severityReason: severity.reason,
     };
   });
 }
@@ -92,6 +139,25 @@ export function confidenceForRisks(risks: RiskCategory[]): number {
   if (risks.length && risks.every((risk) => risk === "low-risk")) return 90;
   if (risks.includes("ux")) return 80;
   return 90;
+}
+
+const severityRank: Record<Severity, number> = {
+  low: 1,
+  medium: 2,
+  high: 3,
+  critical: 4,
+};
+
+export function highestSeverity(files: ClassifiedFile[]): Severity {
+  return files.reduce<Severity>((highest, file) => (
+    severityRank[file.severity] > severityRank[highest] ? file.severity : highest
+  ), "low");
+}
+
+export function criticalWarnings(files: ClassifiedFile[]): string[] {
+  return files
+    .filter((file) => file.severity === "critical")
+    .map((file) => `${file.path}: ${file.severityReason}`);
 }
 
 export function confidenceNotes(risks: RiskCategory[], confidence: number): string[] {

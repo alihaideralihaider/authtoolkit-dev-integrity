@@ -1,4 +1,14 @@
-import type { RiskCategory } from "./riskClassifier.ts";
+import type { RiskCategory, Severity } from "./riskClassifier.ts";
+
+export type ReviewPack =
+  | "planning-pack"
+  | "security-pack"
+  | "payment-pack"
+  | "sms-compliance-pack"
+  | "vault-pack"
+  | "runtime-pack"
+  | "ux-pack"
+  | "release-readiness-pack";
 
 const reviewByRisk: Record<RiskCategory, string[]> = {
   security: ["saana-security-review"],
@@ -24,3 +34,32 @@ export function selectReviews(risks: RiskCategory[], selectedSkill: string): str
   return [...reviews];
 }
 
+const packByRisk: Record<RiskCategory, ReviewPack[]> = {
+  security: ["security-pack"],
+  payment: ["payment-pack"],
+  "sms-compliance": ["sms-compliance-pack"],
+  vault: ["vault-pack"],
+  runtime: ["runtime-pack"],
+  ux: ["ux-pack"],
+  "low-risk": [],
+  unknown: ["planning-pack"],
+};
+
+export function selectReviewPacks(risks: RiskCategory[], highestSeverity: Severity): ReviewPack[] {
+  const packs = new Set<ReviewPack>();
+
+  for (const risk of risks) {
+    for (const pack of packByRisk[risk]) {
+      packs.add(pack);
+    }
+  }
+
+  if (highestSeverity === "high" || highestSeverity === "critical") {
+    packs.add("release-readiness-pack");
+  }
+  if (!packs.size) {
+    packs.add("planning-pack");
+  }
+
+  return [...packs];
+}

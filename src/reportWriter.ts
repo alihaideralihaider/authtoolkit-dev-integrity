@@ -15,7 +15,7 @@ function changedFileList(result: ReviewResult): string {
   if (!result.changedFiles.length) return "- none";
 
   return result.changedFiles
-    .map((file) => `- ${file.path} (${file.status}) - risks: ${file.riskCategories.join(", ")}`)
+    .map((file) => `- ${file.path} (${file.status}) - severity: ${file.severity} - risks: ${file.riskCategories.join(", ")} - reason: ${file.severityReason}`)
     .join("\n");
 }
 
@@ -33,6 +33,7 @@ function buildReport(result: ReviewResult): string {
 - Skill file: ${result.skillPath}
 - Timestamp: ${result.timestamp}
 - Changed files count: ${result.changedFiles.length}
+- Highest severity: ${result.highestSeverity}
 - Confidence score: ${result.confidenceScore}
 - Detected env var-like names count: ${result.detectedEnvVarNames.length}
 
@@ -60,9 +61,17 @@ ${list(result.riskCategories)}
 
 ${list(result.suggestedReviews)}
 
+## Suggested Review Packs
+
+${list(result.suggestedReviewPacks)}
+
 ## Confidence Notes
 
 ${list(result.confidenceNotes)}
+
+## Critical Warnings
+
+${list(result.criticalWarnings)}
 
 ## Unknown-Risk Warnings
 
