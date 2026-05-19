@@ -76,6 +76,28 @@ ${list(result.riskCategories)}
 
 ${riskCombinationList(result)}
 
+## PR Integrity
+
+- Merge readiness: ${result.prIntegrity.mergeReadiness}
+- Approval risk: ${result.prIntegrity.approvalRisk}
+- Recommended decision: ${result.prIntegrity.recommendedDecision}
+
+### Required Review Packs
+
+${list(result.prIntegrity.requiredReviewPacks)}
+
+### Blocking Reasons
+
+${list(result.prIntegrity.blockingReasons)}
+
+### Missing Evidence
+
+${list(result.prIntegrity.missingEvidence)}
+
+### Reviewer Checklist
+
+${list(result.prIntegrity.reviewerChecklist)}
+
 ## Suggested Reviews
 
 ${list(result.suggestedReviews)}

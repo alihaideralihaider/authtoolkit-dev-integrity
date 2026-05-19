@@ -44,6 +44,8 @@ These combinations identify cases where separately understandable changes become
 
 Risk combinations can add review packs and cap confidence until targeted review is complete.
 
+PR Integrity consumes Git Monitoring output and produces merge-readiness guidance.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:

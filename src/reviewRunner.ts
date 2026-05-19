@@ -3,8 +3,10 @@ import path from "node:path";
 import { monitorGit } from "./gitMonitor.ts";
 import { classifyChangedFiles, collectRiskCategories, confidenceForRisks, confidenceNotes, criticalWarnings, highestSeverity } from "./riskClassifier.ts";
 import { confidenceWithRiskCombinations, detectRiskCombinations } from "./riskCombinationDetector.ts";
+import { evaluatePrIntegrity } from "./prIntegrity.ts";
 import { selectReviewPacks, selectReviews } from "./reviewSelector.ts";
 import type { ClassifiedFile, RiskCategory, Severity } from "./riskClassifier.ts";
+import type { PrIntegrityResult } from "./prIntegrity.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
 
@@ -19,6 +21,7 @@ export type ReviewResult = {
   riskCategories: RiskCategory[];
   highestSeverity: Severity;
   riskCombinations: RiskCombination[];
+  prIntegrity: PrIntegrityResult;
   suggestedReviews: string[];
   suggestedReviewPacks: ReviewPack[];
   confidenceScore: number;
@@ -143,6 +146,16 @@ export function runReview(input: RunReviewInput): ReviewResult {
   const baseConfidenceScore = confidenceForRisks(riskCategories);
   const confidenceScore = confidenceWithRiskCombinations(baseConfidenceScore, riskCombinations);
   const detectedEnvVarNames = detectEnvVarNames(repoPath, changedFiles);
+  const unknownRiskWarnings = buildUnknownRiskWarnings(changedFiles);
+  const criticalWarningList = criticalWarnings(changedFiles);
+  const prIntegrity = evaluatePrIntegrity({
+    highestSeverity: maxSeverity,
+    riskCombinations,
+    suggestedReviewPacks,
+    unknownRiskWarnings,
+    criticalWarnings: criticalWarningList,
+    detectedEnvVarNames,
+  });
 
   return {
     repoPath,
@@ -155,12 +168,13 @@ export function runReview(input: RunReviewInput): ReviewResult {
     riskCategories,
     highestSeverity: maxSeverity,
     riskCombinations,
+    prIntegrity,
     suggestedReviews,
     suggestedReviewPacks,
     confidenceScore,
     confidenceNotes: confidenceNotes(riskCategories, confidenceScore),
-    unknownRiskWarnings: buildUnknownRiskWarnings(changedFiles),
-    criticalWarnings: criticalWarnings(changedFiles),
+    unknownRiskWarnings,
+    criticalWarnings: criticalWarningList,
     detectedEnvVarNames,
     safetyNotes: [
       "Local-only review runner.",
