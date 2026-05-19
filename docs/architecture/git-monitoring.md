@@ -48,6 +48,8 @@ PR Integrity consumes Git Monitoring output and produces merge-readiness guidanc
 
 Release Readiness consumes PR Integrity and produces release guidance.
 
+Runtime Integrity consumes Release Readiness and produces post-release monitoring guidance.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:

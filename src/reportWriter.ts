@@ -124,6 +124,28 @@ ${list(result.releaseReadiness.canaryRecommendations)}
 
 ${list(result.releaseReadiness.releaseWarnings)}
 
+## Runtime Integrity
+
+- Runtime posture: ${result.runtimeIntegrity.runtimePosture}
+- Runtime risk: ${result.runtimeIntegrity.runtimeRisk}
+- Recommended runtime action: ${result.runtimeIntegrity.recommendedRuntimeAction}
+
+### Runtime Signals To Watch
+
+${list(result.runtimeIntegrity.runtimeSignalsToWatch)}
+
+### Drift Indicators
+
+${list(result.runtimeIntegrity.driftIndicators)}
+
+### Rollback Triggers
+
+${list(result.runtimeIntegrity.rollbackTriggers)}
+
+### Owner Attention Items
+
+${list(result.runtimeIntegrity.ownerAttentionItems)}
+
 ## Suggested Reviews
 
 ${list(result.suggestedReviews)}

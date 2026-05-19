@@ -5,10 +5,12 @@ import { classifyChangedFiles, collectRiskCategories, confidenceForRisks, confid
 import { confidenceWithRiskCombinations, detectRiskCombinations } from "./riskCombinationDetector.ts";
 import { evaluatePrIntegrity } from "./prIntegrity.ts";
 import { evaluateReleaseReadiness } from "./releaseReadiness.ts";
+import { evaluateRuntimeIntegrity } from "./runtimeIntegrity.ts";
 import { selectReviewPacks, selectReviews } from "./reviewSelector.ts";
 import type { ClassifiedFile, RiskCategory, Severity } from "./riskClassifier.ts";
 import type { PrIntegrityResult } from "./prIntegrity.ts";
 import type { ReleaseReadinessResult } from "./releaseReadiness.ts";
+import type { RuntimeIntegrityResult } from "./runtimeIntegrity.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
 
@@ -25,6 +27,7 @@ export type ReviewResult = {
   riskCombinations: RiskCombination[];
   prIntegrity: PrIntegrityResult;
   releaseReadiness: ReleaseReadinessResult;
+  runtimeIntegrity: RuntimeIntegrityResult;
   suggestedReviews: string[];
   suggestedReviewPacks: ReviewPack[];
   confidenceScore: number;
@@ -167,6 +170,15 @@ export function runReview(input: RunReviewInput): ReviewResult {
     criticalWarnings: criticalWarningList,
     detectedEnvVarNames,
   });
+  const runtimeIntegrity = evaluateRuntimeIntegrity({
+    releaseReadiness,
+    prIntegrity,
+    highestSeverity: maxSeverity,
+    riskCombinations,
+    suggestedReviewPacks,
+    detectedEnvVarNames,
+    criticalWarnings: criticalWarningList,
+  });
 
   return {
     repoPath,
@@ -181,6 +193,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     riskCombinations,
     prIntegrity,
     releaseReadiness,
+    runtimeIntegrity,
     suggestedReviews,
     suggestedReviewPacks,
     confidenceScore,
