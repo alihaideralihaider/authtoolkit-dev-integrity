@@ -273,6 +273,22 @@ ${list(result.recoveryAwareIntegrity.recoveryDependencies)}
 
 ${list(result.recoveryAwareIntegrity.recoveryWarnings)}
 
+## Impact-Aware Integrity
+
+- Overall impact: ${result.impactAwareIntegrity.overallImpact}
+- Customer impact: ${result.impactAwareIntegrity.customerImpact}
+- Admin impact: ${result.impactAwareIntegrity.adminImpact}
+- Payment impact: ${result.impactAwareIntegrity.paymentImpact}
+- Runtime impact: ${result.impactAwareIntegrity.runtimeImpact}
+- Data impact: ${result.impactAwareIntegrity.dataImpact}
+- Compliance impact: ${result.impactAwareIntegrity.complianceImpact}
+- Owner/operator impact: ${result.impactAwareIntegrity.ownerOperatorImpact}
+- Recommended impact action: ${result.impactAwareIntegrity.recommendedImpactAction}
+
+### Impact Warnings
+
+${list(result.impactAwareIntegrity.impactWarnings)}
+
 ## Posture-Aware Integrity
 
 - Integrity trend: ${result.postureAwareIntegrity.integrityTrend}

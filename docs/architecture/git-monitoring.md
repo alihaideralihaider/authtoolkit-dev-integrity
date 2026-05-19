@@ -70,6 +70,8 @@ Build-Aware Integrity consumes optional local build summary input and adjusts tr
 
 Layer-specific drift keeps drift logic inside each awareness layer rather than creating one giant drift engine.
 
+Impact-Aware Integrity translates technical risk into customer, admin, payment, runtime, data, compliance, and owner/operator impact.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:

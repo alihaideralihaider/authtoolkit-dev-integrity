@@ -14,6 +14,7 @@ import { evaluatePolicyAwareIntegrity } from "./policyAwareIntegrity.ts";
 import { evaluateEvidenceAwareIntegrity } from "./evidenceAwareIntegrity.ts";
 import { evaluateAgentAwareIntegrity } from "./agentAwareIntegrity.ts";
 import { evaluateRecoveryAwareIntegrity } from "./recoveryAwareIntegrity.ts";
+import { evaluateImpactAwareIntegrity } from "./impactAwareIntegrity.ts";
 import { confidenceWithBuildAwareness, evaluateBuildAwareIntegrity, loadBuildSummary } from "./buildAwareIntegrity.ts";
 import { selectReviewPacks, selectReviews } from "./reviewSelector.ts";
 import type { ClassifiedFile, RiskCategory, Severity } from "./riskClassifier.ts";
@@ -28,6 +29,7 @@ import type { PolicyAwareIntegrityResult } from "./policyAwareIntegrity.ts";
 import type { EvidenceAwareIntegrityResult } from "./evidenceAwareIntegrity.ts";
 import type { AgentAwareIntegrityResult } from "./agentAwareIntegrity.ts";
 import type { RecoveryAwareIntegrityResult } from "./recoveryAwareIntegrity.ts";
+import type { ImpactAwareIntegrityResult } from "./impactAwareIntegrity.ts";
 import type { BuildAwareIntegrityResult } from "./buildAwareIntegrity.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { DiffAwareIntegrityResult } from "./diffAwareIntegrity.ts";
@@ -50,6 +52,7 @@ export type ReviewResult = {
   evidenceAwareIntegrity: EvidenceAwareIntegrityResult;
   agentAwareIntegrity: AgentAwareIntegrityResult;
   recoveryAwareIntegrity: RecoveryAwareIntegrityResult;
+  impactAwareIntegrity: ImpactAwareIntegrityResult;
   buildAwareIntegrity: BuildAwareIntegrityResult;
   prIntegrity: PrIntegrityResult;
   releaseReadiness: ReleaseReadinessResult;
@@ -329,6 +332,16 @@ export function runReview(input: RunReviewInput): ReviewResult {
     agentAwareIntegrity,
     buildAwareIntegrity,
   });
+  const impactAwareIntegrity = evaluateImpactAwareIntegrity({
+    buildAwareIntegrity,
+    diffAwareIntegrity,
+    releaseReadiness,
+    runtimeIntegrity,
+    architectureAwareIntegrity,
+    policyAwareIntegrity,
+    evidenceAwareIntegrity,
+    recoveryAwareIntegrity,
+  });
   const layerSummaries = buildLayerSummaries({
     buildAwareIntegrity,
     architectureAwareIntegrity,
@@ -375,6 +388,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     evidenceAwareIntegrity,
     agentAwareIntegrity,
     recoveryAwareIntegrity,
+    impactAwareIntegrity,
     buildAwareIntegrity,
     prIntegrity,
     releaseReadiness,
