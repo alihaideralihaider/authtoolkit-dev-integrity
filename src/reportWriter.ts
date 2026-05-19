@@ -81,6 +81,30 @@ function buildReport(result: ReviewResult, timelinePath: string): string {
 - Confidence score: ${result.confidenceScore}
 - Detected env var-like names count: ${result.detectedEnvVarNames.length}
 
+## Integrity Decision Summary
+
+- Overall integrity decision: ${result.integrityDecisionSummary.overallIntegrityDecision}
+- Operational trust level: ${result.integrityDecisionSummary.operationalTrustLevel}
+- Release trust summary: ${result.integrityDecisionSummary.releaseTrustSummary}
+- Recovery trust summary: ${result.integrityDecisionSummary.recoveryTrustSummary}
+- Recommended operational decision: ${result.integrityDecisionSummary.recommendedOperationalDecision}
+
+### Primary Risk Drivers
+
+${list(result.integrityDecisionSummary.primaryRiskDrivers)}
+
+### Blocking Factors
+
+${list(result.integrityDecisionSummary.blockingFactors)}
+
+### Required Next Actions
+
+${list(result.integrityDecisionSummary.requiredNextActions)}
+
+### Required Human Attention
+
+${list(result.integrityDecisionSummary.requiredHumanAttention)}
+
 ## Git Status Summary
 
 \`\`\`text

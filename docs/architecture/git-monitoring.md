@@ -72,6 +72,8 @@ Layer-specific drift keeps drift logic inside each awareness layer rather than c
 
 Impact-Aware Integrity translates technical risk into customer, admin, payment, runtime, data, compliance, and owner/operator impact.
 
+Integrity Decision Summary condenses all awareness layers into a unified operational trust decision.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:
