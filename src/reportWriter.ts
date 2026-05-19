@@ -51,6 +51,18 @@ function diffFindingList(result: ReviewResult): string {
     .join("\n");
 }
 
+function triggeredPolicyList(result: ReviewResult): string {
+  if (!result.policyAwareIntegrity.triggeredPolicies.length) return "- none";
+
+  return result.policyAwareIntegrity.triggeredPolicies
+    .map((policy) => [
+      `- ${policy.name}`,
+      `  - result: ${policy.result}`,
+      `  - reason: ${policy.reason}`,
+    ].join("\n"))
+    .join("\n");
+}
+
 function safeFileName(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
@@ -138,6 +150,35 @@ ${list(result.architectureAwareIntegrity.architectureWarnings)}
 ### Architecture Review Notes
 
 ${list(result.architectureAwareIntegrity.architectureReviewNotes)}
+
+## Policy-Aware Integrity
+
+- Policy posture: ${result.policyAwareIntegrity.policyPosture}
+- Recommended policy action: ${result.policyAwareIntegrity.recommendedPolicyAction}
+
+### Triggered Policies
+
+${triggeredPolicyList(result)}
+
+### Policy Violations
+
+${list(result.policyAwareIntegrity.policyViolations)}
+
+### Policy Escalations
+
+${list(result.policyAwareIntegrity.policyEscalations)}
+
+### Required Approvals
+
+${list(result.policyAwareIntegrity.requiredApprovals)}
+
+### Governance Warnings
+
+${list(result.policyAwareIntegrity.governanceWarnings)}
+
+### Policy Review Notes
+
+${list(result.policyAwareIntegrity.policyReviewNotes)}
 
 ## Posture-Aware Integrity
 
