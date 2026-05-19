@@ -6,8 +6,10 @@ import { confidenceWithRiskCombinations, detectRiskCombinations } from "./riskCo
 import { evaluatePrIntegrity } from "./prIntegrity.ts";
 import { evaluateReleaseReadiness } from "./releaseReadiness.ts";
 import { evaluateRuntimeIntegrity } from "./runtimeIntegrity.ts";
+import { buildEvidenceTimeline } from "./evidenceTimeline.ts";
 import { selectReviewPacks, selectReviews } from "./reviewSelector.ts";
 import type { ClassifiedFile, RiskCategory, Severity } from "./riskClassifier.ts";
+import type { EvidenceTimeline } from "./evidenceTimeline.ts";
 import type { PrIntegrityResult } from "./prIntegrity.ts";
 import type { ReleaseReadinessResult } from "./releaseReadiness.ts";
 import type { RuntimeIntegrityResult } from "./runtimeIntegrity.ts";
@@ -28,6 +30,7 @@ export type ReviewResult = {
   prIntegrity: PrIntegrityResult;
   releaseReadiness: ReleaseReadinessResult;
   runtimeIntegrity: RuntimeIntegrityResult;
+  evidenceTimeline: EvidenceTimeline;
   suggestedReviews: string[];
   suggestedReviewPacks: ReviewPack[];
   confidenceScore: number;
@@ -138,6 +141,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
   }
 
   const gitMonitor = monitorGit(repoPath);
+  const timestamp = new Date().toISOString();
   const changedFiles = classifyChangedFiles(gitMonitor.changedFiles);
   const riskCategories = collectRiskCategories(changedFiles);
   const maxSeverity = highestSeverity(changedFiles);
@@ -179,12 +183,29 @@ export function runReview(input: RunReviewInput): ReviewResult {
     detectedEnvVarNames,
     criticalWarnings: criticalWarningList,
   });
+  const evidenceTimeline = buildEvidenceTimeline({
+    generatedAt: timestamp,
+    repoPath,
+    selectedSkill,
+    changedFilesCount: changedFiles.length,
+    riskCategories,
+    highestSeverity: maxSeverity,
+    confidenceScore,
+    suggestedReviewPacks,
+    riskCombinations,
+    prIntegrity,
+    releaseReadiness,
+    runtimeIntegrity,
+    criticalWarnings: criticalWarningList,
+    unknownRiskWarnings,
+    detectedEnvVarNames,
+  });
 
   return {
     repoPath,
     selectedSkill,
     skillPath,
-    timestamp: new Date().toISOString(),
+    timestamp,
     gitStatus: gitMonitor.gitStatus,
     diffNameOnly: gitMonitor.diffNameOnly,
     changedFiles,
@@ -194,6 +215,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     prIntegrity,
     releaseReadiness,
     runtimeIntegrity,
+    evidenceTimeline,
     suggestedReviews,
     suggestedReviewPacks,
     confidenceScore,

@@ -38,7 +38,7 @@ function safeFileName(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
-function buildReport(result: ReviewResult): string {
+function buildReport(result: ReviewResult, timelinePath: string): string {
   return `# AuthToolkit Dev Integrity Report
 
 ## Summary
@@ -146,6 +146,37 @@ ${list(result.runtimeIntegrity.rollbackTriggers)}
 
 ${list(result.runtimeIntegrity.ownerAttentionItems)}
 
+## Evidence Timeline
+
+- Timeline ID: ${result.evidenceTimeline.timelineId}
+- Timeline JSON: ${timelinePath}
+
+### Integrity Snapshot
+
+- Highest severity: ${result.evidenceTimeline.integritySnapshot.highestSeverity}
+- Merge readiness: ${result.evidenceTimeline.integritySnapshot.mergeReadiness}
+- Release decision: ${result.evidenceTimeline.integritySnapshot.releaseDecision}
+- Runtime posture: ${result.evidenceTimeline.integritySnapshot.runtimePosture}
+- Confidence score: ${result.evidenceTimeline.integritySnapshot.confidenceScore}
+
+### Posture Snapshot
+
+- Approval risk: ${result.evidenceTimeline.postureSnapshot.approvalRisk}
+- Release risk: ${result.evidenceTimeline.postureSnapshot.releaseRisk}
+- Runtime risk: ${result.evidenceTimeline.postureSnapshot.runtimeRisk}
+
+### Unresolved Risks
+
+${list(result.evidenceTimeline.unresolvedRisks)}
+
+### Unresolved Warnings
+
+${list(result.evidenceTimeline.unresolvedWarnings)}
+
+### Audit Notes
+
+${list(result.evidenceTimeline.auditNotes)}
+
 ## Suggested Reviews
 
 ${list(result.suggestedReviews)}
@@ -182,11 +213,19 @@ ${list(result.nextActions)}
 
 export function writeReport(result: ReviewResult): string {
   const reportsDir = path.join(repoRoot(), "reports");
+  const timelineDir = path.join(reportsDir, "timeline");
   mkdirSync(reportsDir, { recursive: true });
+  mkdirSync(timelineDir, { recursive: true });
 
-  const reportName = `${new Date().toISOString().replace(/[:.]/g, "-")}-${safeFileName(result.selectedSkill)}.md`;
+  const timestampSlug = new Date().toISOString().replace(/[:.]/g, "-");
+  const reportName = `${timestampSlug}-${safeFileName(result.selectedSkill)}.md`;
+  const timelineName = `${timestampSlug}-${result.evidenceTimeline.timelineId}.json`;
   const reportPath = path.join(reportsDir, reportName);
-  writeFileSync(reportPath, buildReport(result));
+  const timelinePath = path.join(timelineDir, timelineName);
+  const relativeTimelinePath = path.relative(repoRoot(), timelinePath);
+
+  writeFileSync(timelinePath, JSON.stringify(result.evidenceTimeline, null, 2));
+  writeFileSync(reportPath, buildReport(result, relativeTimelinePath));
 
   return reportPath;
 }

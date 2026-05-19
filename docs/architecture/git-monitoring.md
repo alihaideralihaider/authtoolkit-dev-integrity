@@ -50,6 +50,8 @@ Release Readiness consumes PR Integrity and produces release guidance.
 
 Runtime Integrity consumes Release Readiness and produces post-release monitoring guidance.
 
+Evidence Timeline preserves explainable integrity history across review runs.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:
