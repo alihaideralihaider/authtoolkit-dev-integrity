@@ -8,12 +8,14 @@ import { evaluatePrIntegrity } from "./prIntegrity.ts";
 import { evaluateReleaseReadiness } from "./releaseReadiness.ts";
 import { evaluateRuntimeIntegrity } from "./runtimeIntegrity.ts";
 import { buildEvidenceTimeline } from "./evidenceTimeline.ts";
+import { evaluatePostureAwareIntegrity } from "./postureAwareIntegrity.ts";
 import { selectReviewPacks, selectReviews } from "./reviewSelector.ts";
 import type { ClassifiedFile, RiskCategory, Severity } from "./riskClassifier.ts";
 import type { EvidenceTimeline } from "./evidenceTimeline.ts";
 import type { PrIntegrityResult } from "./prIntegrity.ts";
 import type { ReleaseReadinessResult } from "./releaseReadiness.ts";
 import type { RuntimeIntegrityResult } from "./runtimeIntegrity.ts";
+import type { PostureAwareIntegrityResult } from "./postureAwareIntegrity.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { DiffAwareIntegrityResult } from "./diffAwareIntegrity.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
@@ -34,6 +36,7 @@ export type ReviewResult = {
   releaseReadiness: ReleaseReadinessResult;
   runtimeIntegrity: RuntimeIntegrityResult;
   evidenceTimeline: EvidenceTimeline;
+  postureAwareIntegrity: PostureAwareIntegrityResult;
   suggestedReviews: string[];
   suggestedReviewPacks: ReviewPack[];
   confidenceScore: number;
@@ -210,6 +213,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     detectedEnvVarNames,
     diffAwareIntegrity,
   });
+  const postureAwareIntegrity = evaluatePostureAwareIntegrity(evidenceTimeline);
 
   return {
     repoPath,
@@ -227,6 +231,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     releaseReadiness,
     runtimeIntegrity,
     evidenceTimeline,
+    postureAwareIntegrity,
     suggestedReviews,
     suggestedReviewPacks,
     confidenceScore,

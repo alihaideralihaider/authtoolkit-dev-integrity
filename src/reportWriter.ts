@@ -114,6 +114,34 @@ ${list(result.diffAwareIntegrity.diffSensitiveChanges)}
 
 ${list(result.diffAwareIntegrity.diffReviewNotes)}
 
+## Posture-Aware Integrity
+
+- Integrity trend: ${result.postureAwareIntegrity.integrityTrend}
+- Previous timeline ID: ${result.postureAwareIntegrity.previousTimelineId || "none"}
+- Previous timeline path: ${result.postureAwareIntegrity.previousTimelinePath || "none"}
+- Posture summary: ${result.postureAwareIntegrity.postureSummary}
+- Recommended posture action: ${result.postureAwareIntegrity.recommendedPostureAction}
+
+### Posture Transitions
+
+${list(result.postureAwareIntegrity.postureTransitions)}
+
+### Degradation Signals
+
+${list(result.postureAwareIntegrity.degradationSignals)}
+
+### Stabilization Signals
+
+${list(result.postureAwareIntegrity.stabilizationSignals)}
+
+### Recovery Signals
+
+${list(result.postureAwareIntegrity.recoverySignals)}
+
+### Escalation Warnings
+
+${list(result.postureAwareIntegrity.escalationWarnings)}
+
 ## PR Integrity
 
 - Merge readiness: ${result.prIntegrity.mergeReadiness}

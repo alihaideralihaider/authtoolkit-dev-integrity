@@ -54,6 +54,8 @@ Evidence Timeline preserves explainable integrity history across review runs.
 
 Diff-Aware Integrity inspects safe Git diff signals without printing full raw diffs or secret values.
 
+Posture-Aware Integrity compares integrity posture across review runs.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:
