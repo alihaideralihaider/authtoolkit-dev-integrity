@@ -3,6 +3,7 @@ import path from "node:path";
 import { monitorGit } from "./gitMonitor.ts";
 import { classifyChangedFiles, collectRiskCategories, confidenceForRisks, confidenceNotes, criticalWarnings, highestSeverity } from "./riskClassifier.ts";
 import { confidenceWithRiskCombinations, detectRiskCombinations } from "./riskCombinationDetector.ts";
+import { confidenceWithDiffFindings, evaluateDiffAwareIntegrity } from "./diffAwareIntegrity.ts";
 import { evaluatePrIntegrity } from "./prIntegrity.ts";
 import { evaluateReleaseReadiness } from "./releaseReadiness.ts";
 import { evaluateRuntimeIntegrity } from "./runtimeIntegrity.ts";
@@ -14,6 +15,7 @@ import type { PrIntegrityResult } from "./prIntegrity.ts";
 import type { ReleaseReadinessResult } from "./releaseReadiness.ts";
 import type { RuntimeIntegrityResult } from "./runtimeIntegrity.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
+import type { DiffAwareIntegrityResult } from "./diffAwareIntegrity.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
 
 export type ReviewResult = {
@@ -27,6 +29,7 @@ export type ReviewResult = {
   riskCategories: RiskCategory[];
   highestSeverity: Severity;
   riskCombinations: RiskCombination[];
+  diffAwareIntegrity: DiffAwareIntegrityResult;
   prIntegrity: PrIntegrityResult;
   releaseReadiness: ReleaseReadinessResult;
   runtimeIntegrity: RuntimeIntegrityResult;
@@ -146,15 +149,18 @@ export function runReview(input: RunReviewInput): ReviewResult {
   const riskCategories = collectRiskCategories(changedFiles);
   const maxSeverity = highestSeverity(changedFiles);
   const riskCombinations = detectRiskCombinations(changedFiles);
+  const diffAwareIntegrity = evaluateDiffAwareIntegrity(gitMonitor.diffLines);
   const suggestedReviews = selectReviews(riskCategories, selectedSkill);
   const suggestedReviewPacks = [
     ...new Set([
       ...selectReviewPacks(riskCategories, maxSeverity),
       ...riskCombinations.flatMap((combination) => combination.suggestedReviewPacks),
+      ...diffAwareIntegrity.diffFindings.flatMap((finding) => finding.suggestedReviewPacks),
     ]),
   ];
   const baseConfidenceScore = confidenceForRisks(riskCategories);
-  const confidenceScore = confidenceWithRiskCombinations(baseConfidenceScore, riskCombinations);
+  const combinationConfidenceScore = confidenceWithRiskCombinations(baseConfidenceScore, riskCombinations);
+  const confidenceScore = confidenceWithDiffFindings(combinationConfidenceScore, diffAwareIntegrity);
   const detectedEnvVarNames = detectEnvVarNames(repoPath, changedFiles);
   const unknownRiskWarnings = buildUnknownRiskWarnings(changedFiles);
   const criticalWarningList = criticalWarnings(changedFiles);
@@ -165,6 +171,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     unknownRiskWarnings,
     criticalWarnings: criticalWarningList,
     detectedEnvVarNames,
+    diffFindings: diffAwareIntegrity.diffFindings,
   });
   const releaseReadiness = evaluateReleaseReadiness({
     prIntegrity,
@@ -173,6 +180,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     suggestedReviewPacks,
     criticalWarnings: criticalWarningList,
     detectedEnvVarNames,
+    diffFindings: diffAwareIntegrity.diffFindings,
   });
   const runtimeIntegrity = evaluateRuntimeIntegrity({
     releaseReadiness,
@@ -182,6 +190,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     suggestedReviewPacks,
     detectedEnvVarNames,
     criticalWarnings: criticalWarningList,
+    diffFindings: diffAwareIntegrity.diffFindings,
   });
   const evidenceTimeline = buildEvidenceTimeline({
     generatedAt: timestamp,
@@ -199,6 +208,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     criticalWarnings: criticalWarningList,
     unknownRiskWarnings,
     detectedEnvVarNames,
+    diffAwareIntegrity,
   });
 
   return {
@@ -212,6 +222,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     riskCategories,
     highestSeverity: maxSeverity,
     riskCombinations,
+    diffAwareIntegrity,
     prIntegrity,
     releaseReadiness,
     runtimeIntegrity,

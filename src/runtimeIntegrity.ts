@@ -3,6 +3,7 @@ import type { ReleaseReadinessResult } from "./releaseReadiness.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { Severity } from "./riskClassifier.ts";
+import type { DiffFinding } from "./diffAwareIntegrity.ts";
 
 export type RuntimePosture = "stable" | "watch" | "degraded-risk" | "rollback-watch";
 export type RuntimeRisk = "low" | "medium" | "high" | "critical";
@@ -15,6 +16,7 @@ export type RuntimeIntegrityInput = {
   suggestedReviewPacks: ReviewPack[];
   detectedEnvVarNames: string[];
   criticalWarnings: string[];
+  diffFindings: DiffFinding[];
 };
 
 export type RuntimeIntegrityResult = {
@@ -108,6 +110,12 @@ export function evaluateRuntimeIntegrity(
   const highCombinations = input.riskCombinations.filter(
     (combination) => combination.severity === "high"
   );
+  const criticalDiffFindings = input.diffFindings.filter(
+    (finding) => finding.severity === "critical"
+  );
+  const highDiffFindings = input.diffFindings.filter(
+    (finding) => finding.severity === "high"
+  );
   const ownerAttentionItems = [
     "Review runtime errors before next release.",
     "Confirm rollback path is documented.",
@@ -124,7 +132,8 @@ export function evaluateRuntimeIntegrity(
     input.releaseReadiness.releaseDecision === "blocked" ||
     input.releaseReadiness.releaseRisk === "critical" ||
     input.criticalWarnings.length > 0 ||
-    criticalCombinations.length > 0
+    criticalCombinations.length > 0 ||
+    criticalDiffFindings.length > 0
   ) {
     runtimePosture = "rollback-watch";
     runtimeRisk = "critical";
@@ -132,18 +141,20 @@ export function evaluateRuntimeIntegrity(
   } else if (
     input.releaseReadiness.releaseDecision === "caution" ||
     highCombinations.length > 0 ||
+    highDiffFindings.length > 0 ||
     hasPack(packs, "release-readiness-pack") ||
     hasPack(packs, "payment-pack") ||
     hasPack(packs, "security-pack")
   ) {
     runtimePosture = "degraded-risk";
-    runtimeRisk = highCombinations.length || input.highestSeverity === "high" ? "high" : "medium";
+    runtimeRisk = highCombinations.length || highDiffFindings.length || input.highestSeverity === "high" ? "high" : "medium";
     recommendedRuntimeAction = "Run targeted post-release watch and confirm owner attention items before considering the release healthy.";
   } else if (
     hasPack(packs, "runtime-pack") ||
     hasPack(packs, "vault-pack") ||
     hasPack(packs, "ux-pack") ||
     input.detectedEnvVarNames.length > 0 ||
+    input.diffFindings.length > 0 ||
     input.prIntegrity.mergeReadiness === "needs-review"
   ) {
     runtimePosture = "watch";
@@ -154,7 +165,10 @@ export function evaluateRuntimeIntegrity(
   return {
     runtimePosture,
     runtimeRisk,
-    runtimeSignalsToWatch: unique(packs.flatMap((pack) => signalsByPack[pack] || [])),
+    runtimeSignalsToWatch: unique([
+      ...packs.flatMap((pack) => signalsByPack[pack] || []),
+      ...input.diffFindings.map((finding) => `diff-aware signal: ${finding.signalType}`),
+    ]),
     driftIndicators: unique(packs.flatMap((pack) => driftByPack[pack] || [])),
     rollbackTriggers: unique(packs.flatMap((pack) => rollbackByPack[pack] || [])),
     ownerAttentionItems: hasSensitivePack(packs) || runtimePosture !== "stable" ? ownerAttentionItems : [],

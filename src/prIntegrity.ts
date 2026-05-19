@@ -1,6 +1,7 @@
 import type { ReviewPack } from "./reviewSelector.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { Severity } from "./riskClassifier.ts";
+import type { DiffFinding } from "./diffAwareIntegrity.ts";
 
 export type MergeReadiness = "ready" | "needs-review" | "blocked";
 export type ApprovalRisk = "low" | "medium" | "high" | "critical";
@@ -12,6 +13,7 @@ export type PrIntegrityInput = {
   unknownRiskWarnings: string[];
   criticalWarnings: string[];
   detectedEnvVarNames: string[];
+  diffFindings: DiffFinding[];
 };
 
 export type PrIntegrityResult = {
@@ -104,6 +106,12 @@ export function evaluatePrIntegrity(input: PrIntegrityInput): PrIntegrityResult 
   const highCombinations = input.riskCombinations.filter(
     (combination) => combination.severity === "high"
   );
+  const criticalDiffFindings = input.diffFindings.filter(
+    (finding) => finding.severity === "critical"
+  );
+  const highDiffFindings = input.diffFindings.filter(
+    (finding) => finding.severity === "high"
+  );
   const requiredReviewPacks = [...new Set(input.suggestedReviewPacks)].sort() as ReviewPack[];
   const blockingReasons: string[] = [];
 
@@ -115,6 +123,9 @@ export function evaluatePrIntegrity(input: PrIntegrityInput): PrIntegrityResult 
   }
   for (const warning of input.criticalWarnings) {
     blockingReasons.push(`Critical warning exists: ${warning}`);
+  }
+  for (const finding of criticalDiffFindings) {
+    blockingReasons.push(`Critical diff-aware finding exists: ${finding.findingName} in ${finding.filePath}.`);
   }
 
   let mergeReadiness: MergeReadiness = "ready";
@@ -128,13 +139,23 @@ export function evaluatePrIntegrity(input: PrIntegrityInput): PrIntegrityResult 
   } else if (
     input.highestSeverity === "high" ||
     highCombinations.length > 0 ||
+    highDiffFindings.length > 0 ||
     input.unknownRiskWarnings.length > 0 ||
     requiredReviewPacks.includes("release-readiness-pack") ||
     input.detectedEnvVarNames.length > 0
   ) {
     mergeReadiness = "needs-review";
-    approvalRisk = highCombinations.length || input.highestSeverity === "high" ? "high" : "medium";
+    approvalRisk = highCombinations.length || highDiffFindings.length || input.highestSeverity === "high" ? "high" : "medium";
     recommendedDecision = "Hold for targeted review and evidence before approval or merge.";
+  }
+
+  const missingEvidence = missingEvidenceForPacks(requiredReviewPacks);
+  if (input.diffFindings.length) {
+    missingEvidence.push("No diff-aware review evidence attached.");
+  }
+  const reviewerChecklist = checklistForPacks(requiredReviewPacks);
+  if (input.diffFindings.length) {
+    reviewerChecklist.push("Review diff-aware findings and confirm changed logic is intentional.");
   }
 
   return {
@@ -142,8 +163,8 @@ export function evaluatePrIntegrity(input: PrIntegrityInput): PrIntegrityResult 
     approvalRisk,
     requiredReviewPacks,
     blockingReasons,
-    missingEvidence: missingEvidenceForPacks(requiredReviewPacks),
-    reviewerChecklist: checklistForPacks(requiredReviewPacks),
+    missingEvidence,
+    reviewerChecklist,
     recommendedDecision,
   };
 }

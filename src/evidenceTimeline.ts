@@ -1,6 +1,7 @@
 import type { PrIntegrityResult } from "./prIntegrity.ts";
 import type { ReleaseReadinessResult } from "./releaseReadiness.ts";
 import type { RuntimeIntegrityResult } from "./runtimeIntegrity.ts";
+import type { DiffAwareIntegrityResult } from "./diffAwareIntegrity.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { Severity } from "./riskClassifier.ts";
@@ -21,6 +22,7 @@ export type EvidenceTimelineInput = {
   criticalWarnings: string[];
   unknownRiskWarnings: string[];
   detectedEnvVarNames: string[];
+  diffAwareIntegrity: DiffAwareIntegrityResult;
 };
 
 export type EvidenceTimeline = {
@@ -48,6 +50,7 @@ export type EvidenceTimeline = {
   evidenceItems: {
     selectedReviewPacks: ReviewPack[];
     riskCombinations: string[];
+    diffFindings: string[];
     criticalWarnings: string[];
     rollbackTriggers: string[];
     canaryRecommendations: string[];
@@ -90,6 +93,11 @@ function buildUnresolvedRisks(input: EvidenceTimelineInput): string[] {
   for (const warning of input.unknownRiskWarnings) {
     risks.push(`Unknown risk warning: ${warning}`);
   }
+  for (const finding of input.diffAwareIntegrity.diffFindings) {
+    if (finding.severity === "high" || finding.severity === "critical") {
+      risks.push(`${finding.severity} diff-aware finding: ${finding.findingName} in ${finding.filePath}`);
+    }
+  }
 
   return unique(risks);
 }
@@ -101,6 +109,9 @@ function buildUnresolvedWarnings(input: EvidenceTimelineInput): string[] {
     ...input.releaseReadiness.releaseWarnings,
     ...input.criticalWarnings.map((warning) => `Critical warning: ${warning}`),
     ...input.detectedEnvVarNames.map((name) => `Env var-like name detected: ${name}`),
+    ...input.diffAwareIntegrity.diffFindings
+      .filter((finding) => finding.severity === "low" || finding.severity === "medium")
+      .map((finding) => `Diff-aware warning: ${finding.findingName} in ${finding.filePath}`),
   ]);
 }
 
@@ -115,6 +126,9 @@ function buildAuditNotes(input: EvidenceTimelineInput): string[] {
   }
   if (input.prIntegrity.missingEvidence.length || input.releaseReadiness.missingReleaseEvidence.length) {
     notes.push("Review evidence remains incomplete.");
+  }
+  if (input.diffAwareIntegrity.diffFindings.length) {
+    notes.push("Diff-aware review findings require human confirmation.");
   }
   if (input.suggestedReviewPacks.some((pack) =>
     ["security-pack", "payment-pack", "sms-compliance-pack", "vault-pack", "runtime-pack", "release-readiness-pack"].includes(pack)
@@ -156,6 +170,7 @@ export function buildEvidenceTimeline(input: EvidenceTimelineInput): EvidenceTim
     evidenceItems: {
       selectedReviewPacks: input.suggestedReviewPacks,
       riskCombinations: input.riskCombinations.map((combination) => combination.name),
+      diffFindings: input.diffAwareIntegrity.diffFindings.map((finding) => finding.findingName),
       criticalWarnings: input.criticalWarnings,
       rollbackTriggers: input.runtimeIntegrity.rollbackTriggers,
       canaryRecommendations: input.releaseReadiness.canaryRecommendations,

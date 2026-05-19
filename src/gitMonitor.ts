@@ -15,7 +15,16 @@ export type GitMonitorResult = {
   repoPath: string;
   gitStatus: string;
   diffNameOnly: string;
+  diffLines: GitDiffLine[];
   changedFiles: FileChange[];
+};
+
+export type GitDiffLine = {
+  filePath: string;
+  changeType: "added" | "removed";
+  lineNumber?: number;
+  hunkHeader?: string;
+  text: string;
 };
 
 function assertGitRepo(repoPath: string): void {
@@ -69,11 +78,71 @@ function parseStatusLine(line: string): FileChange | null {
   };
 }
 
+function parseDiffLines(diffOutput: string): GitDiffLine[] {
+  const lines: GitDiffLine[] = [];
+  let currentFile = "";
+  let hunkHeader = "";
+  let nextAddedLine: number | undefined;
+  let nextRemovedLine: number | undefined;
+
+  for (const line of diffOutput.split("\n")) {
+    if (line.startsWith("diff --git ")) {
+      currentFile = "";
+      hunkHeader = "";
+      nextAddedLine = undefined;
+      nextRemovedLine = undefined;
+      continue;
+    }
+
+    if (line.startsWith("+++ b/")) {
+      currentFile = line.slice("+++ b/".length);
+      continue;
+    }
+
+    if (line.startsWith("@@")) {
+      hunkHeader = line;
+      const match = line.match(/@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@/);
+      nextRemovedLine = match ? Number(match[1]) : undefined;
+      nextAddedLine = match ? Number(match[2]) : undefined;
+      continue;
+    }
+
+    if (!currentFile) continue;
+
+    if (line.startsWith("+") && !line.startsWith("+++")) {
+      lines.push({
+        filePath: currentFile,
+        changeType: "added",
+        lineNumber: nextAddedLine,
+        hunkHeader,
+        text: line.slice(1),
+      });
+      if (nextAddedLine !== undefined) nextAddedLine += 1;
+      continue;
+    }
+
+    if (line.startsWith("-") && !line.startsWith("---")) {
+      lines.push({
+        filePath: currentFile,
+        changeType: "removed",
+        lineNumber: nextRemovedLine,
+        hunkHeader,
+        text: line.slice(1),
+      });
+      if (nextRemovedLine !== undefined) nextRemovedLine += 1;
+      continue;
+    }
+  }
+
+  return lines;
+}
+
 export function monitorGit(repoPath: string): GitMonitorResult {
   assertGitRepo(repoPath);
 
   const gitStatus = git(repoPath, ["status", "--short"]);
   const diffNameOnly = git(repoPath, ["diff", "--name-only"]);
+  const diffUnifiedZero = git(repoPath, ["diff", "--unified=0"]);
   const statusChanges = gitStatus
     .split("\n")
     .map(parseStatusLine)
@@ -94,7 +163,7 @@ export function monitorGit(repoPath: string): GitMonitorResult {
     repoPath,
     gitStatus,
     diffNameOnly,
+    diffLines: parseDiffLines(diffUnifiedZero),
     changedFiles: [...statusChanges, ...diffOnlyChanges],
   };
 }
-

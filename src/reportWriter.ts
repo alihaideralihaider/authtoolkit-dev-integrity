@@ -34,6 +34,23 @@ function riskCombinationList(result: ReviewResult): string {
     .join("\n");
 }
 
+function diffFindingList(result: ReviewResult): string {
+  if (!result.diffAwareIntegrity.diffFindings.length) return "- none";
+
+  return result.diffAwareIntegrity.diffFindings
+    .map((finding) => [
+      `- ${finding.findingName}`,
+      `  - severity: ${finding.severity}`,
+      `  - file path: ${finding.filePath}`,
+      `  - reason: ${finding.reason}`,
+      `  - signal type: ${finding.signalType}`,
+      `  - suggested packs: ${finding.suggestedReviewPacks.join(", ")}`,
+      `  - safe evidence summary: ${finding.safeEvidenceSummary}`,
+      `  - suggested next action: ${finding.suggestedNextAction}`,
+    ].join("\n"))
+    .join("\n");
+}
+
 function safeFileName(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
@@ -75,6 +92,27 @@ ${list(result.riskCategories)}
 ## Risk Combinations
 
 ${riskCombinationList(result)}
+
+## Diff-Aware Integrity
+
+- Confidence impact cap: ${result.diffAwareIntegrity.diffConfidenceImpact.cap ?? "none"}
+- Confidence impact reason: ${result.diffAwareIntegrity.diffConfidenceImpact.reason}
+
+### Diff Findings
+
+${diffFindingList(result)}
+
+### Diff Risk Signals
+
+${list(result.diffAwareIntegrity.diffRiskSignals)}
+
+### Diff Sensitive Changes
+
+${list(result.diffAwareIntegrity.diffSensitiveChanges)}
+
+### Diff Review Notes
+
+${list(result.diffAwareIntegrity.diffReviewNotes)}
 
 ## PR Integrity
 

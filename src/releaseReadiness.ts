@@ -2,6 +2,7 @@ import type { PrIntegrityResult } from "./prIntegrity.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { Severity } from "./riskClassifier.ts";
+import type { DiffFinding } from "./diffAwareIntegrity.ts";
 
 export type ReleaseDecision = "ready" | "caution" | "blocked";
 export type ReleaseRisk = "low" | "medium" | "high" | "critical";
@@ -13,6 +14,7 @@ export type ReleaseReadinessInput = {
   suggestedReviewPacks: ReviewPack[];
   criticalWarnings: string[];
   detectedEnvVarNames: string[];
+  diffFindings: DiffFinding[];
 };
 
 export type ReleaseReadinessResult = {
@@ -135,6 +137,12 @@ export function evaluateReleaseReadiness(
   const highCombinations = input.riskCombinations.filter(
     (combination) => combination.severity === "high"
   );
+  const criticalDiffFindings = input.diffFindings.filter(
+    (finding) => finding.severity === "critical"
+  );
+  const highOrMediumDiffFindings = input.diffFindings.filter(
+    (finding) => finding.severity === "high" || finding.severity === "medium"
+  );
   const releaseWarnings: string[] = [];
 
   if (input.detectedEnvVarNames.length) {
@@ -142,6 +150,9 @@ export function evaluateReleaseReadiness(
   }
   for (const combination of highCombinations) {
     releaseWarnings.push(`High risk combination requires release caution: ${combination.name}.`);
+  }
+  for (const finding of highOrMediumDiffFindings) {
+    releaseWarnings.push(`Diff-aware finding requires release review: ${finding.findingName} in ${finding.filePath}.`);
   }
 
   let releaseDecision: ReleaseDecision = "ready";
@@ -152,6 +163,7 @@ export function evaluateReleaseReadiness(
     input.prIntegrity.mergeReadiness === "blocked" ||
     input.highestSeverity === "critical" ||
     criticalCombinations.length > 0 ||
+    criticalDiffFindings.length > 0 ||
     input.criticalWarnings.length > 0
   ) {
     releaseDecision = "blocked";
@@ -164,18 +176,26 @@ export function evaluateReleaseReadiness(
     hasPack(packs, "vault-pack") ||
     hasPack(packs, "payment-pack") ||
     highCombinations.length > 0 ||
+    highOrMediumDiffFindings.length > 0 ||
     input.detectedEnvVarNames.length > 0
   ) {
     releaseDecision = "caution";
-    releaseRisk = highCombinations.length || input.highestSeverity === "high" ? "high" : "medium";
+    releaseRisk = highCombinations.length || highOrMediumDiffFindings.some((finding) => finding.severity === "high") || input.highestSeverity === "high" ? "high" : "medium";
     recommendedReleaseAction = "Hold release until required checks, canary plan, and rollback path are confirmed.";
+  }
+
+  const requiredReleaseChecks = unique(packs.flatMap((pack) => requiredChecksByPack[pack] || []));
+  const missingReleaseEvidence = missingEvidenceForRelease(packs);
+  if (input.diffFindings.length) {
+    requiredReleaseChecks.push("Verify diff-aware findings were reviewed.");
+    missingReleaseEvidence.push("No diff-aware release evidence attached.");
   }
 
   return {
     releaseDecision,
     releaseRisk,
-    requiredReleaseChecks: unique(packs.flatMap((pack) => requiredChecksByPack[pack] || [])),
-    missingReleaseEvidence: missingEvidenceForRelease(packs),
+    requiredReleaseChecks: unique(requiredReleaseChecks),
+    missingReleaseEvidence: unique(missingReleaseEvidence),
     rollbackRequirements: unique(packs.flatMap((pack) => rollbackByPack[pack] || [])),
     canaryRecommendations: unique(packs.flatMap((pack) => canaryByPack[pack] || [])),
     releaseWarnings,

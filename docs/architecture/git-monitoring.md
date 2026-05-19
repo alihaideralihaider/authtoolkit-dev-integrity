@@ -52,6 +52,8 @@ Runtime Integrity consumes Release Readiness and produces post-release monitorin
 
 Evidence Timeline preserves explainable integrity history across review runs.
 
+Diff-Aware Integrity inspects safe Git diff signals without printing full raw diffs or secret values.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:
