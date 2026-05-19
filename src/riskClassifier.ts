@@ -163,6 +163,11 @@ export function criticalWarnings(files: ClassifiedFile[]): string[] {
 export function confidenceNotes(risks: RiskCategory[], confidence: number): string[] {
   const notes = [`Confidence score: ${confidence}`];
 
+  if (confidence <= 35) {
+    notes.push("Critical risk combination detected; confidence is capped until targeted review is complete.");
+  } else if (confidence <= 50) {
+    notes.push("High risk combination detected; confidence is capped until targeted review is complete.");
+  }
   if (risks.includes("unknown")) {
     notes.push("Unknown risk is present; manual review is required before relying on this report.");
   }

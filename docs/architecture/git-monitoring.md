@@ -36,6 +36,14 @@ This routing remains simple and local-first:
 - high or critical severity adds release readiness review-pack routing
 - unknown risk adds planning-pack routing
 
+## Risk Combination Detection
+
+Git Monitoring now detects simple risky combinations across changed files.
+
+These combinations identify cases where separately understandable changes become more sensitive together, such as payment plus webhook plus security, runtime plus Vault/config, or admin UX plus API/security changes.
+
+Risk combinations can add review packs and cap confidence until targeted review is complete.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:

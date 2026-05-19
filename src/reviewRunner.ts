@@ -2,8 +2,10 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { monitorGit } from "./gitMonitor.ts";
 import { classifyChangedFiles, collectRiskCategories, confidenceForRisks, confidenceNotes, criticalWarnings, highestSeverity } from "./riskClassifier.ts";
+import { confidenceWithRiskCombinations, detectRiskCombinations } from "./riskCombinationDetector.ts";
 import { selectReviewPacks, selectReviews } from "./reviewSelector.ts";
 import type { ClassifiedFile, RiskCategory, Severity } from "./riskClassifier.ts";
+import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
 
 export type ReviewResult = {
@@ -16,6 +18,7 @@ export type ReviewResult = {
   changedFiles: ClassifiedFile[];
   riskCategories: RiskCategory[];
   highestSeverity: Severity;
+  riskCombinations: RiskCombination[];
   suggestedReviews: string[];
   suggestedReviewPacks: ReviewPack[];
   confidenceScore: number;
@@ -129,9 +132,16 @@ export function runReview(input: RunReviewInput): ReviewResult {
   const changedFiles = classifyChangedFiles(gitMonitor.changedFiles);
   const riskCategories = collectRiskCategories(changedFiles);
   const maxSeverity = highestSeverity(changedFiles);
+  const riskCombinations = detectRiskCombinations(changedFiles);
   const suggestedReviews = selectReviews(riskCategories, selectedSkill);
-  const suggestedReviewPacks = selectReviewPacks(riskCategories, maxSeverity);
-  const confidenceScore = confidenceForRisks(riskCategories);
+  const suggestedReviewPacks = [
+    ...new Set([
+      ...selectReviewPacks(riskCategories, maxSeverity),
+      ...riskCombinations.flatMap((combination) => combination.suggestedReviewPacks),
+    ]),
+  ];
+  const baseConfidenceScore = confidenceForRisks(riskCategories);
+  const confidenceScore = confidenceWithRiskCombinations(baseConfidenceScore, riskCombinations);
   const detectedEnvVarNames = detectEnvVarNames(repoPath, changedFiles);
 
   return {
@@ -144,6 +154,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     changedFiles,
     riskCategories,
     highestSeverity: maxSeverity,
+    riskCombinations,
     suggestedReviews,
     suggestedReviewPacks,
     confidenceScore,

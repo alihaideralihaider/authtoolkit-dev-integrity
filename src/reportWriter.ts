@@ -19,6 +19,21 @@ function changedFileList(result: ReviewResult): string {
     .join("\n");
 }
 
+function riskCombinationList(result: ReviewResult): string {
+  if (!result.riskCombinations.length) return "- none";
+
+  return result.riskCombinations
+    .map((combination) => [
+      `- ${combination.name}`,
+      `  - severity: ${combination.severity}`,
+      `  - reason: ${combination.reason}`,
+      `  - matched files: ${combination.matchedFiles.join(", ")}`,
+      `  - suggested packs: ${combination.suggestedReviewPacks.join(", ")}`,
+      `  - suggested next action: ${combination.suggestedNextAction}`,
+    ].join("\n"))
+    .join("\n");
+}
+
 function safeFileName(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
@@ -56,6 +71,10 @@ ${changedFileList(result)}
 ## Detected Risk Categories
 
 ${list(result.riskCategories)}
+
+## Risk Combinations
+
+${riskCombinationList(result)}
 
 ## Suggested Reviews
 
