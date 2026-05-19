@@ -62,6 +62,8 @@ Policy-Aware Integrity evaluates governance rules, escalation paths, and approva
 
 Evidence-Aware Integrity evaluates whether review, release, runtime, and policy evidence is sufficient.
 
+Agent-Aware Integrity detects agent/automation authorship signals and adjusts review expectations.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:

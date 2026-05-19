@@ -213,6 +213,31 @@ ${list(result.evidenceAwareIntegrity.evidenceRequiredForPolicy)}
 
 ${list(result.evidenceAwareIntegrity.evidenceWarnings)}
 
+## Agent-Aware Integrity
+
+- Agent risk posture: ${result.agentAwareIntegrity.agentRiskPosture}
+- Recommended agent action: ${result.agentAwareIntegrity.recommendedAgentAction}
+
+### Authorship Signals
+
+${list(result.agentAwareIntegrity.authorshipSignals)}
+
+### Automation Signals
+
+${list(result.agentAwareIntegrity.automationSignals)}
+
+### Agent Review Requirements
+
+${list(result.agentAwareIntegrity.agentReviewRequirements)}
+
+### Agent Trust Warnings
+
+${list(result.agentAwareIntegrity.agentTrustWarnings)}
+
+### Agent Boundary Warnings
+
+${list(result.agentAwareIntegrity.agentBoundaryWarnings)}
+
 ## Posture-Aware Integrity
 
 - Integrity trend: ${result.postureAwareIntegrity.integrityTrend}
