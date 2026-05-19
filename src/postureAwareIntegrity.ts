@@ -3,6 +3,7 @@ import path from "node:path";
 import type { EvidenceTimeline } from "./evidenceTimeline.ts";
 
 export type IntegrityTrend = "improving" | "stable" | "degrading" | "critical-degrading";
+export type LayerDrift = "improved" | "stable" | "worsened" | "unknown";
 
 export type PostureAwareIntegrityResult = {
   postureTransitions: string[];
@@ -13,6 +14,13 @@ export type PostureAwareIntegrityResult = {
   escalationWarnings: string[];
   postureSummary: string;
   recommendedPostureAction: string;
+  buildDrift: LayerDrift;
+  runtimeDrift: LayerDrift;
+  architectureDrift: LayerDrift;
+  policyDrift: LayerDrift;
+  evidenceDrift: LayerDrift;
+  agentDrift: LayerDrift;
+  recoveryDrift: LayerDrift;
   previousTimelineId?: string;
   previousTimelinePath?: string;
 };
@@ -40,6 +48,43 @@ const runtimeRank: Record<string, number> = {
   watch: 2,
   "degraded-risk": 3,
   "rollback-watch": 4,
+};
+
+const buildRank: Record<string, number> = {
+  passed: 1,
+  warning: 2,
+  failed: 3,
+  unknown: 4,
+};
+
+const blastRadiusRank: Record<string, number> = {
+  limited: 1,
+  moderate: 2,
+  broad: 3,
+  critical: 4,
+};
+
+const policyRank: Record<string, number> = {
+  compliant: 1,
+  "review-required": 2,
+  "escalation-required": 3,
+  "policy-blocked": 4,
+};
+
+const evidenceRank: Record<string, number> = {
+  sufficient: 1,
+  partial: 2,
+  weak: 3,
+  missing: 4,
+  "blocking-gap": 5,
+};
+
+const recoveryRank: Record<string, number> = {
+  "easily-recoverable": 1,
+  "recoverable-with-coordination": 2,
+  "difficult-recovery": 3,
+  "high-risk-recovery": 4,
+  "unknown-recovery": 5,
 };
 
 function repoRoot(): string {
@@ -183,6 +228,55 @@ function trendFor(input: {
   return "stable";
 }
 
+function driftByRank(
+  previousValue: string | undefined,
+  currentValue: string | undefined,
+  rank: Record<string, number>
+): LayerDrift {
+  if (!previousValue || !currentValue) return "unknown";
+  const previousRank = rank[previousValue];
+  const currentRank = rank[currentValue];
+  if (!previousRank || !currentRank) return "unknown";
+  if (currentRank > previousRank) return "worsened";
+  if (currentRank < previousRank) return "improved";
+  return "stable";
+}
+
+function agentDrift(previous: EvidenceTimeline | null, current: EvidenceTimeline): LayerDrift {
+  const previousAgent = previous?.layerSummaries?.agent;
+  const currentAgent = current.layerSummaries?.agent;
+  if (!previousAgent || !currentAgent) return "unknown";
+
+  const previousSignals = previousAgent.authorshipSignalsCount + previousAgent.automationSignalsCount;
+  const currentSignals = currentAgent.authorshipSignalsCount + currentAgent.automationSignalsCount;
+
+  if (previousSignals === 0 && currentSignals > 0) return "worsened";
+  if (previousSignals > 0 && currentSignals === 0) return "improved";
+  if (currentAgent.agentReviewRequirementsCount > previousAgent.agentReviewRequirementsCount) return "worsened";
+  if (currentAgent.agentReviewRequirementsCount < previousAgent.agentReviewRequirementsCount) return "improved";
+  return "stable";
+}
+
+function layerDrifts(previous: EvidenceTimeline | null, current: EvidenceTimeline): Pick<PostureAwareIntegrityResult,
+  "buildDrift" |
+  "runtimeDrift" |
+  "architectureDrift" |
+  "policyDrift" |
+  "evidenceDrift" |
+  "agentDrift" |
+  "recoveryDrift"
+> {
+  return {
+    buildDrift: driftByRank(previous?.layerSummaries?.build?.buildPosture, current.layerSummaries?.build?.buildPosture, buildRank),
+    runtimeDrift: driftByRank(previous?.integritySnapshot.runtimePosture, current.integritySnapshot.runtimePosture, runtimeRank),
+    architectureDrift: driftByRank(previous?.layerSummaries?.architecture?.blastRadius, current.layerSummaries?.architecture?.blastRadius, blastRadiusRank),
+    policyDrift: driftByRank(previous?.layerSummaries?.policy?.policyPosture, current.layerSummaries?.policy?.policyPosture, policyRank),
+    evidenceDrift: driftByRank(previous?.layerSummaries?.evidence?.evidencePosture, current.layerSummaries?.evidence?.evidencePosture, evidenceRank),
+    agentDrift: agentDrift(previous, current),
+    recoveryDrift: driftByRank(previous?.layerSummaries?.recovery?.recoveryPosture, current.layerSummaries?.recovery?.recoveryPosture, recoveryRank),
+  };
+}
+
 function summaryFor(trend: IntegrityTrend, previous: EvidenceTimeline | null): string {
   if (!previous) {
     return "No previous timeline snapshot exists for this repo, so posture comparison starts from this run.";
@@ -219,6 +313,7 @@ export function evaluatePostureAwareIntegrity(
   const previous = previousEntry?.timeline || null;
 
   if (!previous) {
+    const drifts = layerDrifts(previous, current);
     return {
       postureTransitions: ["No previous timeline snapshot found for this repo."],
       integrityTrend: "stable",
@@ -228,6 +323,7 @@ export function evaluatePostureAwareIntegrity(
       escalationWarnings: [],
       postureSummary: summaryFor("stable", previous),
       recommendedPostureAction: actionFor("stable"),
+      ...drifts,
     };
   }
 
@@ -370,6 +466,7 @@ export function evaluatePostureAwareIntegrity(
     degradationSignals,
     recoverySignals,
   });
+  const drifts = layerDrifts(previous, current);
 
   return {
     postureTransitions: unique(transitions),
@@ -380,6 +477,7 @@ export function evaluatePostureAwareIntegrity(
     escalationWarnings: unique(escalationWarnings),
     postureSummary: summaryFor(integrityTrend, previous),
     recommendedPostureAction: actionFor(integrityTrend),
+    ...drifts,
     previousTimelineId: previous.timelineId,
     previousTimelinePath: previousEntry ? path.relative(repoRoot(), previousEntry.filePath) : undefined,
   };

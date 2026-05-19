@@ -285,6 +285,16 @@ ${list(result.recoveryAwareIntegrity.recoveryWarnings)}
 
 ${list(result.postureAwareIntegrity.postureTransitions)}
 
+### Layer-Specific Drift
+
+- Build drift: ${result.postureAwareIntegrity.buildDrift}
+- Runtime drift: ${result.postureAwareIntegrity.runtimeDrift}
+- Architecture drift: ${result.postureAwareIntegrity.architectureDrift}
+- Policy drift: ${result.postureAwareIntegrity.policyDrift}
+- Evidence drift: ${result.postureAwareIntegrity.evidenceDrift}
+- Agent drift: ${result.postureAwareIntegrity.agentDrift}
+- Recovery drift: ${result.postureAwareIntegrity.recoveryDrift}
+
 ### Degradation Signals
 
 ${list(result.postureAwareIntegrity.degradationSignals)}

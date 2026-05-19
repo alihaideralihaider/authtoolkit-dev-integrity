@@ -23,6 +23,32 @@ export type EvidenceTimelineInput = {
   unknownRiskWarnings: string[];
   detectedEnvVarNames: string[];
   diffAwareIntegrity: DiffAwareIntegrityResult;
+  layerSummaries?: LayerSummaries;
+};
+
+export type LayerSummaries = {
+  build?: {
+    buildPosture: string;
+    buildRisk: string;
+  };
+  architecture?: {
+    blastRadius: string;
+  };
+  policy?: {
+    policyPosture: string;
+  };
+  evidence?: {
+    evidencePosture: string;
+  };
+  agent?: {
+    agentRiskPosture: string;
+    authorshipSignalsCount: number;
+    automationSignalsCount: number;
+    agentReviewRequirementsCount: number;
+  };
+  recovery?: {
+    recoveryPosture: string;
+  };
 };
 
 export type EvidenceTimeline = {
@@ -56,6 +82,7 @@ export type EvidenceTimeline = {
     canaryRecommendations: string[];
     ownerAttentionItems: string[];
   };
+  layerSummaries?: LayerSummaries;
   unresolvedRisks: string[];
   unresolvedWarnings: string[];
   auditNotes: string[];
@@ -176,6 +203,7 @@ export function buildEvidenceTimeline(input: EvidenceTimelineInput): EvidenceTim
       canaryRecommendations: input.releaseReadiness.canaryRecommendations,
       ownerAttentionItems: input.runtimeIntegrity.ownerAttentionItems,
     },
+    layerSummaries: input.layerSummaries,
     unresolvedRisks: buildUnresolvedRisks(input),
     unresolvedWarnings: buildUnresolvedWarnings(input),
     auditNotes: buildAuditNotes(input),

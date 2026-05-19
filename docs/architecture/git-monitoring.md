@@ -68,6 +68,8 @@ Recovery-Aware Integrity evaluates rollback feasibility, recovery complexity, an
 
 Build-Aware Integrity consumes optional local build summary input and adjusts trust, release, and evidence expectations.
 
+Layer-specific drift keeps drift logic inside each awareness layer rather than creating one giant drift engine.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:

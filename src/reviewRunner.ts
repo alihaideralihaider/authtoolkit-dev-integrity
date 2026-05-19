@@ -18,6 +18,7 @@ import { confidenceWithBuildAwareness, evaluateBuildAwareIntegrity, loadBuildSum
 import { selectReviewPacks, selectReviews } from "./reviewSelector.ts";
 import type { ClassifiedFile, RiskCategory, Severity } from "./riskClassifier.ts";
 import type { EvidenceTimeline } from "./evidenceTimeline.ts";
+import type { LayerSummaries } from "./evidenceTimeline.ts";
 import type { PrIntegrityResult } from "./prIntegrity.ts";
 import type { ReleaseReadinessResult } from "./releaseReadiness.ts";
 import type { RuntimeIntegrityResult } from "./runtimeIntegrity.ts";
@@ -155,6 +156,40 @@ function buildUnknownRiskWarnings(changedFiles: ClassifiedFile[]): string[] {
     .map((file) => `${file.path} could not be classified by v1 Git Monitoring heuristics.`);
 }
 
+function buildLayerSummaries(input: {
+  buildAwareIntegrity: BuildAwareIntegrityResult;
+  architectureAwareIntegrity: ArchitectureAwareIntegrityResult;
+  policyAwareIntegrity: PolicyAwareIntegrityResult;
+  evidenceAwareIntegrity: EvidenceAwareIntegrityResult;
+  agentAwareIntegrity: AgentAwareIntegrityResult;
+  recoveryAwareIntegrity: RecoveryAwareIntegrityResult;
+}): LayerSummaries {
+  return {
+    build: {
+      buildPosture: input.buildAwareIntegrity.buildPosture,
+      buildRisk: input.buildAwareIntegrity.buildRisk,
+    },
+    architecture: {
+      blastRadius: input.architectureAwareIntegrity.blastRadius,
+    },
+    policy: {
+      policyPosture: input.policyAwareIntegrity.policyPosture,
+    },
+    evidence: {
+      evidencePosture: input.evidenceAwareIntegrity.evidencePosture,
+    },
+    agent: {
+      agentRiskPosture: input.agentAwareIntegrity.agentRiskPosture,
+      authorshipSignalsCount: input.agentAwareIntegrity.authorshipSignals.length,
+      automationSignalsCount: input.agentAwareIntegrity.automationSignals.length,
+      agentReviewRequirementsCount: input.agentAwareIntegrity.agentReviewRequirements.length,
+    },
+    recovery: {
+      recoveryPosture: input.recoveryAwareIntegrity.recoveryPosture,
+    },
+  };
+}
+
 export function runReview(input: RunReviewInput): ReviewResult {
   const repoPath = normalizeRepoPath(input.repoPath);
   assertDirectory(repoPath, "Repo path");
@@ -234,7 +269,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     releaseReadiness,
     runtimeIntegrity,
   });
-  const evidenceTimeline = buildEvidenceTimeline({
+  const baseEvidenceTimeline = buildEvidenceTimeline({
     generatedAt: timestamp,
     repoPath,
     selectedSkill,
@@ -252,7 +287,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     detectedEnvVarNames,
     diffAwareIntegrity,
   });
-  const postureAwareIntegrity = evaluatePostureAwareIntegrity(evidenceTimeline);
+  const basePostureAwareIntegrity = evaluatePostureAwareIntegrity(baseEvidenceTimeline);
   const policyAwareIntegrity = evaluatePolicyAwareIntegrity({
     riskCategories,
     suggestedReviewPacks,
@@ -261,15 +296,15 @@ export function runReview(input: RunReviewInput): ReviewResult {
     prIntegrity,
     releaseReadiness,
     runtimeIntegrity,
-    postureAwareIntegrity,
+    postureAwareIntegrity: basePostureAwareIntegrity,
     architectureAwareIntegrity,
   });
   const evidenceAwareIntegrity = evaluateEvidenceAwareIntegrity({
     prIntegrity,
     releaseReadiness,
     runtimeIntegrity,
-    evidenceTimeline,
-    postureAwareIntegrity,
+    evidenceTimeline: baseEvidenceTimeline,
+    postureAwareIntegrity: basePostureAwareIntegrity,
     architectureAwareIntegrity,
     policyAwareIntegrity,
     buildAwareIntegrity,
@@ -294,6 +329,34 @@ export function runReview(input: RunReviewInput): ReviewResult {
     agentAwareIntegrity,
     buildAwareIntegrity,
   });
+  const layerSummaries = buildLayerSummaries({
+    buildAwareIntegrity,
+    architectureAwareIntegrity,
+    policyAwareIntegrity,
+    evidenceAwareIntegrity,
+    agentAwareIntegrity,
+    recoveryAwareIntegrity,
+  });
+  const evidenceTimeline = buildEvidenceTimeline({
+    generatedAt: timestamp,
+    repoPath,
+    selectedSkill,
+    changedFilesCount: changedFiles.length,
+    riskCategories,
+    highestSeverity: maxSeverity,
+    confidenceScore,
+    suggestedReviewPacks,
+    riskCombinations,
+    prIntegrity,
+    releaseReadiness,
+    runtimeIntegrity,
+    criticalWarnings: criticalWarningList,
+    unknownRiskWarnings,
+    detectedEnvVarNames,
+    diffAwareIntegrity,
+    layerSummaries,
+  });
+  const postureAwareIntegrity = evaluatePostureAwareIntegrity(evidenceTimeline);
 
   return {
     repoPath,
