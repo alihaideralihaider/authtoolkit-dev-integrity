@@ -13,6 +13,7 @@ import { evaluateArchitectureAwareIntegrity } from "./architectureAwareIntegrity
 import { evaluatePolicyAwareIntegrity } from "./policyAwareIntegrity.ts";
 import { evaluateEvidenceAwareIntegrity } from "./evidenceAwareIntegrity.ts";
 import { evaluateAgentAwareIntegrity } from "./agentAwareIntegrity.ts";
+import { evaluateRecoveryAwareIntegrity } from "./recoveryAwareIntegrity.ts";
 import { selectReviewPacks, selectReviews } from "./reviewSelector.ts";
 import type { ClassifiedFile, RiskCategory, Severity } from "./riskClassifier.ts";
 import type { EvidenceTimeline } from "./evidenceTimeline.ts";
@@ -24,6 +25,7 @@ import type { ArchitectureAwareIntegrityResult } from "./architectureAwareIntegr
 import type { PolicyAwareIntegrityResult } from "./policyAwareIntegrity.ts";
 import type { EvidenceAwareIntegrityResult } from "./evidenceAwareIntegrity.ts";
 import type { AgentAwareIntegrityResult } from "./agentAwareIntegrity.ts";
+import type { RecoveryAwareIntegrityResult } from "./recoveryAwareIntegrity.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { DiffAwareIntegrityResult } from "./diffAwareIntegrity.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
@@ -44,6 +46,7 @@ export type ReviewResult = {
   policyAwareIntegrity: PolicyAwareIntegrityResult;
   evidenceAwareIntegrity: EvidenceAwareIntegrityResult;
   agentAwareIntegrity: AgentAwareIntegrityResult;
+  recoveryAwareIntegrity: RecoveryAwareIntegrityResult;
   prIntegrity: PrIntegrityResult;
   releaseReadiness: ReleaseReadinessResult;
   runtimeIntegrity: RuntimeIntegrityResult;
@@ -266,6 +269,15 @@ export function runReview(input: RunReviewInput): ReviewResult {
     policyAwareIntegrity,
     evidenceAwareIntegrity,
   });
+  const recoveryAwareIntegrity = evaluateRecoveryAwareIntegrity({
+    diffAwareIntegrity,
+    releaseReadiness,
+    runtimeIntegrity,
+    architectureAwareIntegrity,
+    policyAwareIntegrity,
+    evidenceAwareIntegrity,
+    agentAwareIntegrity,
+  });
 
   return {
     repoPath,
@@ -283,6 +295,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     policyAwareIntegrity,
     evidenceAwareIntegrity,
     agentAwareIntegrity,
+    recoveryAwareIntegrity,
     prIntegrity,
     releaseReadiness,
     runtimeIntegrity,

@@ -64,6 +64,8 @@ Evidence-Aware Integrity evaluates whether review, release, runtime, and policy 
 
 Agent-Aware Integrity detects agent/automation authorship signals and adjusts review expectations.
 
+Recovery-Aware Integrity evaluates rollback feasibility, recovery complexity, and operational recovery burden.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:

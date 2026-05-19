@@ -238,6 +238,23 @@ ${list(result.agentAwareIntegrity.agentTrustWarnings)}
 
 ${list(result.agentAwareIntegrity.agentBoundaryWarnings)}
 
+## Recovery-Aware Integrity
+
+- Recovery posture: ${result.recoveryAwareIntegrity.recoveryPosture}
+- Rollback complexity: ${result.recoveryAwareIntegrity.rollbackComplexity}
+- Recovery risk: ${result.recoveryAwareIntegrity.recoveryRisk}
+- Rollback feasibility: ${result.recoveryAwareIntegrity.rollbackFeasibility}
+- Operator recovery burden: ${result.recoveryAwareIntegrity.operatorRecoveryBurden}
+- Recommended recovery action: ${result.recoveryAwareIntegrity.recommendedRecoveryAction}
+
+### Recovery Dependencies
+
+${list(result.recoveryAwareIntegrity.recoveryDependencies)}
+
+### Recovery Warnings
+
+${list(result.recoveryAwareIntegrity.recoveryWarnings)}
+
 ## Posture-Aware Integrity
 
 - Integrity trend: ${result.postureAwareIntegrity.integrityTrend}
