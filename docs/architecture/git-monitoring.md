@@ -46,6 +46,8 @@ Risk combinations can add review packs and cap confidence until targeted review 
 
 PR Integrity consumes Git Monitoring output and produces merge-readiness guidance.
 
+Release Readiness consumes PR Integrity and produces release guidance.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:

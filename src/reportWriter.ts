@@ -98,6 +98,32 @@ ${list(result.prIntegrity.missingEvidence)}
 
 ${list(result.prIntegrity.reviewerChecklist)}
 
+## Release Readiness
+
+- Release decision: ${result.releaseReadiness.releaseDecision}
+- Release risk: ${result.releaseReadiness.releaseRisk}
+- Recommended release action: ${result.releaseReadiness.recommendedReleaseAction}
+
+### Required Release Checks
+
+${list(result.releaseReadiness.requiredReleaseChecks)}
+
+### Missing Release Evidence
+
+${list(result.releaseReadiness.missingReleaseEvidence)}
+
+### Rollback Requirements
+
+${list(result.releaseReadiness.rollbackRequirements)}
+
+### Canary Recommendations
+
+${list(result.releaseReadiness.canaryRecommendations)}
+
+### Release Warnings
+
+${list(result.releaseReadiness.releaseWarnings)}
+
 ## Suggested Reviews
 
 ${list(result.suggestedReviews)}

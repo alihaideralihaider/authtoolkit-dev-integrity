@@ -4,9 +4,11 @@ import { monitorGit } from "./gitMonitor.ts";
 import { classifyChangedFiles, collectRiskCategories, confidenceForRisks, confidenceNotes, criticalWarnings, highestSeverity } from "./riskClassifier.ts";
 import { confidenceWithRiskCombinations, detectRiskCombinations } from "./riskCombinationDetector.ts";
 import { evaluatePrIntegrity } from "./prIntegrity.ts";
+import { evaluateReleaseReadiness } from "./releaseReadiness.ts";
 import { selectReviewPacks, selectReviews } from "./reviewSelector.ts";
 import type { ClassifiedFile, RiskCategory, Severity } from "./riskClassifier.ts";
 import type { PrIntegrityResult } from "./prIntegrity.ts";
+import type { ReleaseReadinessResult } from "./releaseReadiness.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
 
@@ -22,6 +24,7 @@ export type ReviewResult = {
   highestSeverity: Severity;
   riskCombinations: RiskCombination[];
   prIntegrity: PrIntegrityResult;
+  releaseReadiness: ReleaseReadinessResult;
   suggestedReviews: string[];
   suggestedReviewPacks: ReviewPack[];
   confidenceScore: number;
@@ -156,6 +159,14 @@ export function runReview(input: RunReviewInput): ReviewResult {
     criticalWarnings: criticalWarningList,
     detectedEnvVarNames,
   });
+  const releaseReadiness = evaluateReleaseReadiness({
+    prIntegrity,
+    highestSeverity: maxSeverity,
+    riskCombinations,
+    suggestedReviewPacks,
+    criticalWarnings: criticalWarningList,
+    detectedEnvVarNames,
+  });
 
   return {
     repoPath,
@@ -169,6 +180,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     highestSeverity: maxSeverity,
     riskCombinations,
     prIntegrity,
+    releaseReadiness,
     suggestedReviews,
     suggestedReviewPacks,
     confidenceScore,
