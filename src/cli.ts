@@ -4,6 +4,7 @@ import { writeReport } from "./reportWriter.ts";
 type CliArgs = {
   repo?: string;
   skill?: string;
+  buildSummary?: string;
 };
 
 function parseArgs(argv: string[]): CliArgs {
@@ -19,6 +20,9 @@ function parseArgs(argv: string[]): CliArgs {
     } else if (arg === "--skill" && next) {
       args.skill = next;
       index += 1;
+    } else if (arg === "--build-summary" && next) {
+      args.buildSummary = next;
+      index += 1;
     }
   }
 
@@ -26,7 +30,7 @@ function parseArgs(argv: string[]): CliArgs {
 }
 
 function printUsage(): void {
-  console.error("Usage: npm run review -- --repo /path/to/repo --skill vault-secret-readiness-review");
+  console.error("Usage: npm run review -- --repo /path/to/repo --skill vault-secret-readiness-review [--build-summary /path/to/build-summary.json]");
 }
 
 async function main(): Promise<void> {
@@ -41,6 +45,7 @@ async function main(): Promise<void> {
   const result = runReview({
     repoPath: args.repo,
     selectedSkill: args.skill,
+    buildSummaryPath: args.buildSummary,
   });
   const reportPath = writeReport(result);
 
@@ -52,4 +57,3 @@ main().catch((error) => {
   console.error(error instanceof Error ? error.message : String(error));
   process.exitCode = 1;
 });
-

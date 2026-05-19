@@ -3,6 +3,7 @@ import type { ReviewPack } from "./reviewSelector.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { Severity } from "./riskClassifier.ts";
 import type { DiffFinding } from "./diffAwareIntegrity.ts";
+import type { BuildAwareIntegrityResult } from "./buildAwareIntegrity.ts";
 
 export type ReleaseDecision = "ready" | "caution" | "blocked";
 export type ReleaseRisk = "low" | "medium" | "high" | "critical";
@@ -15,6 +16,7 @@ export type ReleaseReadinessInput = {
   criticalWarnings: string[];
   detectedEnvVarNames: string[];
   diffFindings: DiffFinding[];
+  buildAwareIntegrity: BuildAwareIntegrityResult;
 };
 
 export type ReleaseReadinessResult = {
@@ -154,6 +156,9 @@ export function evaluateReleaseReadiness(
   for (const finding of highOrMediumDiffFindings) {
     releaseWarnings.push(`Diff-aware finding requires release review: ${finding.findingName} in ${finding.filePath}.`);
   }
+  if (input.buildAwareIntegrity.buildPosture !== "passed") {
+    releaseWarnings.push(`Build-aware release impact: ${input.buildAwareIntegrity.releaseImpact}.`);
+  }
 
   let releaseDecision: ReleaseDecision = "ready";
   let releaseRisk: ReleaseRisk = "low";
@@ -164,6 +169,7 @@ export function evaluateReleaseReadiness(
     input.highestSeverity === "critical" ||
     criticalCombinations.length > 0 ||
     criticalDiffFindings.length > 0 ||
+    input.buildAwareIntegrity.buildRisk === "critical" ||
     input.criticalWarnings.length > 0
   ) {
     releaseDecision = "blocked";
@@ -177,6 +183,8 @@ export function evaluateReleaseReadiness(
     hasPack(packs, "payment-pack") ||
     highCombinations.length > 0 ||
     highOrMediumDiffFindings.length > 0 ||
+    input.buildAwareIntegrity.buildPosture === "failed" ||
+    input.buildAwareIntegrity.buildPosture === "warning" ||
     input.detectedEnvVarNames.length > 0
   ) {
     releaseDecision = "caution";
@@ -189,6 +197,10 @@ export function evaluateReleaseReadiness(
   if (input.diffFindings.length) {
     requiredReleaseChecks.push("Verify diff-aware findings were reviewed.");
     missingReleaseEvidence.push("No diff-aware release evidence attached.");
+  }
+  if (input.buildAwareIntegrity.buildPosture !== "passed") {
+    requiredReleaseChecks.push("Verify build-aware findings were reviewed.");
+    missingReleaseEvidence.push("No passing build evidence attached.");
   }
 
   return {

@@ -66,6 +66,8 @@ Agent-Aware Integrity detects agent/automation authorship signals and adjusts re
 
 Recovery-Aware Integrity evaluates rollback feasibility, recovery complexity, and operational recovery burden.
 
+Build-Aware Integrity consumes optional local build summary input and adjusts trust, release, and evidence expectations.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:

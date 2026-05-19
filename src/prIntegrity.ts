@@ -2,6 +2,7 @@ import type { ReviewPack } from "./reviewSelector.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { Severity } from "./riskClassifier.ts";
 import type { DiffFinding } from "./diffAwareIntegrity.ts";
+import type { BuildAwareIntegrityResult } from "./buildAwareIntegrity.ts";
 
 export type MergeReadiness = "ready" | "needs-review" | "blocked";
 export type ApprovalRisk = "low" | "medium" | "high" | "critical";
@@ -14,6 +15,7 @@ export type PrIntegrityInput = {
   criticalWarnings: string[];
   detectedEnvVarNames: string[];
   diffFindings: DiffFinding[];
+  buildAwareIntegrity: BuildAwareIntegrityResult;
 };
 
 export type PrIntegrityResult = {
@@ -127,6 +129,9 @@ export function evaluatePrIntegrity(input: PrIntegrityInput): PrIntegrityResult 
   for (const finding of criticalDiffFindings) {
     blockingReasons.push(`Critical diff-aware finding exists: ${finding.findingName} in ${finding.filePath}.`);
   }
+  if (input.buildAwareIntegrity.buildRisk === "critical") {
+    blockingReasons.push("Critical build-aware issue exists.");
+  }
 
   let mergeReadiness: MergeReadiness = "ready";
   let approvalRisk: ApprovalRisk = "low";
@@ -142,7 +147,10 @@ export function evaluatePrIntegrity(input: PrIntegrityInput): PrIntegrityResult 
     highDiffFindings.length > 0 ||
     input.unknownRiskWarnings.length > 0 ||
     requiredReviewPacks.includes("release-readiness-pack") ||
-    input.detectedEnvVarNames.length > 0
+    input.detectedEnvVarNames.length > 0 ||
+    input.buildAwareIntegrity.buildPosture === "failed" ||
+    input.buildAwareIntegrity.buildPosture === "warning" ||
+    input.buildAwareIntegrity.buildPosture === "unknown"
   ) {
     mergeReadiness = "needs-review";
     approvalRisk = highCombinations.length || highDiffFindings.length || input.highestSeverity === "high" ? "high" : "medium";
@@ -153,9 +161,15 @@ export function evaluatePrIntegrity(input: PrIntegrityInput): PrIntegrityResult 
   if (input.diffFindings.length) {
     missingEvidence.push("No diff-aware review evidence attached.");
   }
+  if (input.buildAwareIntegrity.buildPosture !== "passed") {
+    missingEvidence.push("No passing build evidence attached.");
+  }
   const reviewerChecklist = checklistForPacks(requiredReviewPacks);
   if (input.diffFindings.length) {
     reviewerChecklist.push("Review diff-aware findings and confirm changed logic is intentional.");
+  }
+  if (input.buildAwareIntegrity.buildPosture !== "passed") {
+    reviewerChecklist.push("Review build-aware findings and attach build/test evidence.");
   }
 
   return {

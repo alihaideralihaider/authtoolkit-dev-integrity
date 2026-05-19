@@ -126,6 +126,24 @@ ${list(result.diffAwareIntegrity.diffSensitiveChanges)}
 
 ${list(result.diffAwareIntegrity.diffReviewNotes)}
 
+## Build-Aware Integrity
+
+- Build posture: ${result.buildAwareIntegrity.buildPosture}
+- Build risk: ${result.buildAwareIntegrity.buildRisk}
+- Failed stage: ${result.buildAwareIntegrity.failedStage}
+- Likely failure area: ${result.buildAwareIntegrity.likelyFailureArea}
+- Build summary path: ${result.buildAwareIntegrity.buildSummaryPath || "none"}
+- Release impact: ${result.buildAwareIntegrity.releaseImpact}
+- Recommended build action: ${result.buildAwareIntegrity.recommendedBuildAction}
+
+### Affected Review Packs
+
+${list(result.buildAwareIntegrity.affectedReviewPacks)}
+
+### Build Evidence Requirements
+
+${list(result.buildAwareIntegrity.buildEvidenceRequirements)}
+
 ## Architecture-Aware Integrity
 
 - Blast radius: ${result.architectureAwareIntegrity.blastRadius}

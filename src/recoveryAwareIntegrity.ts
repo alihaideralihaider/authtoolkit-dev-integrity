@@ -5,6 +5,7 @@ import type { EvidenceAwareIntegrityResult } from "./evidenceAwareIntegrity.ts";
 import type { PolicyAwareIntegrityResult } from "./policyAwareIntegrity.ts";
 import type { ReleaseReadinessResult } from "./releaseReadiness.ts";
 import type { RuntimeIntegrityResult } from "./runtimeIntegrity.ts";
+import type { BuildAwareIntegrityResult } from "./buildAwareIntegrity.ts";
 
 export type RecoveryPosture =
   | "easily-recoverable"
@@ -26,6 +27,7 @@ export type RecoveryAwareIntegrityInput = {
   policyAwareIntegrity: PolicyAwareIntegrityResult;
   evidenceAwareIntegrity: EvidenceAwareIntegrityResult;
   agentAwareIntegrity: AgentAwareIntegrityResult;
+  buildAwareIntegrity: BuildAwareIntegrityResult;
 };
 
 export type RecoveryAwareIntegrityResult = {
@@ -67,12 +69,14 @@ function isHighRiskRecovery(input: RecoveryAwareIntegrityInput): boolean {
     || serviceRoleSecurityFinding
     || runtimeVaultReleaseCaution
     || input.policyAwareIntegrity.policyPosture === "policy-blocked"
+    || input.buildAwareIntegrity.buildRisk === "critical"
     || input.runtimeIntegrity.runtimePosture === "rollback-watch";
 }
 
 function isDifficultRecovery(input: RecoveryAwareIntegrityInput): boolean {
   return hasBoundary(input, "runtime/deployment boundary")
     || hasFinding(input, /payment-state|webhook|idempotency/i)
+    || input.buildAwareIntegrity.buildPosture === "failed"
     || input.evidenceAwareIntegrity.evidencePosture === "missing"
     || input.evidenceAwareIntegrity.evidencePosture === "blocking-gap"
     || input.architectureAwareIntegrity.architectureWarnings.length > 0;
@@ -112,6 +116,7 @@ function dependencies(input: RecoveryAwareIntegrityInput): string[] {
   if (hasBoundary(input, "runtime/deployment boundary")) values.push("runtime bindings");
   if (hasBoundary(input, "secret/config boundary")) values.push("env/config restoration");
   if (input.releaseReadiness.rollbackRequirements.length || input.releaseReadiness.releaseDecision !== "ready") values.push("deploy rollback path");
+  if (input.buildAwareIntegrity.buildPosture !== "passed") values.push("build/test rerun path");
   if (hasBoundary(input, "tenant/data boundary")) values.push("tenant/data consistency");
   if (hasBoundary(input, "customer communication boundary")) values.push("customer messaging state");
   if (input.architectureAwareIntegrity.affectedSystems.includes("admin") || input.runtimeIntegrity.runtimeSignalsToWatch.some((signal) => /admin/i.test(signal))) {
@@ -130,6 +135,7 @@ function warnings(input: RecoveryAwareIntegrityInput): string[] {
   if (hasFinding(input, /webhook|idempotency/i)) values.push("Webhook replay/idempotency verification required.");
   if (hasBoundary(input, "customer communication boundary")) values.push("Customer communication state may drift during rollback.");
   if (input.evidenceAwareIntegrity.evidencePosture !== "sufficient") values.push("Rollback evidence is incomplete.");
+  if (input.buildAwareIntegrity.buildPosture === "failed") values.push("Failed build must be rerun before recovery confidence improves.");
   if (input.agentAwareIntegrity.agentRiskPosture !== "human-likely" && input.agentAwareIntegrity.agentRiskPosture !== "unknown-authorship") {
     values.push("Agent or automation signal increases recovery review expectations.");
   }

@@ -14,6 +14,7 @@ import { evaluatePolicyAwareIntegrity } from "./policyAwareIntegrity.ts";
 import { evaluateEvidenceAwareIntegrity } from "./evidenceAwareIntegrity.ts";
 import { evaluateAgentAwareIntegrity } from "./agentAwareIntegrity.ts";
 import { evaluateRecoveryAwareIntegrity } from "./recoveryAwareIntegrity.ts";
+import { confidenceWithBuildAwareness, evaluateBuildAwareIntegrity, loadBuildSummary } from "./buildAwareIntegrity.ts";
 import { selectReviewPacks, selectReviews } from "./reviewSelector.ts";
 import type { ClassifiedFile, RiskCategory, Severity } from "./riskClassifier.ts";
 import type { EvidenceTimeline } from "./evidenceTimeline.ts";
@@ -26,6 +27,7 @@ import type { PolicyAwareIntegrityResult } from "./policyAwareIntegrity.ts";
 import type { EvidenceAwareIntegrityResult } from "./evidenceAwareIntegrity.ts";
 import type { AgentAwareIntegrityResult } from "./agentAwareIntegrity.ts";
 import type { RecoveryAwareIntegrityResult } from "./recoveryAwareIntegrity.ts";
+import type { BuildAwareIntegrityResult } from "./buildAwareIntegrity.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { DiffAwareIntegrityResult } from "./diffAwareIntegrity.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
@@ -47,6 +49,7 @@ export type ReviewResult = {
   evidenceAwareIntegrity: EvidenceAwareIntegrityResult;
   agentAwareIntegrity: AgentAwareIntegrityResult;
   recoveryAwareIntegrity: RecoveryAwareIntegrityResult;
+  buildAwareIntegrity: BuildAwareIntegrityResult;
   prIntegrity: PrIntegrityResult;
   releaseReadiness: ReleaseReadinessResult;
   runtimeIntegrity: RuntimeIntegrityResult;
@@ -66,6 +69,7 @@ export type ReviewResult = {
 type RunReviewInput = {
   repoPath: string;
   selectedSkill: string;
+  buildSummaryPath?: string;
 };
 
 const envNamePattern = /\b[A-Z][A-Z0-9_]{2,}\b/g;
@@ -168,17 +172,24 @@ export function runReview(input: RunReviewInput): ReviewResult {
   const maxSeverity = highestSeverity(changedFiles);
   const riskCombinations = detectRiskCombinations(changedFiles);
   const diffAwareIntegrity = evaluateDiffAwareIntegrity(gitMonitor.diffLines);
+  const buildSummary = loadBuildSummary(input.buildSummaryPath);
+  const buildAwareIntegrity = evaluateBuildAwareIntegrity(
+    buildSummary.summary,
+    buildSummary.resolvedPath
+  );
   const suggestedReviews = selectReviews(riskCategories, selectedSkill);
   const suggestedReviewPacks = [
     ...new Set([
       ...selectReviewPacks(riskCategories, maxSeverity),
       ...riskCombinations.flatMap((combination) => combination.suggestedReviewPacks),
       ...diffAwareIntegrity.diffFindings.flatMap((finding) => finding.suggestedReviewPacks),
+      ...buildAwareIntegrity.affectedReviewPacks,
     ]),
   ];
   const baseConfidenceScore = confidenceForRisks(riskCategories);
   const combinationConfidenceScore = confidenceWithRiskCombinations(baseConfidenceScore, riskCombinations);
-  const confidenceScore = confidenceWithDiffFindings(combinationConfidenceScore, diffAwareIntegrity);
+  const diffConfidenceScore = confidenceWithDiffFindings(combinationConfidenceScore, diffAwareIntegrity);
+  const confidenceScore = confidenceWithBuildAwareness(diffConfidenceScore, buildAwareIntegrity);
   const detectedEnvVarNames = detectEnvVarNames(repoPath, changedFiles);
   const unknownRiskWarnings = buildUnknownRiskWarnings(changedFiles);
   const criticalWarningList = criticalWarnings(changedFiles);
@@ -190,6 +201,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     criticalWarnings: criticalWarningList,
     detectedEnvVarNames,
     diffFindings: diffAwareIntegrity.diffFindings,
+    buildAwareIntegrity,
   });
   const releaseReadiness = evaluateReleaseReadiness({
     prIntegrity,
@@ -199,6 +211,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     criticalWarnings: criticalWarningList,
     detectedEnvVarNames,
     diffFindings: diffAwareIntegrity.diffFindings,
+    buildAwareIntegrity,
   });
   const runtimeIntegrity = evaluateRuntimeIntegrity({
     releaseReadiness,
@@ -209,6 +222,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     detectedEnvVarNames,
     criticalWarnings: criticalWarningList,
     diffFindings: diffAwareIntegrity.diffFindings,
+    buildAwareIntegrity,
   });
   const architectureAwareIntegrity = evaluateArchitectureAwareIntegrity({
     changedFiles,
@@ -258,6 +272,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     postureAwareIntegrity,
     architectureAwareIntegrity,
     policyAwareIntegrity,
+    buildAwareIntegrity,
   });
   const agentAwareIntegrity = evaluateAgentAwareIntegrity({
     changedFiles,
@@ -277,6 +292,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     policyAwareIntegrity,
     evidenceAwareIntegrity,
     agentAwareIntegrity,
+    buildAwareIntegrity,
   });
 
   return {
@@ -296,6 +312,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     evidenceAwareIntegrity,
     agentAwareIntegrity,
     recoveryAwareIntegrity,
+    buildAwareIntegrity,
     prIntegrity,
     releaseReadiness,
     runtimeIntegrity,

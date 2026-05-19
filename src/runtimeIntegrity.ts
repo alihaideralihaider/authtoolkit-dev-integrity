@@ -4,6 +4,7 @@ import type { ReviewPack } from "./reviewSelector.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { Severity } from "./riskClassifier.ts";
 import type { DiffFinding } from "./diffAwareIntegrity.ts";
+import type { BuildAwareIntegrityResult } from "./buildAwareIntegrity.ts";
 
 export type RuntimePosture = "stable" | "watch" | "degraded-risk" | "rollback-watch";
 export type RuntimeRisk = "low" | "medium" | "high" | "critical";
@@ -17,6 +18,7 @@ export type RuntimeIntegrityInput = {
   detectedEnvVarNames: string[];
   criticalWarnings: string[];
   diffFindings: DiffFinding[];
+  buildAwareIntegrity: BuildAwareIntegrityResult;
 };
 
 export type RuntimeIntegrityResult = {
@@ -132,6 +134,7 @@ export function evaluateRuntimeIntegrity(
     input.releaseReadiness.releaseDecision === "blocked" ||
     input.releaseReadiness.releaseRisk === "critical" ||
     input.criticalWarnings.length > 0 ||
+    input.buildAwareIntegrity.buildRisk === "critical" ||
     criticalCombinations.length > 0 ||
     criticalDiffFindings.length > 0
   ) {
@@ -140,6 +143,8 @@ export function evaluateRuntimeIntegrity(
     recommendedRuntimeAction = "Do not release; if already released, watch rollback triggers immediately.";
   } else if (
     input.releaseReadiness.releaseDecision === "caution" ||
+    input.buildAwareIntegrity.buildPosture === "failed" ||
+    input.buildAwareIntegrity.buildPosture === "warning" ||
     highCombinations.length > 0 ||
     highDiffFindings.length > 0 ||
     hasPack(packs, "release-readiness-pack") ||
@@ -168,6 +173,7 @@ export function evaluateRuntimeIntegrity(
     runtimeSignalsToWatch: unique([
       ...packs.flatMap((pack) => signalsByPack[pack] || []),
       ...input.diffFindings.map((finding) => `diff-aware signal: ${finding.signalType}`),
+      ...(input.buildAwareIntegrity.buildPosture !== "passed" ? [`build-aware signal: ${input.buildAwareIntegrity.buildPosture}`] : []),
     ]),
     driftIndicators: unique(packs.flatMap((pack) => driftByPack[pack] || [])),
     rollbackTriggers: unique(packs.flatMap((pack) => rollbackByPack[pack] || [])),

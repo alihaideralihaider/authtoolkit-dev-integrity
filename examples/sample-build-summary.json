@@ -1,0 +1,8 @@
+{
+  "status": "failed",
+  "stage": "typecheck",
+  "failedJobs": ["typecheck"],
+  "failureCategory": "typescript",
+  "summary": "TypeScript compile failed",
+  "logsRedacted": true
+}

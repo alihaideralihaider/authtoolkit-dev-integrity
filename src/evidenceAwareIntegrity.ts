@@ -5,6 +5,7 @@ import type { PostureAwareIntegrityResult } from "./postureAwareIntegrity.ts";
 import type { PrIntegrityResult } from "./prIntegrity.ts";
 import type { ReleaseReadinessResult } from "./releaseReadiness.ts";
 import type { RuntimeIntegrityResult } from "./runtimeIntegrity.ts";
+import type { BuildAwareIntegrityResult } from "./buildAwareIntegrity.ts";
 
 export type EvidencePosture =
   | "sufficient"
@@ -21,6 +22,7 @@ export type EvidenceAwareIntegrityInput = {
   postureAwareIntegrity: PostureAwareIntegrityResult;
   architectureAwareIntegrity: ArchitectureAwareIntegrityResult;
   policyAwareIntegrity: PolicyAwareIntegrityResult;
+  buildAwareIntegrity: BuildAwareIntegrityResult;
 };
 
 export type EvidenceAwareIntegrityResult = {
@@ -63,12 +65,14 @@ function evidenceGaps(input: EvidenceAwareIntegrityInput): string[] {
     ...input.policyAwareIntegrity.requiredApprovals.map((item) => `Required approval missing until attached: ${item}`),
     ...input.policyAwareIntegrity.policyViolations.map((item) => `Policy evidence gap: ${item}`),
     ...input.architectureAwareIntegrity.architectureWarnings.map((item) => `Architecture evidence gap: ${item}`),
+    ...input.buildAwareIntegrity.buildEvidenceRequirements.map((item) => `Build evidence gap: ${item}`),
   ]);
 }
 
 function beforeMerge(input: EvidenceAwareIntegrityInput): string[] {
   return unique([
     ...input.prIntegrity.missingEvidence,
+    ...input.buildAwareIntegrity.buildEvidenceRequirements,
     ...input.policyAwareIntegrity.requiredApprovals
       .filter((approval) => ["security review", "payment review", "runtime review", "architecture review", "owner approval"].includes(approval))
       .map((approval) => `Attach ${approval} evidence before merge.`),
@@ -79,6 +83,7 @@ function beforeMerge(input: EvidenceAwareIntegrityInput): string[] {
 function beforeRelease(input: EvidenceAwareIntegrityInput): string[] {
   return unique([
     ...input.releaseReadiness.missingReleaseEvidence,
+    ...input.buildAwareIntegrity.buildEvidenceRequirements,
     ...input.releaseReadiness.requiredReleaseChecks.map((check) => `Attach release check evidence: ${check}`),
     ...input.policyAwareIntegrity.requiredApprovals
       .filter((approval) => ["release review", "rollback approval", "owner approval"].includes(approval))
@@ -123,6 +128,12 @@ function evidenceWarnings(input: EvidenceAwareIntegrityInput, gaps: string[]): s
   }
   if (input.postureAwareIntegrity.integrityTrend === "critical-degrading") {
     warnings.push("Critical posture degradation requires escalation evidence.");
+  }
+  if (input.buildAwareIntegrity.buildPosture === "unknown") {
+    warnings.push("Build evidence is missing.");
+  }
+  if (input.buildAwareIntegrity.buildPosture === "failed") {
+    warnings.push("Build failed; passing rerun evidence is required.");
   }
 
   return unique(warnings);
