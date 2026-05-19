@@ -114,6 +114,31 @@ ${list(result.diffAwareIntegrity.diffSensitiveChanges)}
 
 ${list(result.diffAwareIntegrity.diffReviewNotes)}
 
+## Architecture-Aware Integrity
+
+- Blast radius: ${result.architectureAwareIntegrity.blastRadius}
+- Recommended architecture action: ${result.architectureAwareIntegrity.recommendedArchitectureAction}
+
+### Affected Systems
+
+${list(result.architectureAwareIntegrity.affectedSystems)}
+
+### Affected Boundaries
+
+${list(result.architectureAwareIntegrity.affectedBoundaries)}
+
+### Dependency Signals
+
+${list(result.architectureAwareIntegrity.dependencySignals)}
+
+### Architecture Warnings
+
+${list(result.architectureAwareIntegrity.architectureWarnings)}
+
+### Architecture Review Notes
+
+${list(result.architectureAwareIntegrity.architectureReviewNotes)}
+
 ## Posture-Aware Integrity
 
 - Integrity trend: ${result.postureAwareIntegrity.integrityTrend}

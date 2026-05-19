@@ -56,6 +56,8 @@ Diff-Aware Integrity inspects safe Git diff signals without printing full raw di
 
 Posture-Aware Integrity compares integrity posture across review runs.
 
+Architecture-Aware Integrity identifies affected systems, boundaries, dependencies, and blast radius.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:
