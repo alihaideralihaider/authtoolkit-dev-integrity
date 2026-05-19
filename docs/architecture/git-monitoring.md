@@ -60,6 +60,8 @@ Architecture-Aware Integrity identifies affected systems, boundaries, dependenci
 
 Policy-Aware Integrity evaluates governance rules, escalation paths, and approval expectations.
 
+Evidence-Aware Integrity evaluates whether review, release, runtime, and policy evidence is sufficient.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:

@@ -180,6 +180,39 @@ ${list(result.policyAwareIntegrity.governanceWarnings)}
 
 ${list(result.policyAwareIntegrity.policyReviewNotes)}
 
+## Evidence-Aware Integrity
+
+- Evidence posture: ${result.evidenceAwareIntegrity.evidencePosture}
+- Recommended evidence action: ${result.evidenceAwareIntegrity.recommendedEvidenceAction}
+
+### Evidence Strengths
+
+${list(result.evidenceAwareIntegrity.evidenceStrengths)}
+
+### Evidence Gaps
+
+${list(result.evidenceAwareIntegrity.evidenceGaps)}
+
+### Evidence Required Before Merge
+
+${list(result.evidenceAwareIntegrity.evidenceRequiredBeforeMerge)}
+
+### Evidence Required Before Release
+
+${list(result.evidenceAwareIntegrity.evidenceRequiredBeforeRelease)}
+
+### Evidence Required After Release
+
+${list(result.evidenceAwareIntegrity.evidenceRequiredAfterRelease)}
+
+### Evidence Required For Policy
+
+${list(result.evidenceAwareIntegrity.evidenceRequiredForPolicy)}
+
+### Evidence Warnings
+
+${list(result.evidenceAwareIntegrity.evidenceWarnings)}
+
 ## Posture-Aware Integrity
 
 - Integrity trend: ${result.postureAwareIntegrity.integrityTrend}

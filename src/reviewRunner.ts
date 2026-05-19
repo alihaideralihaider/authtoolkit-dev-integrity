@@ -11,6 +11,7 @@ import { buildEvidenceTimeline } from "./evidenceTimeline.ts";
 import { evaluatePostureAwareIntegrity } from "./postureAwareIntegrity.ts";
 import { evaluateArchitectureAwareIntegrity } from "./architectureAwareIntegrity.ts";
 import { evaluatePolicyAwareIntegrity } from "./policyAwareIntegrity.ts";
+import { evaluateEvidenceAwareIntegrity } from "./evidenceAwareIntegrity.ts";
 import { selectReviewPacks, selectReviews } from "./reviewSelector.ts";
 import type { ClassifiedFile, RiskCategory, Severity } from "./riskClassifier.ts";
 import type { EvidenceTimeline } from "./evidenceTimeline.ts";
@@ -20,6 +21,7 @@ import type { RuntimeIntegrityResult } from "./runtimeIntegrity.ts";
 import type { PostureAwareIntegrityResult } from "./postureAwareIntegrity.ts";
 import type { ArchitectureAwareIntegrityResult } from "./architectureAwareIntegrity.ts";
 import type { PolicyAwareIntegrityResult } from "./policyAwareIntegrity.ts";
+import type { EvidenceAwareIntegrityResult } from "./evidenceAwareIntegrity.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { DiffAwareIntegrityResult } from "./diffAwareIntegrity.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
@@ -38,6 +40,7 @@ export type ReviewResult = {
   diffAwareIntegrity: DiffAwareIntegrityResult;
   architectureAwareIntegrity: ArchitectureAwareIntegrityResult;
   policyAwareIntegrity: PolicyAwareIntegrityResult;
+  evidenceAwareIntegrity: EvidenceAwareIntegrityResult;
   prIntegrity: PrIntegrityResult;
   releaseReadiness: ReleaseReadinessResult;
   runtimeIntegrity: RuntimeIntegrityResult;
@@ -241,6 +244,15 @@ export function runReview(input: RunReviewInput): ReviewResult {
     postureAwareIntegrity,
     architectureAwareIntegrity,
   });
+  const evidenceAwareIntegrity = evaluateEvidenceAwareIntegrity({
+    prIntegrity,
+    releaseReadiness,
+    runtimeIntegrity,
+    evidenceTimeline,
+    postureAwareIntegrity,
+    architectureAwareIntegrity,
+    policyAwareIntegrity,
+  });
 
   return {
     repoPath,
@@ -256,6 +268,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     diffAwareIntegrity,
     architectureAwareIntegrity,
     policyAwareIntegrity,
+    evidenceAwareIntegrity,
     prIntegrity,
     releaseReadiness,
     runtimeIntegrity,
