@@ -19,6 +19,7 @@ import { evaluateImpactAwareIntegrity } from "./impactAwareIntegrity.ts";
 import { evaluateIntegrityDecisionSummary } from "./integrityDecisionSummary.ts";
 import { buildControlRoomOverview } from "./controlRoomOverview.ts";
 import { buildWorkflowRoutingSummary } from "./workflowRoutingSummary.ts";
+import { buildPrContext } from "./prContext.ts";
 import { confidenceWithBuildAwareness, evaluateBuildAwareIntegrity, loadBuildSummary } from "./buildAwareIntegrity.ts";
 import { selectReviewPacks, selectReviews } from "./reviewSelector.ts";
 import type { ClassifiedFile, RiskCategory, Severity } from "./riskClassifier.ts";
@@ -39,6 +40,7 @@ import type { ControlRoomOverviewResult } from "./controlRoomOverview.ts";
 import type { WorkflowRoutingSummaryResult } from "./workflowRoutingSummary.ts";
 import type { BuildAwareIntegrityResult } from "./buildAwareIntegrity.ts";
 import type { GitContext } from "./gitContext.ts";
+import type { PrContext } from "./prContext.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { DiffAwareIntegrityResult } from "./diffAwareIntegrity.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
@@ -65,6 +67,7 @@ export type ReviewResult = {
   integrityDecisionSummary: IntegrityDecisionSummaryResult;
   controlRoomOverview: ControlRoomOverviewResult;
   workflowRoutingSummary: WorkflowRoutingSummaryResult;
+  prContext: PrContext;
   buildAwareIntegrity: BuildAwareIntegrityResult;
   prIntegrity: PrIntegrityResult;
   releaseReadiness: ReleaseReadinessResult;
@@ -430,6 +433,14 @@ export function runReview(input: RunReviewInput): ReviewResult {
     impactAwareIntegrity,
     postureAwareIntegrity,
   });
+  const prContext = buildPrContext({
+    gitContext,
+    changedFiles,
+    riskCategories,
+    suggestedReviewPacks,
+    integrityDecisionSummary,
+    workflowRoutingSummary,
+  });
 
   return {
     repoPath,
@@ -453,6 +464,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     integrityDecisionSummary,
     controlRoomOverview,
     workflowRoutingSummary,
+    prContext,
     buildAwareIntegrity,
     prIntegrity,
     releaseReadiness,

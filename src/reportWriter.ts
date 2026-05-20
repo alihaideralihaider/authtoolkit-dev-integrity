@@ -66,6 +66,10 @@ function triggeredPolicyList(result: ReviewResult): string {
     .join("\n");
 }
 
+function prContextList(values: string[]): string {
+  return list(values);
+}
+
 function safeFileName(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
@@ -217,6 +221,32 @@ ${list(result.gitContext.commitsInRange)}
 ### Git Context Warnings
 
 ${list(result.gitContext.gitContextWarnings)}
+
+## PR Context
+
+- PR title suggestion: ${result.prContext.prTitleSuggestion}
+- PR readiness label: ${result.prContext.prReadinessLabel}
+- PR summary: ${result.prContext.prSummary}
+
+### Change Scope
+
+${prContextList(result.prContext.prChangeScope)}
+
+### Risk Summary
+
+${prContextList(result.prContext.prRiskSummary)}
+
+### Review Focus
+
+${prContextList(result.prContext.prReviewFocus)}
+
+### Required Evidence
+
+${prContextList(result.prContext.prRequiredEvidence)}
+
+### Recommended Reviewer Types
+
+${prContextList(result.prContext.prRecommendedReviewerTypes)}
 
 ## Git Diff Name-Only
 

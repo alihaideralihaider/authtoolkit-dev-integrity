@@ -16,6 +16,7 @@ export type ReportCatalogEntry = {
   currentBranch: string;
   baseBranch: string;
   currentCommit: string;
+  prReadinessLabel: string;
   highestSeverity: string;
   confidenceScore: number;
 };
@@ -49,6 +50,7 @@ function loadCatalog(repoRoot: string): ReportCatalogEntry[] {
         currentBranch: entry.currentBranch || "unknown",
         baseBranch: entry.baseBranch || "unknown",
         currentCommit: entry.currentCommit || "unknown",
+        prReadinessLabel: entry.prReadinessLabel || "unknown",
       }));
   } catch {
     return [];
@@ -72,6 +74,7 @@ function isCatalogEntry(value: unknown): value is ReportCatalogEntry {
     && (entry.currentBranch === undefined || typeof entry.currentBranch === "string")
     && (entry.baseBranch === undefined || typeof entry.baseBranch === "string")
     && (entry.currentCommit === undefined || typeof entry.currentCommit === "string")
+    && (entry.prReadinessLabel === undefined || typeof entry.prReadinessLabel === "string")
     && typeof entry.highestSeverity === "string"
     && typeof entry.confidenceScore === "number";
 }
@@ -90,7 +93,7 @@ function buildMarkdownCatalog(entries: ReportCatalogEntry[]): string {
 
     return [
       `| ${markdownCell(entry.generatedAt)} | ${markdownCell(shortRepoName(entry.repoPath))} | ${markdownCell(entry.selectedSkill)} | ${markdownCell(entry.controlRoomStatus)} | ${markdownCell(entry.overallIntegrityDecision)} | ${markdownCell(entry.operationalTrustLevel)} | ${markdownCell(entry.workflowPriority)} | ${markdownCell(entry.reportPath)} |`,
-      `|  | workflows: ${markdownCell(workflows)} | branch: ${markdownCell(entry.currentBranch)} | base: ${markdownCell(entry.baseBranch)} | commit: ${markdownCell(entry.currentCommit)} |  |  | timeline: ${markdownCell(entry.timelinePath)} |`,
+      `|  | workflows: ${markdownCell(workflows)} | branch: ${markdownCell(entry.currentBranch)} | base: ${markdownCell(entry.baseBranch)} | PR: ${markdownCell(entry.prReadinessLabel)} | commit: ${markdownCell(entry.currentCommit)} |  | timeline: ${markdownCell(entry.timelinePath)} |`,
     ];
   });
 
@@ -121,6 +124,7 @@ export function updateReportCatalog(input: UpdateReportCatalogInput): void {
     currentBranch: input.result.gitContext.currentBranch,
     baseBranch: input.result.gitContext.baseBranch,
     currentCommit: input.result.gitContext.currentCommit,
+    prReadinessLabel: input.result.prContext.prReadinessLabel,
     highestSeverity: input.result.highestSeverity,
     confidenceScore: input.result.confidenceScore,
   };

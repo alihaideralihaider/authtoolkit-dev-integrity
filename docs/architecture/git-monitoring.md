@@ -86,6 +86,8 @@ Operational Timeline Summary condenses recent operational posture and workflow p
 
 Git Context adds local branch, commit, and base comparison metadata without using external Git hosting APIs.
 
+PR Context turns local Git and Integrity output into a pull-request-style review summary without external Git hosting APIs.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:
