@@ -81,6 +81,40 @@ function buildReport(result: ReviewResult, timelinePath: string): string {
 - Confidence score: ${result.confidenceScore}
 - Detected env var-like names count: ${result.detectedEnvVarNames.length}
 
+## Integrity Control Room Overview
+
+- Control room status: ${result.controlRoomOverview.controlRoomStatus}
+- Executive summary: ${result.controlRoomOverview.executiveSummary}
+- Recommended action: ${result.controlRoomOverview.recommendedControlRoomAction}
+
+### Decision Snapshot
+
+${list(result.controlRoomOverview.decisionSnapshot)}
+
+### Awareness Snapshot
+
+${list(result.controlRoomOverview.awarenessSnapshot)}
+
+### Risk Snapshot
+
+${list(result.controlRoomOverview.riskSnapshot)}
+
+### Required Actions
+
+${list(result.controlRoomOverview.requiredActions)}
+
+### Human Attention Areas
+
+${list(result.controlRoomOverview.humanAttentionAreas)}
+
+### Drift Snapshot
+
+${list(result.controlRoomOverview.driftSnapshot)}
+
+### Control Room Warnings
+
+${list(result.controlRoomOverview.controlRoomWarnings)}
+
 ## Integrity Decision Summary
 
 - Overall integrity decision: ${result.integrityDecisionSummary.overallIntegrityDecision}

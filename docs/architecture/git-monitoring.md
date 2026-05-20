@@ -74,6 +74,8 @@ Impact-Aware Integrity translates technical risk into customer, admin, payment, 
 
 Integrity Decision Summary condenses all awareness layers into a unified operational trust decision.
 
+Integrity Control Room Overview presents the engine and awareness stack as one operational command summary.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:
