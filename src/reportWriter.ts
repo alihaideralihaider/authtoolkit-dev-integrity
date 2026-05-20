@@ -116,6 +116,35 @@ ${list(result.controlRoomOverview.driftSnapshot)}
 
 ${list(result.controlRoomOverview.controlRoomWarnings)}
 
+## Workflow Routing Summary
+
+- Workflow priority: ${result.workflowRoutingSummary.workflowPriority}
+- Recommended workflow path: ${result.workflowRoutingSummary.recommendedWorkflowPath}
+
+### Active Workflows
+
+${list(result.workflowRoutingSummary.activeWorkflows)}
+
+### Workflow Reasons
+
+${list(result.workflowRoutingSummary.workflowReasons)}
+
+### Workflow Owners
+
+${list(result.workflowRoutingSummary.workflowOwners)}
+
+### Workflow Evidence Needs
+
+${list(result.workflowRoutingSummary.workflowEvidenceNeeds)}
+
+### Next Workflow Actions
+
+${list(result.workflowRoutingSummary.nextWorkflowActions)}
+
+### Workflow Warnings
+
+${list(result.workflowRoutingSummary.workflowWarnings)}
+
 ## Integrity Decision Summary
 
 - Overall integrity decision: ${result.integrityDecisionSummary.overallIntegrityDecision}

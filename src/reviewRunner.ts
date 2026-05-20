@@ -17,6 +17,7 @@ import { evaluateRecoveryAwareIntegrity } from "./recoveryAwareIntegrity.ts";
 import { evaluateImpactAwareIntegrity } from "./impactAwareIntegrity.ts";
 import { evaluateIntegrityDecisionSummary } from "./integrityDecisionSummary.ts";
 import { buildControlRoomOverview } from "./controlRoomOverview.ts";
+import { buildWorkflowRoutingSummary } from "./workflowRoutingSummary.ts";
 import { confidenceWithBuildAwareness, evaluateBuildAwareIntegrity, loadBuildSummary } from "./buildAwareIntegrity.ts";
 import { selectReviewPacks, selectReviews } from "./reviewSelector.ts";
 import type { ClassifiedFile, RiskCategory, Severity } from "./riskClassifier.ts";
@@ -34,6 +35,7 @@ import type { RecoveryAwareIntegrityResult } from "./recoveryAwareIntegrity.ts";
 import type { ImpactAwareIntegrityResult } from "./impactAwareIntegrity.ts";
 import type { IntegrityDecisionSummaryResult } from "./integrityDecisionSummary.ts";
 import type { ControlRoomOverviewResult } from "./controlRoomOverview.ts";
+import type { WorkflowRoutingSummaryResult } from "./workflowRoutingSummary.ts";
 import type { BuildAwareIntegrityResult } from "./buildAwareIntegrity.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { DiffAwareIntegrityResult } from "./diffAwareIntegrity.ts";
@@ -59,6 +61,7 @@ export type ReviewResult = {
   impactAwareIntegrity: ImpactAwareIntegrityResult;
   integrityDecisionSummary: IntegrityDecisionSummaryResult;
   controlRoomOverview: ControlRoomOverviewResult;
+  workflowRoutingSummary: WorkflowRoutingSummaryResult;
   buildAwareIntegrity: BuildAwareIntegrityResult;
   prIntegrity: PrIntegrityResult;
   releaseReadiness: ReleaseReadinessResult;
@@ -403,6 +406,21 @@ export function runReview(input: RunReviewInput): ReviewResult {
     impactAwareIntegrity,
     postureAwareIntegrity,
   });
+  const workflowRoutingSummary = buildWorkflowRoutingSummary({
+    integrityDecisionSummary,
+    controlRoomOverview,
+    buildAwareIntegrity,
+    prIntegrity,
+    releaseReadiness,
+    runtimeIntegrity,
+    architectureAwareIntegrity,
+    policyAwareIntegrity,
+    evidenceAwareIntegrity,
+    agentAwareIntegrity,
+    recoveryAwareIntegrity,
+    impactAwareIntegrity,
+    postureAwareIntegrity,
+  });
 
   return {
     repoPath,
@@ -424,6 +442,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     impactAwareIntegrity,
     integrityDecisionSummary,
     controlRoomOverview,
+    workflowRoutingSummary,
     buildAwareIntegrity,
     prIntegrity,
     releaseReadiness,

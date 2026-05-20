@@ -78,6 +78,8 @@ Integrity Control Room Overview presents the engine and awareness stack as one o
 
 Plain English summaries provide a short non-technical companion explanation for top-level decisions.
 
+Workflow Routing Summary connects awareness, decision, and control-room outputs into operational workflow routing.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:
