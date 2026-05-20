@@ -90,6 +90,8 @@ PR Context turns local Git and Integrity output into a pull-request-style review
 
 CI/CD Context consumes local redacted pipeline summaries and adjusts evidence, release, and workflow expectations without provider APIs.
 
+GitHub PR Comment Draft generates a local reviewable PR comment body without posting to GitHub.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:

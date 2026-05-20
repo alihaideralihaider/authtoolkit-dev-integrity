@@ -1,5 +1,6 @@
 import { runReview } from "./reviewRunner.ts";
 import { writeReport } from "./reportWriter.ts";
+import { writeGitHubPrCommentDraft } from "./githubPrCommentDraft.ts";
 
 type CliArgs = {
   repo?: string;
@@ -7,6 +8,7 @@ type CliArgs = {
   buildSummary?: string;
   baseBranch?: string;
   cicdSummary?: string;
+  githubCommentDraft?: boolean;
 };
 
 function parseArgs(argv: string[]): CliArgs {
@@ -31,6 +33,8 @@ function parseArgs(argv: string[]): CliArgs {
     } else if (arg === "--cicd-summary" && next) {
       args.cicdSummary = next;
       index += 1;
+    } else if (arg === "--github-comment-draft") {
+      args.githubCommentDraft = true;
     }
   }
 
@@ -38,7 +42,7 @@ function parseArgs(argv: string[]): CliArgs {
 }
 
 function printUsage(): void {
-  console.error("Usage: npm run review -- --repo /path/to/repo --skill vault-secret-readiness-review [--build-summary /path/to/build-summary.json] [--base-branch main] [--cicd-summary /path/to/cicd-summary.json]");
+  console.error("Usage: npm run review -- --repo /path/to/repo --skill vault-secret-readiness-review [--build-summary /path/to/build-summary.json] [--base-branch main] [--cicd-summary /path/to/cicd-summary.json] [--github-comment-draft]");
 }
 
 async function main(): Promise<void> {
@@ -58,9 +62,15 @@ async function main(): Promise<void> {
     cicdSummaryPath: args.cicdSummary,
   });
   const reportPath = writeReport(result);
+  const commentDraftPath = args.githubCommentDraft
+    ? writeGitHubPrCommentDraft({ result, reportPath })
+    : undefined;
 
   console.log("AuthToolkit Dev Integrity review complete");
   console.log(`Report: ${reportPath}`);
+  if (commentDraftPath) {
+    console.log(`GitHub PR comment draft: ${commentDraftPath}`);
+  }
 }
 
 main().catch((error) => {
