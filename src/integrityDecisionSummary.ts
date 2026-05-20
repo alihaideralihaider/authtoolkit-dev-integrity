@@ -30,6 +30,7 @@ export type IntegrityDecisionSummaryInput = {
 export type IntegrityDecisionSummaryResult = {
   overallIntegrityDecision: OverallIntegrityDecision;
   operationalTrustLevel: OperationalTrustLevel;
+  plainEnglishSummary: string;
   primaryRiskDrivers: string[];
   blockingFactors: string[];
   requiredNextActions: string[];
@@ -208,6 +209,14 @@ function operationalDecision(decision: OverallIntegrityDecision): string {
   return "Proceed through normal review and preserve the generated evidence timeline.";
 }
 
+function plainEnglishSummary(decision: OverallIntegrityDecision): string {
+  if (decision === "blocked") return "This change should not move forward yet. Important blockers or missing evidence must be resolved first.";
+  if (decision === "high-risk") return "This change may affect important systems and needs senior human review before merge or release.";
+  if (decision === "caution") return "This change may be safe, but only after the required review and evidence are completed.";
+  if (decision === "trusted-with-review") return "This change can likely move forward after targeted review.";
+  return "This change appears safe to move through the normal review process.";
+}
+
 export function evaluateIntegrityDecisionSummary(
   input: IntegrityDecisionSummaryInput
 ): IntegrityDecisionSummaryResult {
@@ -217,6 +226,7 @@ export function evaluateIntegrityDecisionSummary(
   return {
     overallIntegrityDecision,
     operationalTrustLevel: trustLevel(overallIntegrityDecision),
+    plainEnglishSummary: plainEnglishSummary(overallIntegrityDecision),
     primaryRiskDrivers: primaryRiskDrivers(input),
     blockingFactors: blockers,
     requiredNextActions: requiredNextActions(input),

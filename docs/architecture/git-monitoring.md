@@ -76,6 +76,8 @@ Integrity Decision Summary condenses all awareness layers into a unified operati
 
 Integrity Control Room Overview presents the engine and awareness stack as one operational command summary.
 
+Plain English summaries provide a short non-technical companion explanation for top-level decisions.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:

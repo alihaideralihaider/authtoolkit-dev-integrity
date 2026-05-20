@@ -84,6 +84,7 @@ function buildReport(result: ReviewResult, timelinePath: string): string {
 ## Integrity Control Room Overview
 
 - Control room status: ${result.controlRoomOverview.controlRoomStatus}
+- Plain English: ${result.controlRoomOverview.plainEnglishSummary}
 - Executive summary: ${result.controlRoomOverview.executiveSummary}
 - Recommended action: ${result.controlRoomOverview.recommendedControlRoomAction}
 
@@ -119,6 +120,7 @@ ${list(result.controlRoomOverview.controlRoomWarnings)}
 
 - Overall integrity decision: ${result.integrityDecisionSummary.overallIntegrityDecision}
 - Operational trust level: ${result.integrityDecisionSummary.operationalTrustLevel}
+- Plain English: ${result.integrityDecisionSummary.plainEnglishSummary}
 - Release trust summary: ${result.integrityDecisionSummary.releaseTrustSummary}
 - Recovery trust summary: ${result.integrityDecisionSummary.recoveryTrustSummary}
 - Recommended operational decision: ${result.integrityDecisionSummary.recommendedOperationalDecision}

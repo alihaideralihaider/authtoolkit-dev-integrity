@@ -31,6 +31,7 @@ export type ControlRoomOverviewInput = {
 export type ControlRoomOverviewResult = {
   controlRoomStatus: ControlRoomStatus;
   executiveSummary: string;
+  plainEnglishSummary: string;
   decisionSnapshot: string[];
   awarenessSnapshot: string[];
   riskSnapshot: string[];
@@ -114,6 +115,13 @@ function executiveSummary(input: ControlRoomOverviewInput, status: ControlRoomSt
   return "Control Room is green: integrity posture is trusted with stable runtime and sufficient evidence.";
 }
 
+function plainEnglishSummary(status: ControlRoomStatus): string {
+  if (status === "red") return "Stop. This change has serious blockers or critical operational risk.";
+  if (status === "orange") return "Slow down. This change needs escalation or targeted validation.";
+  if (status === "yellow") return "Proceed carefully. Required evidence or review is still needed.";
+  return "Normal review path. No major operational blocker was detected.";
+}
+
 function decisionSnapshot(input: ControlRoomOverviewInput): string[] {
   return [
     `overall decision: ${input.integrityDecisionSummary.overallIntegrityDecision}`,
@@ -185,6 +193,7 @@ export function buildControlRoomOverview(
   return {
     controlRoomStatus,
     executiveSummary: executiveSummary(input, controlRoomStatus),
+    plainEnglishSummary: plainEnglishSummary(controlRoomStatus),
     decisionSnapshot: decisionSnapshot(input),
     awarenessSnapshot: awarenessSnapshot(input),
     riskSnapshot: riskSnapshot(input),
