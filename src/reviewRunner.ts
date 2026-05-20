@@ -20,6 +20,7 @@ import { evaluateIntegrityDecisionSummary } from "./integrityDecisionSummary.ts"
 import { buildControlRoomOverview } from "./controlRoomOverview.ts";
 import { buildWorkflowRoutingSummary } from "./workflowRoutingSummary.ts";
 import { buildPrContext } from "./prContext.ts";
+import { buildSummaryFromCicdContext, evaluateCicdContext, loadCicdSummary } from "./cicdContext.ts";
 import { confidenceWithBuildAwareness, evaluateBuildAwareIntegrity, loadBuildSummary } from "./buildAwareIntegrity.ts";
 import { selectReviewPacks, selectReviews } from "./reviewSelector.ts";
 import type { ClassifiedFile, RiskCategory, Severity } from "./riskClassifier.ts";
@@ -41,6 +42,7 @@ import type { WorkflowRoutingSummaryResult } from "./workflowRoutingSummary.ts";
 import type { BuildAwareIntegrityResult } from "./buildAwareIntegrity.ts";
 import type { GitContext } from "./gitContext.ts";
 import type { PrContext } from "./prContext.ts";
+import type { CicdContext } from "./cicdContext.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { DiffAwareIntegrityResult } from "./diffAwareIntegrity.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
@@ -68,6 +70,7 @@ export type ReviewResult = {
   controlRoomOverview: ControlRoomOverviewResult;
   workflowRoutingSummary: WorkflowRoutingSummaryResult;
   prContext: PrContext;
+  cicdContext: CicdContext;
   buildAwareIntegrity: BuildAwareIntegrityResult;
   prIntegrity: PrIntegrityResult;
   releaseReadiness: ReleaseReadinessResult;
@@ -90,6 +93,7 @@ type RunReviewInput = {
   selectedSkill: string;
   buildSummaryPath?: string;
   baseBranch?: string;
+  cicdSummaryPath?: string;
 };
 
 const envNamePattern = /\b[A-Z][A-Z0-9_]{2,}\b/g;
@@ -231,10 +235,14 @@ export function runReview(input: RunReviewInput): ReviewResult {
   const maxSeverity = highestSeverity(changedFiles);
   const riskCombinations = detectRiskCombinations(changedFiles);
   const diffAwareIntegrity = evaluateDiffAwareIntegrity(gitMonitor.diffLines);
+  const cicdSummary = loadCicdSummary(input.cicdSummaryPath);
+  const cicdContext = evaluateCicdContext(cicdSummary.summary, gitContext, cicdSummary.resolvedPath);
   const buildSummary = loadBuildSummary(input.buildSummaryPath);
+  const effectiveBuildSummary = buildSummary.summary || buildSummaryFromCicdContext(cicdContext);
+  const effectiveBuildSummaryPath = buildSummary.resolvedPath || cicdContext.cicdSummaryPath;
   const buildAwareIntegrity = evaluateBuildAwareIntegrity(
-    buildSummary.summary,
-    buildSummary.resolvedPath
+    effectiveBuildSummary,
+    effectiveBuildSummaryPath
   );
   const suggestedReviews = selectReviews(riskCategories, selectedSkill);
   const suggestedReviewPacks = [
@@ -432,6 +440,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     recoveryAwareIntegrity,
     impactAwareIntegrity,
     postureAwareIntegrity,
+    cicdContext,
   });
   const prContext = buildPrContext({
     gitContext,
@@ -440,6 +449,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     suggestedReviewPacks,
     integrityDecisionSummary,
     workflowRoutingSummary,
+    cicdContext,
   });
 
   return {
@@ -465,6 +475,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     controlRoomOverview,
     workflowRoutingSummary,
     prContext,
+    cicdContext,
     buildAwareIntegrity,
     prIntegrity,
     releaseReadiness,

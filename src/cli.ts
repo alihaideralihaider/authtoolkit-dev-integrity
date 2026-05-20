@@ -6,6 +6,7 @@ type CliArgs = {
   skill?: string;
   buildSummary?: string;
   baseBranch?: string;
+  cicdSummary?: string;
 };
 
 function parseArgs(argv: string[]): CliArgs {
@@ -27,6 +28,9 @@ function parseArgs(argv: string[]): CliArgs {
     } else if (arg === "--base-branch" && next) {
       args.baseBranch = next;
       index += 1;
+    } else if (arg === "--cicd-summary" && next) {
+      args.cicdSummary = next;
+      index += 1;
     }
   }
 
@@ -34,7 +38,7 @@ function parseArgs(argv: string[]): CliArgs {
 }
 
 function printUsage(): void {
-  console.error("Usage: npm run review -- --repo /path/to/repo --skill vault-secret-readiness-review [--build-summary /path/to/build-summary.json] [--base-branch main]");
+  console.error("Usage: npm run review -- --repo /path/to/repo --skill vault-secret-readiness-review [--build-summary /path/to/build-summary.json] [--base-branch main] [--cicd-summary /path/to/cicd-summary.json]");
 }
 
 async function main(): Promise<void> {
@@ -51,6 +55,7 @@ async function main(): Promise<void> {
     selectedSkill: args.skill,
     buildSummaryPath: args.buildSummary,
     baseBranch: args.baseBranch,
+    cicdSummaryPath: args.cicdSummary,
   });
   const reportPath = writeReport(result);
 

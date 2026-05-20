@@ -1,3 +1,4 @@
+import type { CicdContext } from "./cicdContext.ts";
 import type { GitContext } from "./gitContext.ts";
 import type { IntegrityDecisionSummaryResult } from "./integrityDecisionSummary.ts";
 import type { ClassifiedFile, RiskCategory } from "./riskClassifier.ts";
@@ -13,6 +14,7 @@ export type PrContextInput = {
   suggestedReviewPacks: ReviewPack[];
   integrityDecisionSummary: IntegrityDecisionSummaryResult;
   workflowRoutingSummary: WorkflowRoutingSummaryResult;
+  cicdContext: CicdContext;
 };
 
 export type PrContext = {
@@ -65,6 +67,8 @@ function riskSummary(input: PrContextInput): string[] {
     `Workflow priority: ${input.workflowRoutingSummary.workflowPriority}`,
     ...(input.riskCategories.length ? [`Risk categories: ${input.riskCategories.join(", ")}`] : ["Risk categories: none"]),
     ...(input.suggestedReviewPacks.length ? [`Suggested review packs: ${input.suggestedReviewPacks.join(", ")}`] : ["Suggested review packs: none"]),
+    `CI/CD status: ${input.cicdContext.pipelineStatus}`,
+    `CI/CD trust: ${input.cicdContext.cicdTrustSummary}`,
     ...input.integrityDecisionSummary.primaryRiskDrivers.map((driver) => `Primary risk driver: ${driver}`),
   ]);
 }

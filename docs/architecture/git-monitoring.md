@@ -88,6 +88,8 @@ Git Context adds local branch, commit, and base comparison metadata without usin
 
 PR Context turns local Git and Integrity output into a pull-request-style review summary without external Git hosting APIs.
 
+CI/CD Context consumes local redacted pipeline summaries and adjusts evidence, release, and workflow expectations without provider APIs.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:

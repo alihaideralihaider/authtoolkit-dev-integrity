@@ -1,6 +1,7 @@
 import type { AgentAwareIntegrityResult } from "./agentAwareIntegrity.ts";
 import type { ArchitectureAwareIntegrityResult } from "./architectureAwareIntegrity.ts";
 import type { BuildAwareIntegrityResult } from "./buildAwareIntegrity.ts";
+import type { CicdContext } from "./cicdContext.ts";
 import type { ControlRoomOverviewResult } from "./controlRoomOverview.ts";
 import type { EvidenceAwareIntegrityResult } from "./evidenceAwareIntegrity.ts";
 import type { ImpactAwareIntegrityResult } from "./impactAwareIntegrity.ts";
@@ -37,6 +38,7 @@ export type WorkflowRoutingSummaryInput = {
   recoveryAwareIntegrity: RecoveryAwareIntegrityResult;
   impactAwareIntegrity: ImpactAwareIntegrityResult;
   postureAwareIntegrity: PostureAwareIntegrityResult;
+  cicdContext?: CicdContext;
 };
 
 export type WorkflowRoutingSummaryResult = {
@@ -93,6 +95,10 @@ function activeWorkflowSet(input: WorkflowRoutingSummaryInput): { workflows: Set
   if (input.evidenceAwareIntegrity.evidencePosture !== "sufficient") {
     addWorkflow(workflows, reasons, "evidence-review", "Evidence workflow is active because evidence posture is not sufficient.");
   }
+  if (input.cicdContext && ["failed", "cancelled", "skipped", "warning"].includes(input.cicdContext.pipelineStatus)) {
+    addWorkflow(workflows, reasons, "evidence-review", "Evidence workflow is active because CI/CD rerun or completion evidence is required.");
+    addWorkflow(workflows, reasons, "release-review", "Release workflow is active because CI/CD context is not passing.");
+  }
   if (
     input.agentAwareIntegrity.agentRiskPosture === "agent-assisted" ||
     input.agentAwareIntegrity.agentRiskPosture === "agent-generated-suspected" ||
@@ -112,6 +118,7 @@ function priorityFor(input: WorkflowRoutingSummaryInput): WorkflowPriority {
     input.architectureAwareIntegrity.blastRadius === "critical" ||
     input.impactAwareIntegrity.overallImpact === "critical" ||
     input.recoveryAwareIntegrity.recoveryRisk === "critical"
+    || (input.cicdContext?.deploymentTarget === "production" && ["failed", "warning"].includes(input.cicdContext.pipelineStatus))
   ) {
     return "critical";
   }
@@ -158,6 +165,7 @@ function evidenceNeedsFor(input: WorkflowRoutingSummaryInput): string[] {
   if (input.policyAwareIntegrity.requiredApprovals.includes("payment review") || input.architectureAwareIntegrity.affectedBoundaries.includes("payment trust boundary")) needs.push("payment review notes");
   if (input.policyAwareIntegrity.requiredApprovals.includes("owner approval")) needs.push("owner approval");
   if (input.releaseReadiness.canaryRecommendations.length) needs.push("canary validation");
+  if (input.cicdContext && ["failed", "warning", "cancelled", "skipped"].includes(input.cicdContext.pipelineStatus)) needs.push("CI/CD rerun evidence");
   return unique(needs);
 }
 

@@ -1,0 +1,16 @@
+{
+  "provider": "github-actions",
+  "pipelineName": "build-and-test",
+  "runId": "local-sample-001",
+  "branch": "main",
+  "commit": "sample",
+  "status": "failed",
+  "failedStage": "typecheck",
+  "failedJobs": ["typecheck"],
+  "deploymentTarget": "preview",
+  "environment": "staging",
+  "durationSeconds": 148,
+  "rerunStatus": "not-rerun",
+  "logsRedacted": true,
+  "safeArtifactRefs": ["typecheck-summary"]
+}

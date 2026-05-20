@@ -17,6 +17,9 @@ export type ReportCatalogEntry = {
   baseBranch: string;
   currentCommit: string;
   prReadinessLabel: string;
+  cicdProvider: string;
+  pipelineStatus: string;
+  pipelineRunId: string;
   highestSeverity: string;
   confidenceScore: number;
 };
@@ -51,6 +54,9 @@ function loadCatalog(repoRoot: string): ReportCatalogEntry[] {
         baseBranch: entry.baseBranch || "unknown",
         currentCommit: entry.currentCommit || "unknown",
         prReadinessLabel: entry.prReadinessLabel || "unknown",
+        cicdProvider: entry.cicdProvider || "unknown",
+        pipelineStatus: entry.pipelineStatus || "unknown",
+        pipelineRunId: entry.pipelineRunId || "unknown",
       }));
   } catch {
     return [];
@@ -75,6 +81,9 @@ function isCatalogEntry(value: unknown): value is ReportCatalogEntry {
     && (entry.baseBranch === undefined || typeof entry.baseBranch === "string")
     && (entry.currentCommit === undefined || typeof entry.currentCommit === "string")
     && (entry.prReadinessLabel === undefined || typeof entry.prReadinessLabel === "string")
+    && (entry.cicdProvider === undefined || typeof entry.cicdProvider === "string")
+    && (entry.pipelineStatus === undefined || typeof entry.pipelineStatus === "string")
+    && (entry.pipelineRunId === undefined || typeof entry.pipelineRunId === "string")
     && typeof entry.highestSeverity === "string"
     && typeof entry.confidenceScore === "number";
 }
@@ -93,7 +102,7 @@ function buildMarkdownCatalog(entries: ReportCatalogEntry[]): string {
 
     return [
       `| ${markdownCell(entry.generatedAt)} | ${markdownCell(shortRepoName(entry.repoPath))} | ${markdownCell(entry.selectedSkill)} | ${markdownCell(entry.controlRoomStatus)} | ${markdownCell(entry.overallIntegrityDecision)} | ${markdownCell(entry.operationalTrustLevel)} | ${markdownCell(entry.workflowPriority)} | ${markdownCell(entry.reportPath)} |`,
-      `|  | workflows: ${markdownCell(workflows)} | branch: ${markdownCell(entry.currentBranch)} | base: ${markdownCell(entry.baseBranch)} | PR: ${markdownCell(entry.prReadinessLabel)} | commit: ${markdownCell(entry.currentCommit)} |  | timeline: ${markdownCell(entry.timelinePath)} |`,
+      `|  | workflows: ${markdownCell(workflows)} | branch: ${markdownCell(entry.currentBranch)} | base: ${markdownCell(entry.baseBranch)} | PR: ${markdownCell(entry.prReadinessLabel)} | CI/CD: ${markdownCell(entry.pipelineStatus)} | run: ${markdownCell(entry.pipelineRunId)} | timeline: ${markdownCell(entry.timelinePath)} |`,
     ];
   });
 
@@ -125,6 +134,9 @@ export function updateReportCatalog(input: UpdateReportCatalogInput): void {
     baseBranch: input.result.gitContext.baseBranch,
     currentCommit: input.result.gitContext.currentCommit,
     prReadinessLabel: input.result.prContext.prReadinessLabel,
+    cicdProvider: input.result.cicdContext.cicdProvider,
+    pipelineStatus: input.result.cicdContext.pipelineStatus,
+    pipelineRunId: input.result.cicdContext.pipelineRunId,
     highestSeverity: input.result.highestSeverity,
     confidenceScore: input.result.confidenceScore,
   };

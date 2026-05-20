@@ -305,6 +305,31 @@ ${list(result.buildAwareIntegrity.affectedReviewPacks)}
 
 ${list(result.buildAwareIntegrity.buildEvidenceRequirements)}
 
+## CI/CD Context
+
+- Provider: ${result.cicdContext.cicdProvider}
+- Pipeline name: ${result.cicdContext.pipelineName}
+- Run ID: ${result.cicdContext.pipelineRunId}
+- Status: ${result.cicdContext.pipelineStatus}
+- Failed stage: ${result.cicdContext.failedStage}
+- Deployment target: ${result.cicdContext.deploymentTarget}
+- Environment: ${result.cicdContext.environment}
+- Duration: ${result.cicdContext.durationSummary}
+- Rerun status: ${result.cicdContext.rerunStatus}
+- Trust summary: ${result.cicdContext.cicdTrustSummary}
+
+### Failed Jobs
+
+${list(result.cicdContext.failedJobs)}
+
+### Safe Artifact Refs
+
+${list(result.cicdContext.safeArtifactRefs)}
+
+### CI/CD Warnings
+
+${list(result.cicdContext.cicdWarnings)}
+
 ## Architecture-Aware Integrity
 
 - Blast radius: ${result.architectureAwareIntegrity.blastRadius}
