@@ -119,27 +119,6 @@ ${list(result.controlRoomOverview.driftSnapshot)}
 
 ${list(result.controlRoomOverview.controlRoomWarnings)}
 
-## Operational Timeline Summary
-
-- Recent trend: ${operationalTimelineSummary.recentTrendSummary}
-- Confidence trend: ${operationalTimelineSummary.confidenceTrend}
-- Control room trend: ${operationalTimelineSummary.controlRoomTrend}
-- Operational decision trend: ${operationalTimelineSummary.operationalDecisionTrend}
-- Drift trend: ${operationalTimelineSummary.driftTrendSummary}
-- Recommended operational focus: ${operationalTimelineSummary.recommendedOperationalFocus}
-
-### Repeated Risk Drivers
-
-${list(operationalTimelineSummary.repeatedRiskDrivers)}
-
-### Repeated Workflow Patterns
-
-${list(operationalTimelineSummary.repeatedWorkflowPatterns)}
-
-### Repeated Blocking Factors
-
-${list(operationalTimelineSummary.repeatedBlockingFactors)}
-
 ## Workflow Routing Summary
 
 - Workflow priority: ${result.workflowRoutingSummary.workflowPriority}
@@ -168,6 +147,27 @@ ${list(result.workflowRoutingSummary.nextWorkflowActions)}
 ### Workflow Warnings
 
 ${list(result.workflowRoutingSummary.workflowWarnings)}
+
+## Operational Timeline Summary
+
+- Recent trend: ${operationalTimelineSummary.recentTrendSummary}
+- Confidence trend: ${operationalTimelineSummary.confidenceTrend}
+- Control room trend: ${operationalTimelineSummary.controlRoomTrend}
+- Operational decision trend: ${operationalTimelineSummary.operationalDecisionTrend}
+- Drift trend: ${operationalTimelineSummary.driftTrendSummary}
+- Recommended operational focus: ${operationalTimelineSummary.recommendedOperationalFocus}
+
+### Repeated Risk Drivers
+
+${list(operationalTimelineSummary.repeatedRiskDrivers)}
+
+### Repeated Workflow Patterns
+
+${list(operationalTimelineSummary.repeatedWorkflowPatterns)}
+
+### Repeated Blocking Factors
+
+${list(operationalTimelineSummary.repeatedBlockingFactors)}
 
 ## Integrity Decision Summary
 
