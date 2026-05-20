@@ -92,6 +92,8 @@ CI/CD Context consumes local redacted pipeline summaries and adjusts evidence, r
 
 GitHub PR Comment Draft generates a local reviewable PR comment body without posting to GitHub.
 
+Release Workflow Plan turns release, runtime, recovery, CI/CD, and evidence signals into a local release checklist.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:

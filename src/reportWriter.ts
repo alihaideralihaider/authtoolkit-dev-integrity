@@ -152,6 +152,35 @@ ${list(result.workflowRoutingSummary.nextWorkflowActions)}
 
 ${list(result.workflowRoutingSummary.workflowWarnings)}
 
+## Release Workflow Plan
+
+- Status: ${result.releaseWorkflowPlan.releaseWorkflowStatus}
+- Recommended release path: ${result.releaseWorkflowPlan.recommendedReleasePath}
+
+### Pre-Release Checklist
+
+${list(result.releaseWorkflowPlan.preReleaseChecklist)}
+
+### Release Execution Checklist
+
+${list(result.releaseWorkflowPlan.releaseExecutionChecklist)}
+
+### Post-Release Watch Checklist
+
+${list(result.releaseWorkflowPlan.postReleaseWatchChecklist)}
+
+### Rollback Readiness Checklist
+
+${list(result.releaseWorkflowPlan.rollbackReadinessChecklist)}
+
+### Required Release Evidence
+
+${list(result.releaseWorkflowPlan.requiredReleaseEvidence)}
+
+### Release Owner Attention
+
+${list(result.releaseWorkflowPlan.releaseOwnerAttention)}
+
 ## Operational Timeline Summary
 
 - Recent trend: ${operationalTimelineSummary.recentTrendSummary}

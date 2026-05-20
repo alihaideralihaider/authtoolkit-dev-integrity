@@ -21,6 +21,7 @@ import { buildControlRoomOverview } from "./controlRoomOverview.ts";
 import { buildWorkflowRoutingSummary } from "./workflowRoutingSummary.ts";
 import { buildPrContext } from "./prContext.ts";
 import { buildSummaryFromCicdContext, evaluateCicdContext, loadCicdSummary } from "./cicdContext.ts";
+import { buildReleaseWorkflowPlan } from "./releaseWorkflowPlan.ts";
 import { confidenceWithBuildAwareness, evaluateBuildAwareIntegrity, loadBuildSummary } from "./buildAwareIntegrity.ts";
 import { selectReviewPacks, selectReviews } from "./reviewSelector.ts";
 import type { ClassifiedFile, RiskCategory, Severity } from "./riskClassifier.ts";
@@ -43,6 +44,7 @@ import type { BuildAwareIntegrityResult } from "./buildAwareIntegrity.ts";
 import type { GitContext } from "./gitContext.ts";
 import type { PrContext } from "./prContext.ts";
 import type { CicdContext } from "./cicdContext.ts";
+import type { ReleaseWorkflowPlan } from "./releaseWorkflowPlan.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { DiffAwareIntegrityResult } from "./diffAwareIntegrity.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
@@ -69,6 +71,7 @@ export type ReviewResult = {
   integrityDecisionSummary: IntegrityDecisionSummaryResult;
   controlRoomOverview: ControlRoomOverviewResult;
   workflowRoutingSummary: WorkflowRoutingSummaryResult;
+  releaseWorkflowPlan: ReleaseWorkflowPlan;
   prContext: PrContext;
   cicdContext: CicdContext;
   buildAwareIntegrity: BuildAwareIntegrityResult;
@@ -442,6 +445,17 @@ export function runReview(input: RunReviewInput): ReviewResult {
     postureAwareIntegrity,
     cicdContext,
   });
+  const releaseWorkflowPlan = buildReleaseWorkflowPlan({
+    releaseReadiness,
+    buildAwareIntegrity,
+    cicdContext,
+    runtimeIntegrity,
+    recoveryAwareIntegrity,
+    impactAwareIntegrity,
+    evidenceAwareIntegrity,
+    workflowRoutingSummary,
+    controlRoomOverview,
+  });
   const prContext = buildPrContext({
     gitContext,
     changedFiles,
@@ -474,6 +488,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     integrityDecisionSummary,
     controlRoomOverview,
     workflowRoutingSummary,
+    releaseWorkflowPlan,
     prContext,
     cicdContext,
     buildAwareIntegrity,
