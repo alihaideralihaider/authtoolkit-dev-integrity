@@ -86,7 +86,7 @@ See `docs/examples/sample-integrity-report-summary.md` for a compact sample.
 
 Key documentation lives in:
 
-- `docs/architecture/`: engine, awareness stack, decision summary, control room, and system blueprint.
+- `docs/architecture/`: engine, awareness stack, decision summary, control room, system blueprint, and `docs/architecture/project-map.md` for contributor orientation.
 - `docs/skills/`: review skill definitions and checklists.
 - `docs/runbooks/`: operational runbooks for onboarding, pre-deploy checks, post-deploy canary, incidents, and recovery.
 - `docs/control-rooms/`: control room concepts such as Vault Control Room.
