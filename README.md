@@ -60,7 +60,7 @@ npm run review -- --repo . --skill saana-plan --build-summary examples/sample-bu
 
 The runner is local-only. It does not call external AI APIs, does not modify the target repo, does not auto-fix, does not commit, does not push, and scans changed files for env var-like names only.
 
-Generated reports are indexed in `reports/catalog.md` so recent review results can be scanned without opening every report file manually.
+Generated reports are indexed in `reports/catalog.md` so recent review results can be scanned without opening every report file manually. Recent operational posture is summarized in `reports/timeline-summary.md`.
 
 ## Read Control Room Status
 
@@ -88,7 +88,7 @@ See `docs/examples/sample-integrity-report-summary.md` for a compact sample.
 
 Key documentation lives in:
 
-- `docs/architecture/`: engine, awareness stack, decision summary, control room, report catalog, system blueprint, and `docs/architecture/project-map.md` for contributor orientation.
+- `docs/architecture/`: engine, awareness stack, decision summary, control room, report catalog, operational timeline summary, system blueprint, and `docs/architecture/project-map.md` for contributor orientation.
 - `docs/skills/`: review skill definitions and checklists.
 - `docs/runbooks/`: operational runbooks for onboarding, pre-deploy checks, post-deploy canary, incidents, and recovery.
 - `docs/control-rooms/`: control room concepts such as Vault Control Room.

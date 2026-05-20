@@ -82,6 +82,8 @@ Workflow Routing Summary connects awareness, decision, and control-room outputs 
 
 Report Catalog indexes generated reports so humans can quickly find recent review results.
 
+Operational Timeline Summary condenses recent operational posture and workflow patterns across report history.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:

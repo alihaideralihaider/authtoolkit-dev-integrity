@@ -1,5 +1,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import type { OperationalTimelineSummary } from "./operationalTimelineSummary.ts";
+import { updateOperationalTimelineSummary } from "./operationalTimelineSummary.ts";
 import { updateReportCatalog } from "./reportCatalog.ts";
 import type { ReviewResult } from "./reviewRunner.ts";
 
@@ -68,7 +70,7 @@ function safeFileName(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
-function buildReport(result: ReviewResult, timelinePath: string): string {
+function buildReport(result: ReviewResult, timelinePath: string, operationalTimelineSummary: OperationalTimelineSummary): string {
   return `# AuthToolkit Dev Integrity Report
 
 ## Summary
@@ -116,6 +118,27 @@ ${list(result.controlRoomOverview.driftSnapshot)}
 ### Control Room Warnings
 
 ${list(result.controlRoomOverview.controlRoomWarnings)}
+
+## Operational Timeline Summary
+
+- Recent trend: ${operationalTimelineSummary.recentTrendSummary}
+- Confidence trend: ${operationalTimelineSummary.confidenceTrend}
+- Control room trend: ${operationalTimelineSummary.controlRoomTrend}
+- Operational decision trend: ${operationalTimelineSummary.operationalDecisionTrend}
+- Drift trend: ${operationalTimelineSummary.driftTrendSummary}
+- Recommended operational focus: ${operationalTimelineSummary.recommendedOperationalFocus}
+
+### Repeated Risk Drivers
+
+${list(operationalTimelineSummary.repeatedRiskDrivers)}
+
+### Repeated Workflow Patterns
+
+${list(operationalTimelineSummary.repeatedWorkflowPatterns)}
+
+### Repeated Blocking Factors
+
+${list(operationalTimelineSummary.repeatedBlockingFactors)}
 
 ## Workflow Routing Summary
 
@@ -566,8 +589,9 @@ export function writeReport(result: ReviewResult): string {
   const relativeTimelinePath = path.relative(repoRoot(), timelinePath);
 
   writeFileSync(timelinePath, JSON.stringify(result.evidenceTimeline, null, 2));
-  writeFileSync(reportPath, buildReport(result, relativeTimelinePath));
   updateReportCatalog({ result, reportPath, timelinePath, repoRoot: repoRoot() });
+  const operationalTimelineSummary = updateOperationalTimelineSummary(repoRoot());
+  writeFileSync(reportPath, buildReport(result, relativeTimelinePath, operationalTimelineSummary));
 
   return reportPath;
 }
