@@ -5,6 +5,7 @@ type CliArgs = {
   repo?: string;
   skill?: string;
   buildSummary?: string;
+  baseBranch?: string;
 };
 
 function parseArgs(argv: string[]): CliArgs {
@@ -23,6 +24,9 @@ function parseArgs(argv: string[]): CliArgs {
     } else if (arg === "--build-summary" && next) {
       args.buildSummary = next;
       index += 1;
+    } else if (arg === "--base-branch" && next) {
+      args.baseBranch = next;
+      index += 1;
     }
   }
 
@@ -30,7 +34,7 @@ function parseArgs(argv: string[]): CliArgs {
 }
 
 function printUsage(): void {
-  console.error("Usage: npm run review -- --repo /path/to/repo --skill vault-secret-readiness-review [--build-summary /path/to/build-summary.json]");
+  console.error("Usage: npm run review -- --repo /path/to/repo --skill vault-secret-readiness-review [--build-summary /path/to/build-summary.json] [--base-branch main]");
 }
 
 async function main(): Promise<void> {
@@ -46,6 +50,7 @@ async function main(): Promise<void> {
     repoPath: args.repo,
     selectedSkill: args.skill,
     buildSummaryPath: args.buildSummary,
+    baseBranch: args.baseBranch,
   });
   const reportPath = writeReport(result);
 

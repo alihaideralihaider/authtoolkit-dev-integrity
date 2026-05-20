@@ -84,6 +84,8 @@ Report Catalog indexes generated reports so humans can quickly find recent revie
 
 Operational Timeline Summary condenses recent operational posture and workflow patterns across report history.
 
+Git Context adds local branch, commit, and base comparison metadata without using external Git hosting APIs.
+
 ## What It Does Not Do Yet
 
 Git Monitoring v1 is not:

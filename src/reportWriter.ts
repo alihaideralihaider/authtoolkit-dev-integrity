@@ -200,6 +200,24 @@ ${list(result.integrityDecisionSummary.requiredHumanAttention)}
 ${result.gitStatus || "clean"}
 \`\`\`
 
+## Git Context
+
+- Current branch: ${result.gitContext.currentBranch}
+- Base branch: ${result.gitContext.baseBranch}
+- Current commit: ${result.gitContext.currentCommit}
+- Merge base: ${result.gitContext.mergeBase}
+- Commit range: ${result.gitContext.commitRange}
+- Ahead/behind summary: ${result.gitContext.aheadBehindSummary}
+- Working tree state: ${result.gitContext.workingTreeState}
+
+### Commits In Range
+
+${list(result.gitContext.commitsInRange)}
+
+### Git Context Warnings
+
+${list(result.gitContext.gitContextWarnings)}
+
 ## Git Diff Name-Only
 
 \`\`\`text

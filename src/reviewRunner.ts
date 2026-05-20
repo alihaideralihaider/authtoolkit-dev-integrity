@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
+import { collectGitContext } from "./gitContext.ts";
 import { monitorGit } from "./gitMonitor.ts";
 import { classifyChangedFiles, collectRiskCategories, confidenceForRisks, confidenceNotes, criticalWarnings, highestSeverity } from "./riskClassifier.ts";
 import { confidenceWithRiskCombinations, detectRiskCombinations } from "./riskCombinationDetector.ts";
@@ -37,6 +38,7 @@ import type { IntegrityDecisionSummaryResult } from "./integrityDecisionSummary.
 import type { ControlRoomOverviewResult } from "./controlRoomOverview.ts";
 import type { WorkflowRoutingSummaryResult } from "./workflowRoutingSummary.ts";
 import type { BuildAwareIntegrityResult } from "./buildAwareIntegrity.ts";
+import type { GitContext } from "./gitContext.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { DiffAwareIntegrityResult } from "./diffAwareIntegrity.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
@@ -48,6 +50,7 @@ export type ReviewResult = {
   timestamp: string;
   gitStatus: string;
   diffNameOnly: string;
+  gitContext: GitContext;
   changedFiles: ClassifiedFile[];
   riskCategories: RiskCategory[];
   highestSeverity: Severity;
@@ -83,6 +86,7 @@ type RunReviewInput = {
   repoPath: string;
   selectedSkill: string;
   buildSummaryPath?: string;
+  baseBranch?: string;
 };
 
 const envNamePattern = /\b[A-Z][A-Z0-9_]{2,}\b/g;
@@ -213,6 +217,11 @@ export function runReview(input: RunReviewInput): ReviewResult {
   }
 
   const gitMonitor = monitorGit(repoPath);
+  const gitContext = collectGitContext({
+    repoPath,
+    gitStatus: gitMonitor.gitStatus,
+    baseBranch: input.baseBranch,
+  });
   const timestamp = new Date().toISOString();
   const changedFiles = classifyChangedFiles(gitMonitor.changedFiles);
   const riskCategories = collectRiskCategories(changedFiles);
@@ -429,6 +438,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     timestamp,
     gitStatus: gitMonitor.gitStatus,
     diffNameOnly: gitMonitor.diffNameOnly,
+    gitContext,
     changedFiles,
     riskCategories,
     highestSeverity: maxSeverity,

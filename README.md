@@ -58,7 +58,13 @@ Optional build evidence can be supplied with a local redacted summary:
 npm run review -- --repo . --skill saana-plan --build-summary examples/sample-build-summary.json
 ```
 
-The runner is local-only. It does not call external AI APIs, does not modify the target repo, does not auto-fix, does not commit, does not push, and scans changed files for env var-like names only.
+Local Git base comparison can be supplied with `--base-branch`:
+
+```sh
+npm run review -- --repo . --skill saana-plan --base-branch main
+```
+
+The runner is local-only. It does not call external AI APIs, does not modify the target repo, does not auto-fix, does not commit, does not push, and scans changed files for env var-like names only. Generated reports include Git Context with local branch, commit, base branch, merge base, commit range, and working tree state.
 
 Generated reports are indexed in `reports/catalog.md` so recent review results can be scanned without opening every report file manually. Recent operational posture is summarized in `reports/timeline-summary.md`.
 
@@ -88,7 +94,7 @@ See `docs/examples/sample-integrity-report-summary.md` for a compact sample.
 
 Key documentation lives in:
 
-- `docs/architecture/`: engine, awareness stack, decision summary, control room, report catalog, operational timeline summary, system blueprint, and `docs/architecture/project-map.md` for contributor orientation.
+- `docs/architecture/`: engine, awareness stack, Git Context, decision summary, control room, report catalog, operational timeline summary, system blueprint, and `docs/architecture/project-map.md` for contributor orientation.
 - `docs/skills/`: review skill definitions and checklists.
 - `docs/runbooks/`: operational runbooks for onboarding, pre-deploy checks, post-deploy canary, incidents, and recovery.
 - `docs/releases/`: project checkpoints, including `docs/releases/v1-foundation-checkpoint.md`.
