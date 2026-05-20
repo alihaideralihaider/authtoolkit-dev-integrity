@@ -1,5 +1,6 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { updateReportCatalog } from "./reportCatalog.ts";
 import type { ReviewResult } from "./reviewRunner.ts";
 
 function repoRoot(): string {
@@ -566,6 +567,7 @@ export function writeReport(result: ReviewResult): string {
 
   writeFileSync(timelinePath, JSON.stringify(result.evidenceTimeline, null, 2));
   writeFileSync(reportPath, buildReport(result, relativeTimelinePath));
+  updateReportCatalog({ result, reportPath, timelinePath, repoRoot: repoRoot() });
 
   return reportPath;
 }
