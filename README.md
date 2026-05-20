@@ -91,6 +91,7 @@ Key documentation lives in:
 - `docs/architecture/`: engine, awareness stack, decision summary, control room, report catalog, operational timeline summary, system blueprint, and `docs/architecture/project-map.md` for contributor orientation.
 - `docs/skills/`: review skill definitions and checklists.
 - `docs/runbooks/`: operational runbooks for onboarding, pre-deploy checks, post-deploy canary, incidents, and recovery.
+- `docs/releases/`: project checkpoints, including `docs/releases/v1-foundation-checkpoint.md`.
 - `docs/control-rooms/`: control room concepts such as Vault Control Room.
 - `docs/audits/`: audit concepts such as Vault Audit.
 - `docs/product/`: product vision and strategy.
