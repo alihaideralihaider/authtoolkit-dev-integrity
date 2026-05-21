@@ -185,6 +185,9 @@ ${list(result.releaseWorkflowPlan.releaseOwnerAttention)}
 
 - Decision: ${result.releaseGateDecision.releaseGateDecision}
 - Confidence: ${result.releaseGateDecision.releaseGateConfidence}
+- Release gate score: ${result.releaseGateDecision.releaseGateScore}
+- Confidence band: ${result.releaseGateDecision.releaseGateConfidenceBand}
+- Scoring summary: ${result.releaseGateDecision.scoringSummary}
 - Recommended action: ${result.releaseGateDecision.recommendedGateAction}
 
 ### Release Gate Reasons
@@ -198,6 +201,18 @@ ${list(result.releaseGateDecision.releaseGateBlockers)}
 ### Release Gate Warnings
 
 ${list(result.releaseGateDecision.releaseGateWarnings)}
+
+### Positive Score Contributors
+
+${list(result.releaseGateDecision.positiveScoreContributors)}
+
+### Negative Score Contributors
+
+${list(result.releaseGateDecision.negativeScoreContributors)}
+
+### Scoring Warnings
+
+${list(result.releaseGateDecision.scoringWarnings)}
 
 ### Required Gate Evidence
 

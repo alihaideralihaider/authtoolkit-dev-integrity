@@ -514,6 +514,8 @@ export async function runReview(input: RunReviewInput): Promise<ReviewResult> {
     githubActionsContext,
     evidenceAwareIntegrity,
     recoveryAwareIntegrity,
+    runtimeIntegrity,
+    impactAwareIntegrity,
   });
   const prContext = buildPrContext({
     gitContext,
@@ -522,6 +524,7 @@ export async function runReview(input: RunReviewInput): Promise<ReviewResult> {
     riskCategories,
     suggestedReviewPacks,
     integrityDecisionSummary,
+    releaseGateDecision,
     workflowRoutingSummary,
     cicdContext,
     releaseSignals,

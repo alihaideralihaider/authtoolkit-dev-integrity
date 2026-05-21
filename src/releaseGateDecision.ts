@@ -4,9 +4,13 @@ import type { EvidenceAwareIntegrityResult } from "./evidenceAwareIntegrity.ts";
 import type { GitHubActionsContext } from "./githubActionsContext.ts";
 import type { GitHubChecksContext } from "./githubChecksContext.ts";
 import type { IntegrityDecisionSummaryResult } from "./integrityDecisionSummary.ts";
+import type { ImpactAwareIntegrityResult } from "./impactAwareIntegrity.ts";
 import type { RecoveryAwareIntegrityResult } from "./recoveryAwareIntegrity.ts";
+import { evaluateReleaseGateScoring } from "./releaseGateScoring.ts";
+import type { ReleaseGateConfidenceBand } from "./releaseGateScoring.ts";
 import type { ReleaseSignals } from "./releaseSignals.ts";
 import type { ReleaseWorkflowPlan } from "./releaseWorkflowPlan.ts";
+import type { RuntimeIntegrityResult } from "./runtimeIntegrity.ts";
 import type { WorkflowRoutingSummaryResult } from "./workflowRoutingSummary.ts";
 
 export type ReleaseGateDecisionValue = "pass" | "warn" | "block" | "needs-human-review";
@@ -22,15 +26,23 @@ export type ReleaseGateDecisionInput = {
   githubActionsContext: GitHubActionsContext;
   evidenceAwareIntegrity: EvidenceAwareIntegrityResult;
   recoveryAwareIntegrity: RecoveryAwareIntegrityResult;
+  runtimeIntegrity: RuntimeIntegrityResult;
+  impactAwareIntegrity: ImpactAwareIntegrityResult;
 };
 
 export type ReleaseGateDecision = {
   releaseGateDecision: ReleaseGateDecisionValue;
   releaseGateConfidence: number;
+  releaseGateScore: number;
+  releaseGateConfidenceBand: ReleaseGateConfidenceBand;
   releaseGateReasons: string[];
   releaseGateBlockers: string[];
   releaseGateWarnings: string[];
   requiredGateEvidence: string[];
+  positiveScoreContributors: string[];
+  negativeScoreContributors: string[];
+  scoringWarnings: string[];
+  scoringSummary: string;
   recommendedGateAction: string;
 };
 
@@ -112,13 +124,6 @@ function decisionFor(input: ReleaseGateDecisionInput, blockers: string[], warnin
   return "needs-human-review";
 }
 
-function confidenceFor(decision: ReleaseGateDecisionValue, blockers: string[], warnings: string[], requiredEvidence: string[]): number {
-  if (decision === "block") return Math.max(0, 35 - blockers.length * 5);
-  if (decision === "needs-human-review") return Math.max(36, 65 - requiredEvidence.length * 2 - warnings.length * 2);
-  if (decision === "warn") return Math.max(66, 82 - warnings.length * 3);
-  return 95;
-}
-
 function actionFor(decision: ReleaseGateDecisionValue): string {
   if (decision === "block") return "Do not release. Resolve blockers, attach evidence, and rerun the Integrity review.";
   if (decision === "needs-human-review") return "Require human release review and attach gate evidence before release.";
@@ -131,14 +136,30 @@ export function evaluateReleaseGateDecision(input: ReleaseGateDecisionInput): Re
   const warnings = warningsFor(input);
   const requiredEvidence = evidenceFor(input);
   const releaseGateDecision = decisionFor(input, blockers, warnings, requiredEvidence);
+  const baseDecision = {
+    releaseGateDecision,
+    releaseGateBlockers: blockers,
+    releaseGateWarnings: warnings,
+    requiredGateEvidence: requiredEvidence,
+  } satisfies Pick<ReleaseGateDecision, "releaseGateDecision" | "releaseGateBlockers" | "releaseGateWarnings" | "requiredGateEvidence">;
+  const scoring = evaluateReleaseGateScoring({
+    ...input,
+    releaseGateDecision: baseDecision,
+  });
 
   return {
     releaseGateDecision,
-    releaseGateConfidence: confidenceFor(releaseGateDecision, blockers, warnings, requiredEvidence),
+    releaseGateConfidence: scoring.releaseGateScore,
+    releaseGateScore: scoring.releaseGateScore,
+    releaseGateConfidenceBand: scoring.releaseGateConfidenceBand,
     releaseGateReasons: reasonsFor(input),
     releaseGateBlockers: blockers,
     releaseGateWarnings: warnings,
     requiredGateEvidence: requiredEvidence,
+    positiveScoreContributors: scoring.positiveScoreContributors,
+    negativeScoreContributors: scoring.negativeScoreContributors,
+    scoringWarnings: scoring.scoringWarnings,
+    scoringSummary: scoring.scoringSummary,
     recommendedGateAction: actionFor(releaseGateDecision),
   };
 }

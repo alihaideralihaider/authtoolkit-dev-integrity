@@ -100,6 +100,8 @@ Release Signals captures small provider-neutral build/workflow signals and maps 
 
 Release Gate Decision converts release, CI/CD, GitHub, evidence, recovery, and Control Room signals into a deterministic gate recommendation.
 
+Release Gate Scoring converts operational blockers, workflow signals, evidence posture, recovery risk, and runtime posture into explainable deterministic release confidence.
+
 GitHub PR Comment Draft generates a local reviewable PR comment body without posting to GitHub.
 
 Release Workflow Plan turns release, runtime, recovery, CI/CD, and evidence signals into a local release checklist.

@@ -4,6 +4,7 @@ import type { GitContext } from "./gitContext.ts";
 import type { GitHubActionsContext } from "./githubActionsContext.ts";
 import type { GitHubChecksContext } from "./githubChecksContext.ts";
 import type { IntegrityDecisionSummaryResult } from "./integrityDecisionSummary.ts";
+import type { ReleaseGateDecision } from "./releaseGateDecision.ts";
 import type { ReleaseSignals } from "./releaseSignals.ts";
 import type { ClassifiedFile, RiskCategory } from "./riskClassifier.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
@@ -18,6 +19,7 @@ export type PrContextInput = {
   riskCategories: RiskCategory[];
   suggestedReviewPacks: ReviewPack[];
   integrityDecisionSummary: IntegrityDecisionSummaryResult;
+  releaseGateDecision: ReleaseGateDecision;
   workflowRoutingSummary: WorkflowRoutingSummaryResult;
   cicdContext: CicdContext;
   releaseSignals: ReleaseSignals;
@@ -79,6 +81,7 @@ function riskSummary(input: PrContextInput): string[] {
     `CI/CD trust: ${input.cicdContext.cicdTrustSummary}`,
     `Release signal: ${input.releaseSignals.releaseSignalProvider} ${input.releaseSignals.workflowName} concluded ${input.releaseSignals.signalConclusion}`,
     `Release signal trust: ${input.releaseSignals.releaseSignalTrustSummary}`,
+    `Release gate scoring: ${input.releaseGateDecision.releaseGateScore} (${input.releaseGateDecision.releaseGateConfidenceBand}) - ${input.releaseGateDecision.scoringSummary}`,
     ...(input.githubChecksContext ? [`GitHub checks: ${input.githubChecksContext.passedChecks} passed, ${input.githubChecksContext.failedChecks} failed, ${input.githubChecksContext.pendingChecks} pending`] : []),
     ...(input.githubChecksContext ? [`GitHub trust: ${input.githubChecksContext.githubChecksTrustSummary}`] : []),
     ...(input.githubActionsContext ? [`GitHub Actions: ${input.githubActionsContext.successfulWorkflowRuns.length} passed, ${input.githubActionsContext.failedWorkflowRuns.length} failed, ${input.githubActionsContext.pendingWorkflowRuns.length} pending, ${input.githubActionsContext.cancelledWorkflowRuns.length} cancelled`] : []),

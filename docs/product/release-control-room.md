@@ -36,6 +36,8 @@ Release gates convert review, build, and risk signals into a release-facing deci
 
 Release Gate Decision v1 is the first deterministic gate output. It combines Release Signals, Release Workflow Plan, GitHub Checks, GitHub Actions, CI/CD Context, evidence posture, recovery posture, and the Integrity Decision Summary into one `pass`, `warn`, `block`, or `needs human review` recommendation.
 
+Release Gate Scoring adds deterministic release confidence reasoning to that gate. It shows the positive and negative weighted contributors so a founder, reviewer, or release owner can see why confidence is high or low without relying on hidden scoring or ML.
+
 Gate outputs:
 
 - `pass`
