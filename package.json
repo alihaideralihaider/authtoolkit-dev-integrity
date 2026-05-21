@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dashboard": "npx serve .",
     "review": "node --experimental-strip-types src/cli.ts"
   },
   "engines": {
     "node": ">=22"
   }
 }
-

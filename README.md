@@ -98,6 +98,22 @@ The runner is local-first. It does not call external AI APIs, does not modify th
 
 Generated reports are indexed in `reports/catalog.md` so recent review results can be scanned without opening every report file manually. Recent operational posture is summarized in `reports/timeline-summary.md`.
 
+## Run The Local Dashboard
+
+After generating review artifacts, run:
+
+```sh
+npm run dashboard
+```
+
+Open the local dashboard path shown by `serve`, usually:
+
+```text
+http://localhost:3000/tools/dev-integrity-dashboard/
+```
+
+The dashboard reads `reports/catalog.json`, `reports/timeline-summary.md`, and linked local report markdown. It is a read-only artifact viewer: no external APIs, no database, no GitHub writes, no deployment, and no target repo modification.
+
 ## Read Control Room Status
 
 Each report includes an `Integrity Control Room Overview` near the top.
@@ -124,7 +140,7 @@ See `docs/examples/sample-integrity-report-summary.md` for a compact sample.
 
 Key documentation lives in:
 
-- `docs/architecture/`: engine, awareness stack, Git Context, Branch Comparison, PR Context, CI/CD Context, Release Signals, Release Gate Decision, Release Gate Scoring, GitHub Checks Context, GitHub Actions Context, Release Workflow Plan, GitHub PR Comment Draft, decision summary, control room, report catalog, operational timeline summary, system blueprint, and `docs/architecture/project-map.md` for contributor orientation.
+- `docs/architecture/`: engine, awareness stack, Git Context, Branch Comparison, PR Context, CI/CD Context, Release Signals, Release Gate Decision, Release Gate Scoring, GitHub Checks Context, GitHub Actions Context, Release Workflow Plan, GitHub PR Comment Draft, Local Dashboard, decision summary, control room, report catalog, operational timeline summary, system blueprint, and `docs/architecture/project-map.md` for contributor orientation.
 - `docs/skills/`: review skill definitions and checklists.
 - `docs/runbooks/`: operational runbooks for onboarding, pre-deploy checks, post-deploy canary, incidents, and recovery.
 - `docs/releases/`: project checkpoints, including `docs/releases/v1-foundation-checkpoint.md`.

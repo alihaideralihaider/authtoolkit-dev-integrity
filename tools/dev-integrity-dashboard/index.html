@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AuthToolkit Dev Integrity Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">AuthToolkit Dev Integrity</p>
+        <h1>Local Control Room Dashboard</h1>
+      </div>
+      <div class="badge">local read-only</div>
+    </header>
+
+    <main>
+      <section id="missing" class="panel hidden">
+        <h2>Artifacts Missing</h2>
+        <p>Run a review first, then refresh this dashboard.</p>
+        <pre>npm run review -- --repo . --skill saana-plan --base-branch main --release-signals examples/sample-release-signals.json</pre>
+      </section>
+
+      <section class="grid top-grid">
+        <article class="panel" id="latest-review"></article>
+        <article class="panel" id="control-room"></article>
+        <article class="panel" id="release-gate"></article>
+        <article class="panel" id="git-branch"></article>
+      </section>
+
+      <section class="grid split-grid">
+        <article class="panel">
+          <h2>Active Workflows</h2>
+          <div id="active-workflows" class="pill-list"></div>
+        </article>
+        <article class="panel">
+          <h2>Timeline Summary</h2>
+          <pre id="timeline-summary" class="markdown-panel"></pre>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="section-heading">
+          <h2>Recent Reports</h2>
+          <span id="report-count" class="muted"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Generated</th>
+                <th>Repo</th>
+                <th>Decision</th>
+                <th>Trust</th>
+                <th>Workflow</th>
+                <th>Gate</th>
+                <th>Report</th>
+              </tr>
+            </thead>
+            <tbody id="recent-reports"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      Reads local generated artifacts only. Does not upload code, diffs, secrets, logs, env values, or customer data.
+    </footer>
+
+    <script src="dashboard.js"></script>
+  </body>
+</html>
