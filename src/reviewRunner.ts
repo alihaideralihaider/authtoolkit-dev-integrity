@@ -22,6 +22,7 @@ import { buildWorkflowRoutingSummary } from "./workflowRoutingSummary.ts";
 import { buildPrContext } from "./prContext.ts";
 import { buildSummaryFromCicdContext, evaluateCicdContext, loadCicdSummary } from "./cicdContext.ts";
 import { evaluateReleaseSignals, loadReleaseSignalSummary } from "./releaseSignals.ts";
+import { evaluateReleaseGateDecision } from "./releaseGateDecision.ts";
 import { buildReleaseWorkflowPlan } from "./releaseWorkflowPlan.ts";
 import { buildBranchComparison } from "./branchComparison.ts";
 import { collectGitHubActionsContext } from "./githubActionsContext.ts";
@@ -53,6 +54,7 @@ import type { BranchComparison } from "./branchComparison.ts";
 import type { GitHubActionsContext } from "./githubActionsContext.ts";
 import type { GitHubChecksContext } from "./githubChecksContext.ts";
 import type { ReleaseSignals } from "./releaseSignals.ts";
+import type { ReleaseGateDecision } from "./releaseGateDecision.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { DiffAwareIntegrityResult } from "./diffAwareIntegrity.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
@@ -83,6 +85,7 @@ export type ReviewResult = {
   controlRoomOverview: ControlRoomOverviewResult;
   workflowRoutingSummary: WorkflowRoutingSummaryResult;
   releaseWorkflowPlan: ReleaseWorkflowPlan;
+  releaseGateDecision: ReleaseGateDecision;
   prContext: PrContext;
   cicdContext: CicdContext;
   releaseSignals: ReleaseSignals;
@@ -500,6 +503,18 @@ export async function runReview(input: RunReviewInput): Promise<ReviewResult> {
     githubChecksContext,
     githubActionsContext,
   });
+  const releaseGateDecision = evaluateReleaseGateDecision({
+    integrityDecisionSummary,
+    controlRoomOverview,
+    workflowRoutingSummary,
+    releaseWorkflowPlan,
+    releaseSignals,
+    cicdContext,
+    githubChecksContext,
+    githubActionsContext,
+    evidenceAwareIntegrity,
+    recoveryAwareIntegrity,
+  });
   const prContext = buildPrContext({
     gitContext,
     branchComparison,
@@ -540,6 +555,7 @@ export async function runReview(input: RunReviewInput): Promise<ReviewResult> {
     controlRoomOverview,
     workflowRoutingSummary,
     releaseWorkflowPlan,
+    releaseGateDecision,
     prContext,
     cicdContext,
     releaseSignals,

@@ -181,6 +181,28 @@ ${list(result.releaseWorkflowPlan.requiredReleaseEvidence)}
 
 ${list(result.releaseWorkflowPlan.releaseOwnerAttention)}
 
+## Release Gate Decision
+
+- Decision: ${result.releaseGateDecision.releaseGateDecision}
+- Confidence: ${result.releaseGateDecision.releaseGateConfidence}
+- Recommended action: ${result.releaseGateDecision.recommendedGateAction}
+
+### Release Gate Reasons
+
+${list(result.releaseGateDecision.releaseGateReasons)}
+
+### Release Gate Blockers
+
+${list(result.releaseGateDecision.releaseGateBlockers)}
+
+### Release Gate Warnings
+
+${list(result.releaseGateDecision.releaseGateWarnings)}
+
+### Required Gate Evidence
+
+${list(result.releaseGateDecision.requiredGateEvidence)}
+
 ## Release Signals
 
 - Provider: ${result.releaseSignals.releaseSignalProvider}

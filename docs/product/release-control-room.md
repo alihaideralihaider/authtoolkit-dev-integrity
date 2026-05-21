@@ -34,6 +34,8 @@ PR review
 
 Release gates convert review, build, and risk signals into a release-facing decision.
 
+Release Gate Decision v1 is the first deterministic gate output. It combines Release Signals, Release Workflow Plan, GitHub Checks, GitHub Actions, CI/CD Context, evidence posture, recovery posture, and the Integrity Decision Summary into one `pass`, `warn`, `block`, or `needs human review` recommendation.
+
 Gate outputs:
 
 - `pass`
