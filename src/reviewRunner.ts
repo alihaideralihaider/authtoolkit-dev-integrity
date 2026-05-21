@@ -22,6 +22,7 @@ import { buildWorkflowRoutingSummary } from "./workflowRoutingSummary.ts";
 import { buildPrContext } from "./prContext.ts";
 import { buildSummaryFromCicdContext, evaluateCicdContext, loadCicdSummary } from "./cicdContext.ts";
 import { buildReleaseWorkflowPlan } from "./releaseWorkflowPlan.ts";
+import { buildBranchComparison } from "./branchComparison.ts";
 import { confidenceWithBuildAwareness, evaluateBuildAwareIntegrity, loadBuildSummary } from "./buildAwareIntegrity.ts";
 import { selectReviewPacks, selectReviews } from "./reviewSelector.ts";
 import type { ClassifiedFile, RiskCategory, Severity } from "./riskClassifier.ts";
@@ -45,6 +46,7 @@ import type { GitContext } from "./gitContext.ts";
 import type { PrContext } from "./prContext.ts";
 import type { CicdContext } from "./cicdContext.ts";
 import type { ReleaseWorkflowPlan } from "./releaseWorkflowPlan.ts";
+import type { BranchComparison } from "./branchComparison.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { DiffAwareIntegrityResult } from "./diffAwareIntegrity.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
@@ -57,6 +59,7 @@ export type ReviewResult = {
   gitStatus: string;
   diffNameOnly: string;
   gitContext: GitContext;
+  branchComparison: BranchComparison;
   changedFiles: ClassifiedFile[];
   riskCategories: RiskCategory[];
   highestSeverity: Severity;
@@ -256,6 +259,14 @@ export function runReview(input: RunReviewInput): ReviewResult {
       ...buildAwareIntegrity.affectedReviewPacks,
     ]),
   ];
+  const branchComparison = buildBranchComparison({
+    repoPath,
+    gitContext,
+    changedFiles,
+    diffAwareIntegrity,
+    riskCategories,
+    suggestedReviewPacks,
+  });
   const baseConfidenceScore = confidenceForRisks(riskCategories);
   const combinationConfidenceScore = confidenceWithRiskCombinations(baseConfidenceScore, riskCombinations);
   const diffConfidenceScore = confidenceWithDiffFindings(combinationConfidenceScore, diffAwareIntegrity);
@@ -458,6 +469,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
   });
   const prContext = buildPrContext({
     gitContext,
+    branchComparison,
     changedFiles,
     riskCategories,
     suggestedReviewPacks,
@@ -474,6 +486,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     gitStatus: gitMonitor.gitStatus,
     diffNameOnly: gitMonitor.diffNameOnly,
     gitContext,
+    branchComparison,
     changedFiles,
     riskCategories,
     highestSeverity: maxSeverity,

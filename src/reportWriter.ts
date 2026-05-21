@@ -251,6 +251,29 @@ ${list(result.gitContext.commitsInRange)}
 
 ${list(result.gitContext.gitContextWarnings)}
 
+## Branch Comparison
+
+- Comparison base: ${result.branchComparison.comparisonBase}
+- Comparison head: ${result.branchComparison.comparisonHead}
+- Files changed against base: ${result.branchComparison.filesChangedAgainstBase}
+- Commits ahead of base: ${result.branchComparison.commitsAheadOfBase}
+
+### Branch Change Summary
+
+${list(result.branchComparison.branchChangeSummary)}
+
+### Branch Risk Summary
+
+${list(result.branchComparison.branchRiskSummary)}
+
+### Branch Review Focus
+
+${list(result.branchComparison.branchReviewFocus)}
+
+### Branch Comparison Warnings
+
+${list(result.branchComparison.branchComparisonWarnings)}
+
 ## PR Context
 
 - PR title suggestion: ${result.prContext.prTitleSuggestion}

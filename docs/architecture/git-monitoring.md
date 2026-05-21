@@ -86,6 +86,8 @@ Operational Timeline Summary condenses recent operational posture and workflow p
 
 Git Context adds local branch, commit, and base comparison metadata without using external Git hosting APIs.
 
+Branch Comparison summarizes local branch changes against base without raw diffs or external Git hosting APIs.
+
 PR Context turns local Git and Integrity output into a pull-request-style review summary without external Git hosting APIs.
 
 CI/CD Context consumes local redacted pipeline summaries and adjusts evidence, release, and workflow expectations without provider APIs.

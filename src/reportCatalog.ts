@@ -20,6 +20,8 @@ export type ReportCatalogEntry = {
   cicdProvider: string;
   pipelineStatus: string;
   pipelineRunId: string;
+  commitsAheadOfBase: number;
+  filesChangedAgainstBase: number;
   highestSeverity: string;
   confidenceScore: number;
 };
@@ -57,6 +59,8 @@ function loadCatalog(repoRoot: string): ReportCatalogEntry[] {
         cicdProvider: entry.cicdProvider || "unknown",
         pipelineStatus: entry.pipelineStatus || "unknown",
         pipelineRunId: entry.pipelineRunId || "unknown",
+        commitsAheadOfBase: entry.commitsAheadOfBase || 0,
+        filesChangedAgainstBase: entry.filesChangedAgainstBase || 0,
       }));
   } catch {
     return [];
@@ -84,6 +88,8 @@ function isCatalogEntry(value: unknown): value is ReportCatalogEntry {
     && (entry.cicdProvider === undefined || typeof entry.cicdProvider === "string")
     && (entry.pipelineStatus === undefined || typeof entry.pipelineStatus === "string")
     && (entry.pipelineRunId === undefined || typeof entry.pipelineRunId === "string")
+    && (entry.commitsAheadOfBase === undefined || typeof entry.commitsAheadOfBase === "number")
+    && (entry.filesChangedAgainstBase === undefined || typeof entry.filesChangedAgainstBase === "number")
     && typeof entry.highestSeverity === "string"
     && typeof entry.confidenceScore === "number";
 }
@@ -102,7 +108,7 @@ function buildMarkdownCatalog(entries: ReportCatalogEntry[]): string {
 
     return [
       `| ${markdownCell(entry.generatedAt)} | ${markdownCell(shortRepoName(entry.repoPath))} | ${markdownCell(entry.selectedSkill)} | ${markdownCell(entry.controlRoomStatus)} | ${markdownCell(entry.overallIntegrityDecision)} | ${markdownCell(entry.operationalTrustLevel)} | ${markdownCell(entry.workflowPriority)} | ${markdownCell(entry.reportPath)} |`,
-      `|  | workflows: ${markdownCell(workflows)} | branch: ${markdownCell(entry.currentBranch)} | base: ${markdownCell(entry.baseBranch)} | PR: ${markdownCell(entry.prReadinessLabel)} | CI/CD: ${markdownCell(entry.pipelineStatus)} | run: ${markdownCell(entry.pipelineRunId)} | timeline: ${markdownCell(entry.timelinePath)} |`,
+      `|  | workflows: ${markdownCell(workflows)} | branch: ${markdownCell(entry.currentBranch)} | base: ${markdownCell(entry.baseBranch)} | PR: ${markdownCell(entry.prReadinessLabel)} | branch diff: ${entry.commitsAheadOfBase} commits/${entry.filesChangedAgainstBase} files | CI/CD: ${markdownCell(entry.pipelineStatus)} | timeline: ${markdownCell(entry.timelinePath)} |`,
     ];
   });
 
@@ -137,6 +143,8 @@ export function updateReportCatalog(input: UpdateReportCatalogInput): void {
     cicdProvider: input.result.cicdContext.cicdProvider,
     pipelineStatus: input.result.cicdContext.pipelineStatus,
     pipelineRunId: input.result.cicdContext.pipelineRunId,
+    commitsAheadOfBase: input.result.branchComparison.commitsAheadOfBase,
+    filesChangedAgainstBase: input.result.branchComparison.filesChangedAgainstBase,
     highestSeverity: input.result.highestSeverity,
     confidenceScore: input.result.confidenceScore,
   };

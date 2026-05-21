@@ -1,3 +1,4 @@
+import type { BranchComparison } from "./branchComparison.ts";
 import type { CicdContext } from "./cicdContext.ts";
 import type { GitContext } from "./gitContext.ts";
 import type { IntegrityDecisionSummaryResult } from "./integrityDecisionSummary.ts";
@@ -9,6 +10,7 @@ export type PrReadinessLabel = "ready-for-review" | "needs-evidence" | "needs-es
 
 export type PrContextInput = {
   gitContext: GitContext;
+  branchComparison: BranchComparison;
   changedFiles: ClassifiedFile[];
   riskCategories: RiskCategory[];
   suggestedReviewPacks: ReviewPack[];
@@ -69,6 +71,7 @@ function riskSummary(input: PrContextInput): string[] {
     ...(input.suggestedReviewPacks.length ? [`Suggested review packs: ${input.suggestedReviewPacks.join(", ")}`] : ["Suggested review packs: none"]),
     `CI/CD status: ${input.cicdContext.pipelineStatus}`,
     `CI/CD trust: ${input.cicdContext.cicdTrustSummary}`,
+    `Branch comparison: ${input.branchComparison.commitsAheadOfBase} commits ahead, ${input.branchComparison.filesChangedAgainstBase} files changed against base`,
     ...input.integrityDecisionSummary.primaryRiskDrivers.map((driver) => `Primary risk driver: ${driver}`),
   ]);
 }
@@ -93,7 +96,7 @@ export function buildPrContext(input: PrContextInput): PrContext {
 
   return {
     prTitleSuggestion: titleSuggestion(input, label),
-    prSummary: `Local PR-style summary for branch ${input.gitContext.currentBranch} against ${input.gitContext.baseBranch}. ${input.integrityDecisionSummary.plainEnglishSummary}`,
+    prSummary: `Local PR-style summary for branch ${input.gitContext.currentBranch} against ${input.gitContext.baseBranch}. Branch comparison shows ${input.branchComparison.commitsAheadOfBase} commits ahead and ${input.branchComparison.filesChangedAgainstBase} files changed against base. ${input.integrityDecisionSummary.plainEnglishSummary}`,
     prChangeScope: changeScope(input),
     prRiskSummary: riskSummary(input),
     prReviewFocus: reviewFocus(input),

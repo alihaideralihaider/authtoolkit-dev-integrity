@@ -76,7 +76,7 @@ A local GitHub PR comment draft can be generated without posting to GitHub:
 npm run review -- --repo . --skill saana-plan --base-branch main --github-comment-draft
 ```
 
-The runner is local-only. It does not call external AI APIs, does not modify the target repo, does not auto-fix, does not commit, does not push, and scans changed files for env var-like names only. Generated reports include Git Context with local branch, commit, base branch, merge base, commit range, and working tree state. Reports also include PR Context, a local pull-request-style summary that does not use GitHub APIs. CI/CD Context can consume a redacted local pipeline summary without provider APIs or raw logs. Release Workflow Plan turns release, runtime, recovery, CI/CD, and evidence signals into a local checklist. GitHub PR Comment Draft can generate a local reviewable comment body without posting to GitHub.
+The runner is local-only. It does not call external AI APIs, does not modify the target repo, does not auto-fix, does not commit, does not push, and scans changed files for env var-like names only. Generated reports include Git Context with local branch, commit, base branch, merge base, commit range, and working tree state. Branch Comparison summarizes local branch impact against base without raw diffs. Reports also include PR Context, a local pull-request-style summary that does not use GitHub APIs. CI/CD Context can consume a redacted local pipeline summary without provider APIs or raw logs. Release Workflow Plan turns release, runtime, recovery, CI/CD, and evidence signals into a local checklist. GitHub PR Comment Draft can generate a local reviewable comment body without posting to GitHub.
 
 Generated reports are indexed in `reports/catalog.md` so recent review results can be scanned without opening every report file manually. Recent operational posture is summarized in `reports/timeline-summary.md`.
 
@@ -106,7 +106,7 @@ See `docs/examples/sample-integrity-report-summary.md` for a compact sample.
 
 Key documentation lives in:
 
-- `docs/architecture/`: engine, awareness stack, Git Context, PR Context, CI/CD Context, Release Workflow Plan, GitHub PR Comment Draft, decision summary, control room, report catalog, operational timeline summary, system blueprint, and `docs/architecture/project-map.md` for contributor orientation.
+- `docs/architecture/`: engine, awareness stack, Git Context, Branch Comparison, PR Context, CI/CD Context, Release Workflow Plan, GitHub PR Comment Draft, decision summary, control room, report catalog, operational timeline summary, system blueprint, and `docs/architecture/project-map.md` for contributor orientation.
 - `docs/skills/`: review skill definitions and checklists.
 - `docs/runbooks/`: operational runbooks for onboarding, pre-deploy checks, post-deploy canary, incidents, and recovery.
 - `docs/releases/`: project checkpoints, including `docs/releases/v1-foundation-checkpoint.md`.
