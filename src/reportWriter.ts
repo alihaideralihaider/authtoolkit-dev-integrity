@@ -418,6 +418,41 @@ ${list(result.githubChecksContext.successfulCheckNames)}
 
 ${list(result.githubChecksContext.githubChecksWarnings)}
 
+## GitHub Actions Context
+
+- Provider: ${result.githubActionsContext.actionsProvider}
+- Workflow runs found: ${result.githubActionsContext.workflowRunsFound}
+- Successful runs: ${result.githubActionsContext.successfulWorkflowRuns.length}
+- Failed runs: ${result.githubActionsContext.failedWorkflowRuns.length}
+- Pending runs: ${result.githubActionsContext.pendingWorkflowRuns.length}
+- Cancelled runs: ${result.githubActionsContext.cancelledWorkflowRuns.length}
+- Longest run duration: ${result.githubActionsContext.longestRunDurationSummary}
+- Trust summary: ${result.githubActionsContext.actionsTrustSummary}
+
+### Workflow Run Summaries
+
+${list(result.githubActionsContext.workflowRunSummaries.map((run) => `${run.name} (${run.status}) - duration: ${run.durationSummary} - ref: ${run.id}`))}
+
+### Failed Workflow Runs
+
+${list(result.githubActionsContext.failedWorkflowRuns)}
+
+### Failed Jobs
+
+${list(result.githubActionsContext.failedJobs)}
+
+### Failed Steps
+
+${list(result.githubActionsContext.failedSteps)}
+
+### Actions Artifact Refs
+
+${list(result.githubActionsContext.actionsArtifactRefs)}
+
+### GitHub Actions Warnings
+
+${list(result.githubActionsContext.actionsWarnings)}
+
 ## Architecture-Aware Integrity
 
 - Blast radius: ${result.architectureAwareIntegrity.blastRadius}

@@ -1,6 +1,7 @@
 import type { BranchComparison } from "./branchComparison.ts";
 import type { CicdContext } from "./cicdContext.ts";
 import type { GitContext } from "./gitContext.ts";
+import type { GitHubActionsContext } from "./githubActionsContext.ts";
 import type { GitHubChecksContext } from "./githubChecksContext.ts";
 import type { IntegrityDecisionSummaryResult } from "./integrityDecisionSummary.ts";
 import type { ClassifiedFile, RiskCategory } from "./riskClassifier.ts";
@@ -19,6 +20,7 @@ export type PrContextInput = {
   workflowRoutingSummary: WorkflowRoutingSummaryResult;
   cicdContext: CicdContext;
   githubChecksContext?: GitHubChecksContext;
+  githubActionsContext?: GitHubActionsContext;
 };
 
 export type PrContext = {
@@ -75,6 +77,8 @@ function riskSummary(input: PrContextInput): string[] {
     `CI/CD trust: ${input.cicdContext.cicdTrustSummary}`,
     ...(input.githubChecksContext ? [`GitHub checks: ${input.githubChecksContext.passedChecks} passed, ${input.githubChecksContext.failedChecks} failed, ${input.githubChecksContext.pendingChecks} pending`] : []),
     ...(input.githubChecksContext ? [`GitHub trust: ${input.githubChecksContext.githubChecksTrustSummary}`] : []),
+    ...(input.githubActionsContext ? [`GitHub Actions: ${input.githubActionsContext.successfulWorkflowRuns.length} passed, ${input.githubActionsContext.failedWorkflowRuns.length} failed, ${input.githubActionsContext.pendingWorkflowRuns.length} pending, ${input.githubActionsContext.cancelledWorkflowRuns.length} cancelled`] : []),
+    ...(input.githubActionsContext ? [`GitHub Actions trust: ${input.githubActionsContext.actionsTrustSummary}`] : []),
     `Branch comparison: ${input.branchComparison.commitsAheadOfBase} commits ahead, ${input.branchComparison.filesChangedAgainstBase} files changed against base`,
     ...input.integrityDecisionSummary.primaryRiskDrivers.map((driver) => `Primary risk driver: ${driver}`),
   ]);

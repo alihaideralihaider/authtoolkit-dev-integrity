@@ -23,6 +23,7 @@ import { buildPrContext } from "./prContext.ts";
 import { buildSummaryFromCicdContext, evaluateCicdContext, loadCicdSummary } from "./cicdContext.ts";
 import { buildReleaseWorkflowPlan } from "./releaseWorkflowPlan.ts";
 import { buildBranchComparison } from "./branchComparison.ts";
+import { collectGitHubActionsContext } from "./githubActionsContext.ts";
 import { collectGitHubChecksContext } from "./githubChecksContext.ts";
 import { confidenceWithBuildAwareness, evaluateBuildAwareIntegrity, loadBuildSummary } from "./buildAwareIntegrity.ts";
 import { selectReviewPacks, selectReviews } from "./reviewSelector.ts";
@@ -48,6 +49,7 @@ import type { PrContext } from "./prContext.ts";
 import type { CicdContext } from "./cicdContext.ts";
 import type { ReleaseWorkflowPlan } from "./releaseWorkflowPlan.ts";
 import type { BranchComparison } from "./branchComparison.ts";
+import type { GitHubActionsContext } from "./githubActionsContext.ts";
 import type { GitHubChecksContext } from "./githubChecksContext.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { DiffAwareIntegrityResult } from "./diffAwareIntegrity.ts";
@@ -63,6 +65,7 @@ export type ReviewResult = {
   gitContext: GitContext;
   branchComparison: BranchComparison;
   githubChecksContext: GitHubChecksContext;
+  githubActionsContext: GitHubActionsContext;
   changedFiles: ClassifiedFile[];
   riskCategories: RiskCategory[];
   highestSeverity: Severity;
@@ -106,6 +109,7 @@ type RunReviewInput = {
   githubRepo?: string;
   githubPr?: string;
   githubTokenEnv?: string;
+  githubActionsContext?: boolean;
 };
 
 const envNamePattern = /\b[A-Z][A-Z0-9_]{2,}\b/g;
@@ -242,6 +246,12 @@ export async function runReview(input: RunReviewInput): Promise<ReviewResult> {
     baseBranch: input.baseBranch,
   });
   const githubChecksContext = await collectGitHubChecksContext({
+    githubRepo: input.githubRepo,
+    githubPr: input.githubPr,
+    githubTokenEnv: input.githubTokenEnv,
+  });
+  const githubActionsContext = await collectGitHubActionsContext({
+    enabled: input.githubActionsContext,
     githubRepo: input.githubRepo,
     githubPr: input.githubPr,
     githubTokenEnv: input.githubTokenEnv,
@@ -467,6 +477,7 @@ export async function runReview(input: RunReviewInput): Promise<ReviewResult> {
     postureAwareIntegrity,
     cicdContext,
     githubChecksContext,
+    githubActionsContext,
   });
   const releaseWorkflowPlan = buildReleaseWorkflowPlan({
     releaseReadiness,
@@ -479,6 +490,7 @@ export async function runReview(input: RunReviewInput): Promise<ReviewResult> {
     workflowRoutingSummary,
     controlRoomOverview,
     githubChecksContext,
+    githubActionsContext,
   });
   const prContext = buildPrContext({
     gitContext,
@@ -490,6 +502,7 @@ export async function runReview(input: RunReviewInput): Promise<ReviewResult> {
     workflowRoutingSummary,
     cicdContext,
     githubChecksContext,
+    githubActionsContext,
   });
 
   return {
@@ -502,6 +515,7 @@ export async function runReview(input: RunReviewInput): Promise<ReviewResult> {
     gitContext,
     branchComparison,
     githubChecksContext,
+    githubActionsContext,
     changedFiles,
     riskCategories,
     highestSeverity: maxSeverity,

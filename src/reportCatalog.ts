@@ -24,6 +24,9 @@ export type ReportCatalogEntry = {
   githubPrNumber: string;
   githubFailedChecks: number;
   githubPendingChecks: number;
+  githubActionsRunsFound: number;
+  githubActionsFailedRuns: number;
+  githubActionsPendingRuns: number;
   commitsAheadOfBase: number;
   filesChangedAgainstBase: number;
   highestSeverity: string;
@@ -67,6 +70,9 @@ function loadCatalog(repoRoot: string): ReportCatalogEntry[] {
         githubPrNumber: entry.githubPrNumber || "unknown",
         githubFailedChecks: entry.githubFailedChecks || 0,
         githubPendingChecks: entry.githubPendingChecks || 0,
+        githubActionsRunsFound: entry.githubActionsRunsFound || 0,
+        githubActionsFailedRuns: entry.githubActionsFailedRuns || 0,
+        githubActionsPendingRuns: entry.githubActionsPendingRuns || 0,
         commitsAheadOfBase: entry.commitsAheadOfBase || 0,
         filesChangedAgainstBase: entry.filesChangedAgainstBase || 0,
       }));
@@ -100,6 +106,9 @@ function isCatalogEntry(value: unknown): value is ReportCatalogEntry {
     && (entry.githubPrNumber === undefined || typeof entry.githubPrNumber === "string")
     && (entry.githubFailedChecks === undefined || typeof entry.githubFailedChecks === "number")
     && (entry.githubPendingChecks === undefined || typeof entry.githubPendingChecks === "number")
+    && (entry.githubActionsRunsFound === undefined || typeof entry.githubActionsRunsFound === "number")
+    && (entry.githubActionsFailedRuns === undefined || typeof entry.githubActionsFailedRuns === "number")
+    && (entry.githubActionsPendingRuns === undefined || typeof entry.githubActionsPendingRuns === "number")
     && (entry.commitsAheadOfBase === undefined || typeof entry.commitsAheadOfBase === "number")
     && (entry.filesChangedAgainstBase === undefined || typeof entry.filesChangedAgainstBase === "number")
     && typeof entry.highestSeverity === "string"
@@ -120,7 +129,7 @@ function buildMarkdownCatalog(entries: ReportCatalogEntry[]): string {
 
     return [
       `| ${markdownCell(entry.generatedAt)} | ${markdownCell(shortRepoName(entry.repoPath))} | ${markdownCell(entry.selectedSkill)} | ${markdownCell(entry.controlRoomStatus)} | ${markdownCell(entry.overallIntegrityDecision)} | ${markdownCell(entry.operationalTrustLevel)} | ${markdownCell(entry.workflowPriority)} | ${markdownCell(entry.reportPath)} |`,
-      `|  | workflows: ${markdownCell(workflows)} | branch: ${markdownCell(entry.currentBranch)} | base: ${markdownCell(entry.baseBranch)} | PR: ${markdownCell(entry.prReadinessLabel)} | branch diff: ${entry.commitsAheadOfBase} commits/${entry.filesChangedAgainstBase} files | GitHub checks: ${entry.githubFailedChecks} failed/${entry.githubPendingChecks} pending | timeline: ${markdownCell(entry.timelinePath)} |`,
+      `|  | workflows: ${markdownCell(workflows)} | branch: ${markdownCell(entry.currentBranch)} | base: ${markdownCell(entry.baseBranch)} | PR: ${markdownCell(entry.prReadinessLabel)} | branch diff: ${entry.commitsAheadOfBase} commits/${entry.filesChangedAgainstBase} files | GitHub checks: ${entry.githubFailedChecks} failed/${entry.githubPendingChecks} pending; Actions: ${entry.githubActionsFailedRuns} failed/${entry.githubActionsPendingRuns} pending | timeline: ${markdownCell(entry.timelinePath)} |`,
     ];
   });
 
@@ -159,6 +168,9 @@ export function updateReportCatalog(input: UpdateReportCatalogInput): void {
     githubPrNumber: input.result.githubChecksContext.githubPrNumber,
     githubFailedChecks: input.result.githubChecksContext.failedChecks,
     githubPendingChecks: input.result.githubChecksContext.pendingChecks,
+    githubActionsRunsFound: input.result.githubActionsContext.workflowRunsFound,
+    githubActionsFailedRuns: input.result.githubActionsContext.failedWorkflowRuns.length,
+    githubActionsPendingRuns: input.result.githubActionsContext.pendingWorkflowRuns.length,
     commitsAheadOfBase: input.result.branchComparison.commitsAheadOfBase,
     filesChangedAgainstBase: input.result.branchComparison.filesChangedAgainstBase,
     highestSeverity: input.result.highestSeverity,

@@ -4,6 +4,7 @@ import type { BuildAwareIntegrityResult } from "./buildAwareIntegrity.ts";
 import type { CicdContext } from "./cicdContext.ts";
 import type { ControlRoomOverviewResult } from "./controlRoomOverview.ts";
 import type { EvidenceAwareIntegrityResult } from "./evidenceAwareIntegrity.ts";
+import type { GitHubActionsContext } from "./githubActionsContext.ts";
 import type { GitHubChecksContext } from "./githubChecksContext.ts";
 import type { ImpactAwareIntegrityResult } from "./impactAwareIntegrity.ts";
 import type { IntegrityDecisionSummaryResult } from "./integrityDecisionSummary.ts";
@@ -41,6 +42,7 @@ export type WorkflowRoutingSummaryInput = {
   postureAwareIntegrity: PostureAwareIntegrityResult;
   cicdContext?: CicdContext;
   githubChecksContext?: GitHubChecksContext;
+  githubActionsContext?: GitHubActionsContext;
 };
 
 export type WorkflowRoutingSummaryResult = {
@@ -107,6 +109,16 @@ function activeWorkflowSet(input: WorkflowRoutingSummaryInput): { workflows: Set
   }
   if (input.githubChecksContext && input.githubChecksContext.pendingChecks > 0) {
     addWorkflow(workflows, reasons, "release-review", "Release workflow is active because GitHub checks are pending.");
+  }
+  if (input.githubActionsContext && (input.githubActionsContext.failedWorkflowRuns.length > 0 || input.githubActionsContext.failedJobs.length > 0)) {
+    addWorkflow(workflows, reasons, "evidence-review", "Evidence workflow is active because GitHub Actions workflows or jobs failed.");
+    addWorkflow(workflows, reasons, "release-review", "Release workflow is active because GitHub Actions are not passing.");
+  }
+  if (input.githubActionsContext && input.githubActionsContext.pendingWorkflowRuns.length > 0) {
+    addWorkflow(workflows, reasons, "release-review", "Release workflow is active because GitHub Actions workflows are pending.");
+  }
+  if (input.githubActionsContext && input.githubActionsContext.cancelledWorkflowRuns.length > 0) {
+    addWorkflow(workflows, reasons, "evidence-review", "Evidence workflow is active because GitHub Actions workflows were cancelled.");
   }
   if (input.githubChecksContext && /review_required|changes_requested|required/i.test(input.githubChecksContext.reviewDecision)) {
     addWorkflow(workflows, reasons, "merge-review", "Merge review is active because GitHub review state is not approved.");
@@ -182,6 +194,11 @@ function evidenceNeedsFor(input: WorkflowRoutingSummaryInput): string[] {
   if (input.githubChecksContext?.pendingChecks) needs.push("GitHub pending check completion evidence");
   if (input.githubChecksContext?.failedCheckNames.some((name) => /coverage/i.test(name))) needs.push("coverage evidence");
   if (input.githubChecksContext?.failedCheckNames.some((name) => /security|semgrep|wiz/i.test(name))) needs.push("security review notes");
+  if (input.githubActionsContext && (input.githubActionsContext.failedWorkflowRuns.length || input.githubActionsContext.failedJobs.length)) needs.push("GitHub Actions rerun evidence");
+  if (input.githubActionsContext?.pendingWorkflowRuns.length) needs.push("GitHub Actions completion evidence");
+  if (input.githubActionsContext?.cancelledWorkflowRuns.length) needs.push("GitHub Actions cancellation evidence");
+  if (input.githubActionsContext?.failedJobs.some((name) => /coverage/i.test(name))) needs.push("coverage evidence");
+  if (input.githubActionsContext?.failedJobs.some((name) => /security|semgrep|wiz/i.test(name))) needs.push("security review notes");
   return unique(needs);
 }
 

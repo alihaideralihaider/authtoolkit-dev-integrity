@@ -2,6 +2,7 @@ import type { BuildAwareIntegrityResult } from "./buildAwareIntegrity.ts";
 import type { CicdContext } from "./cicdContext.ts";
 import type { ControlRoomOverviewResult } from "./controlRoomOverview.ts";
 import type { EvidenceAwareIntegrityResult } from "./evidenceAwareIntegrity.ts";
+import type { GitHubActionsContext } from "./githubActionsContext.ts";
 import type { GitHubChecksContext } from "./githubChecksContext.ts";
 import type { ImpactAwareIntegrityResult } from "./impactAwareIntegrity.ts";
 import type { RecoveryAwareIntegrityResult } from "./recoveryAwareIntegrity.ts";
@@ -22,6 +23,7 @@ export type ReleaseWorkflowPlanInput = {
   workflowRoutingSummary: WorkflowRoutingSummaryResult;
   controlRoomOverview: ControlRoomOverviewResult;
   githubChecksContext?: GitHubChecksContext;
+  githubActionsContext?: GitHubActionsContext;
 };
 
 export type ReleaseWorkflowPlan = {
@@ -54,6 +56,10 @@ function statusFor(input: ReleaseWorkflowPlanInput): ReleaseWorkflowStatus {
     input.cicdContext.pipelineStatus === "warning" ||
     (input.githubChecksContext?.failedChecks || 0) > 0 ||
     (input.githubChecksContext?.pendingChecks || 0) > 0 ||
+    (input.githubActionsContext?.failedWorkflowRuns.length || 0) > 0 ||
+    (input.githubActionsContext?.failedJobs.length || 0) > 0 ||
+    (input.githubActionsContext?.pendingWorkflowRuns.length || 0) > 0 ||
+    (input.githubActionsContext?.cancelledWorkflowRuns.length || 0) > 0 ||
     input.evidenceAwareIntegrity.evidencePosture === "missing" ||
     input.evidenceAwareIntegrity.evidencePosture === "blocking-gap" ||
     input.runtimeIntegrity.runtimePosture !== "stable"
@@ -85,6 +91,9 @@ function preReleaseChecklist(input: ReleaseWorkflowPlanInput): string[] {
     ...(input.cicdContext.pipelineStatus === "failed" || input.cicdContext.pipelineStatus === "warning" ? ["Attach CI/CD rerun evidence before release."] : []),
     ...((input.githubChecksContext?.failedChecks || 0) > 0 ? ["Attach GitHub check rerun evidence before release."] : []),
     ...((input.githubChecksContext?.pendingChecks || 0) > 0 ? ["Wait for pending GitHub checks before release."] : []),
+    ...((input.githubActionsContext?.failedWorkflowRuns.length || 0) > 0 || (input.githubActionsContext?.failedJobs.length || 0) > 0 ? ["Attach GitHub Actions rerun evidence before release."] : []),
+    ...((input.githubActionsContext?.pendingWorkflowRuns.length || 0) > 0 ? ["Wait for pending GitHub Actions workflows before release."] : []),
+    ...((input.githubActionsContext?.cancelledWorkflowRuns.length || 0) > 0 ? ["Explain cancelled GitHub Actions workflows before release."] : []),
     ...(input.controlRoomOverview.controlRoomStatus === "red" ? ["Resolve red Control Room status before release."] : []),
   ]);
 }
@@ -124,6 +133,9 @@ function requiredEvidence(input: ReleaseWorkflowPlanInput): string[] {
     ...(input.cicdContext.pipelineStatus === "failed" || input.cicdContext.pipelineStatus === "warning" ? ["CI/CD rerun evidence"] : []),
     ...((input.githubChecksContext?.failedChecks || 0) > 0 ? ["GitHub check rerun evidence"] : []),
     ...((input.githubChecksContext?.pendingChecks || 0) > 0 ? ["GitHub pending check completion evidence"] : []),
+    ...((input.githubActionsContext?.failedWorkflowRuns.length || 0) > 0 || (input.githubActionsContext?.failedJobs.length || 0) > 0 ? ["GitHub Actions rerun evidence"] : []),
+    ...((input.githubActionsContext?.pendingWorkflowRuns.length || 0) > 0 ? ["GitHub Actions completion evidence"] : []),
+    ...((input.githubActionsContext?.cancelledWorkflowRuns.length || 0) > 0 ? ["GitHub Actions cancellation evidence"] : []),
   ]);
 }
 

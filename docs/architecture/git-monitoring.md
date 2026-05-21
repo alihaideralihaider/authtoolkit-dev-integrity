@@ -92,6 +92,8 @@ PR Context turns local Git and Integrity output into a pull-request-style review
 
 GitHub Checks Context reads PR/check status from GitHub read-only and maps it into operational trust signals.
 
+GitHub Actions Context reads workflow run/job metadata read-only and maps it into operational trust signals without fetching logs or controlling workflows.
+
 CI/CD Context consumes local redacted pipeline summaries and adjusts evidence, release, and workflow expectations without provider APIs.
 
 GitHub PR Comment Draft generates a local reviewable PR comment body without posting to GitHub.

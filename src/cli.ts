@@ -11,6 +11,7 @@ type CliArgs = {
   githubRepo?: string;
   githubPr?: string;
   githubTokenEnv?: string;
+  githubActionsContext?: boolean;
   githubCommentDraft?: boolean;
 };
 
@@ -45,6 +46,8 @@ function parseArgs(argv: string[]): CliArgs {
     } else if (arg === "--github-token-env" && next) {
       args.githubTokenEnv = next;
       index += 1;
+    } else if (arg === "--github-actions-context") {
+      args.githubActionsContext = true;
     } else if (arg === "--github-comment-draft") {
       args.githubCommentDraft = true;
     }
@@ -54,7 +57,7 @@ function parseArgs(argv: string[]): CliArgs {
 }
 
 function printUsage(): void {
-  console.error("Usage: npm run review -- --repo /path/to/repo --skill vault-secret-readiness-review [--build-summary /path/to/build-summary.json] [--base-branch main] [--cicd-summary /path/to/cicd-summary.json] [--github-repo owner/repo --github-pr 123 --github-token-env GITHUB_TOKEN] [--github-comment-draft]");
+  console.error("Usage: npm run review -- --repo /path/to/repo --skill vault-secret-readiness-review [--build-summary /path/to/build-summary.json] [--base-branch main] [--cicd-summary /path/to/cicd-summary.json] [--github-repo owner/repo --github-pr 123 --github-token-env GITHUB_TOKEN] [--github-actions-context] [--github-comment-draft]");
 }
 
 async function main(): Promise<void> {
@@ -75,6 +78,7 @@ async function main(): Promise<void> {
     githubRepo: args.githubRepo,
     githubPr: args.githubPr,
     githubTokenEnv: args.githubTokenEnv,
+    githubActionsContext: args.githubActionsContext,
   });
   const reportPath = writeReport(result);
   const commentDraftPath = args.githubCommentDraft
