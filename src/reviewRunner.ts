@@ -21,6 +21,7 @@ import { buildControlRoomOverview } from "./controlRoomOverview.ts";
 import { buildWorkflowRoutingSummary } from "./workflowRoutingSummary.ts";
 import { buildPrContext } from "./prContext.ts";
 import { buildSummaryFromCicdContext, evaluateCicdContext, loadCicdSummary } from "./cicdContext.ts";
+import { evaluateReleaseSignals, loadReleaseSignalSummary } from "./releaseSignals.ts";
 import { buildReleaseWorkflowPlan } from "./releaseWorkflowPlan.ts";
 import { buildBranchComparison } from "./branchComparison.ts";
 import { collectGitHubActionsContext } from "./githubActionsContext.ts";
@@ -51,6 +52,7 @@ import type { ReleaseWorkflowPlan } from "./releaseWorkflowPlan.ts";
 import type { BranchComparison } from "./branchComparison.ts";
 import type { GitHubActionsContext } from "./githubActionsContext.ts";
 import type { GitHubChecksContext } from "./githubChecksContext.ts";
+import type { ReleaseSignals } from "./releaseSignals.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { DiffAwareIntegrityResult } from "./diffAwareIntegrity.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
@@ -83,6 +85,7 @@ export type ReviewResult = {
   releaseWorkflowPlan: ReleaseWorkflowPlan;
   prContext: PrContext;
   cicdContext: CicdContext;
+  releaseSignals: ReleaseSignals;
   buildAwareIntegrity: BuildAwareIntegrityResult;
   prIntegrity: PrIntegrityResult;
   releaseReadiness: ReleaseReadinessResult;
@@ -106,6 +109,7 @@ type RunReviewInput = {
   buildSummaryPath?: string;
   baseBranch?: string;
   cicdSummaryPath?: string;
+  releaseSignalsPath?: string;
   githubRepo?: string;
   githubPr?: string;
   githubTokenEnv?: string;
@@ -264,6 +268,8 @@ export async function runReview(input: RunReviewInput): Promise<ReviewResult> {
   const diffAwareIntegrity = evaluateDiffAwareIntegrity(gitMonitor.diffLines);
   const cicdSummary = loadCicdSummary(input.cicdSummaryPath);
   const cicdContext = evaluateCicdContext(cicdSummary.summary, gitContext, cicdSummary.resolvedPath);
+  const releaseSignalSummary = loadReleaseSignalSummary(input.releaseSignalsPath);
+  const releaseSignals = evaluateReleaseSignals(releaseSignalSummary.summary, gitContext, releaseSignalSummary.resolvedPath);
   const buildSummary = loadBuildSummary(input.buildSummaryPath);
   const effectiveBuildSummary = buildSummary.summary || buildSummaryFromCicdContext(cicdContext);
   const effectiveBuildSummaryPath = buildSummary.resolvedPath || cicdContext.cicdSummaryPath;
@@ -476,6 +482,7 @@ export async function runReview(input: RunReviewInput): Promise<ReviewResult> {
     impactAwareIntegrity,
     postureAwareIntegrity,
     cicdContext,
+    releaseSignals,
     githubChecksContext,
     githubActionsContext,
   });
@@ -489,6 +496,7 @@ export async function runReview(input: RunReviewInput): Promise<ReviewResult> {
     evidenceAwareIntegrity,
     workflowRoutingSummary,
     controlRoomOverview,
+    releaseSignals,
     githubChecksContext,
     githubActionsContext,
   });
@@ -501,6 +509,7 @@ export async function runReview(input: RunReviewInput): Promise<ReviewResult> {
     integrityDecisionSummary,
     workflowRoutingSummary,
     cicdContext,
+    releaseSignals,
     githubChecksContext,
     githubActionsContext,
   });
@@ -533,6 +542,7 @@ export async function runReview(input: RunReviewInput): Promise<ReviewResult> {
     releaseWorkflowPlan,
     prContext,
     cicdContext,
+    releaseSignals,
     buildAwareIntegrity,
     prIntegrity,
     releaseReadiness,

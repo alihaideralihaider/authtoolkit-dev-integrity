@@ -4,6 +4,7 @@ import type { GitContext } from "./gitContext.ts";
 import type { GitHubActionsContext } from "./githubActionsContext.ts";
 import type { GitHubChecksContext } from "./githubChecksContext.ts";
 import type { IntegrityDecisionSummaryResult } from "./integrityDecisionSummary.ts";
+import type { ReleaseSignals } from "./releaseSignals.ts";
 import type { ClassifiedFile, RiskCategory } from "./riskClassifier.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
 import type { WorkflowRoutingSummaryResult } from "./workflowRoutingSummary.ts";
@@ -19,6 +20,7 @@ export type PrContextInput = {
   integrityDecisionSummary: IntegrityDecisionSummaryResult;
   workflowRoutingSummary: WorkflowRoutingSummaryResult;
   cicdContext: CicdContext;
+  releaseSignals: ReleaseSignals;
   githubChecksContext?: GitHubChecksContext;
   githubActionsContext?: GitHubActionsContext;
 };
@@ -75,6 +77,8 @@ function riskSummary(input: PrContextInput): string[] {
     ...(input.suggestedReviewPacks.length ? [`Suggested review packs: ${input.suggestedReviewPacks.join(", ")}`] : ["Suggested review packs: none"]),
     `CI/CD status: ${input.cicdContext.pipelineStatus}`,
     `CI/CD trust: ${input.cicdContext.cicdTrustSummary}`,
+    `Release signal: ${input.releaseSignals.releaseSignalProvider} ${input.releaseSignals.workflowName} concluded ${input.releaseSignals.signalConclusion}`,
+    `Release signal trust: ${input.releaseSignals.releaseSignalTrustSummary}`,
     ...(input.githubChecksContext ? [`GitHub checks: ${input.githubChecksContext.passedChecks} passed, ${input.githubChecksContext.failedChecks} failed, ${input.githubChecksContext.pendingChecks} pending`] : []),
     ...(input.githubChecksContext ? [`GitHub trust: ${input.githubChecksContext.githubChecksTrustSummary}`] : []),
     ...(input.githubActionsContext ? [`GitHub Actions: ${input.githubActionsContext.successfulWorkflowRuns.length} passed, ${input.githubActionsContext.failedWorkflowRuns.length} failed, ${input.githubActionsContext.pendingWorkflowRuns.length} pending, ${input.githubActionsContext.cancelledWorkflowRuns.length} cancelled`] : []),

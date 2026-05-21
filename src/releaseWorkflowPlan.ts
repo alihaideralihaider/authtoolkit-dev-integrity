@@ -6,6 +6,7 @@ import type { GitHubActionsContext } from "./githubActionsContext.ts";
 import type { GitHubChecksContext } from "./githubChecksContext.ts";
 import type { ImpactAwareIntegrityResult } from "./impactAwareIntegrity.ts";
 import type { RecoveryAwareIntegrityResult } from "./recoveryAwareIntegrity.ts";
+import type { ReleaseSignals } from "./releaseSignals.ts";
 import type { ReleaseReadinessResult } from "./releaseReadiness.ts";
 import type { RuntimeIntegrityResult } from "./runtimeIntegrity.ts";
 import type { WorkflowRoutingSummaryResult } from "./workflowRoutingSummary.ts";
@@ -22,6 +23,7 @@ export type ReleaseWorkflowPlanInput = {
   evidenceAwareIntegrity: EvidenceAwareIntegrityResult;
   workflowRoutingSummary: WorkflowRoutingSummaryResult;
   controlRoomOverview: ControlRoomOverviewResult;
+  releaseSignals: ReleaseSignals;
   githubChecksContext?: GitHubChecksContext;
   githubActionsContext?: GitHubActionsContext;
 };
@@ -54,6 +56,7 @@ function statusFor(input: ReleaseWorkflowPlanInput): ReleaseWorkflowStatus {
     input.releaseReadiness.releaseDecision === "caution" ||
     input.cicdContext.pipelineStatus === "failed" ||
     input.cicdContext.pipelineStatus === "warning" ||
+    ["failure", "cancelled", "skipped"].includes(input.releaseSignals.signalConclusion) ||
     (input.githubChecksContext?.failedChecks || 0) > 0 ||
     (input.githubChecksContext?.pendingChecks || 0) > 0 ||
     (input.githubActionsContext?.failedWorkflowRuns.length || 0) > 0 ||
@@ -89,6 +92,8 @@ function preReleaseChecklist(input: ReleaseWorkflowPlanInput): string[] {
     ...input.evidenceAwareIntegrity.evidenceRequiredBeforeRelease,
     ...(input.buildAwareIntegrity.buildPosture !== "passed" ? ["Attach passing build evidence before release."] : []),
     ...(input.cicdContext.pipelineStatus === "failed" || input.cicdContext.pipelineStatus === "warning" ? ["Attach CI/CD rerun evidence before release."] : []),
+    ...(input.releaseSignals.signalConclusion === "failure" ? ["Attach release signal rerun evidence before release."] : []),
+    ...(["cancelled", "skipped"].includes(input.releaseSignals.signalConclusion) ? ["Attach completed release signal evidence before release."] : []),
     ...((input.githubChecksContext?.failedChecks || 0) > 0 ? ["Attach GitHub check rerun evidence before release."] : []),
     ...((input.githubChecksContext?.pendingChecks || 0) > 0 ? ["Wait for pending GitHub checks before release."] : []),
     ...((input.githubActionsContext?.failedWorkflowRuns.length || 0) > 0 || (input.githubActionsContext?.failedJobs.length || 0) > 0 ? ["Attach GitHub Actions rerun evidence before release."] : []),
@@ -104,6 +109,7 @@ function releaseExecutionChecklist(input: ReleaseWorkflowPlanInput): string[] {
     "Confirm deploy target and environment are intentional.",
     ...input.releaseReadiness.canaryRecommendations.map((item) => `Prepare canary: ${item}`),
     ...(input.cicdContext.deploymentTarget !== "unknown" ? [`Confirm CI/CD deployment target: ${input.cicdContext.deploymentTarget}.`] : []),
+    ...(input.releaseSignals.releaseSignalProvider !== "none" ? [`Confirm release signal provider: ${input.releaseSignals.releaseSignalProvider}.`] : []),
     ...(input.impactAwareIntegrity.overallImpact === "high" || input.impactAwareIntegrity.overallImpact === "critical" ? ["Confirm high-impact release communication path."] : []),
   ]);
 }
@@ -131,6 +137,8 @@ function requiredEvidence(input: ReleaseWorkflowPlanInput): string[] {
     ...input.evidenceAwareIntegrity.evidenceRequiredBeforeRelease,
     ...input.workflowRoutingSummary.workflowEvidenceNeeds,
     ...(input.cicdContext.pipelineStatus === "failed" || input.cicdContext.pipelineStatus === "warning" ? ["CI/CD rerun evidence"] : []),
+    ...(input.releaseSignals.signalConclusion === "failure" ? ["release signal rerun evidence"] : []),
+    ...(["cancelled", "skipped"].includes(input.releaseSignals.signalConclusion) ? ["release signal completion evidence"] : []),
     ...((input.githubChecksContext?.failedChecks || 0) > 0 ? ["GitHub check rerun evidence"] : []),
     ...((input.githubChecksContext?.pendingChecks || 0) > 0 ? ["GitHub pending check completion evidence"] : []),
     ...((input.githubActionsContext?.failedWorkflowRuns.length || 0) > 0 || (input.githubActionsContext?.failedJobs.length || 0) > 0 ? ["GitHub Actions rerun evidence"] : []),

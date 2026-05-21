@@ -8,6 +8,7 @@ type CliArgs = {
   buildSummary?: string;
   baseBranch?: string;
   cicdSummary?: string;
+  releaseSignals?: string;
   githubRepo?: string;
   githubPr?: string;
   githubTokenEnv?: string;
@@ -37,6 +38,9 @@ function parseArgs(argv: string[]): CliArgs {
     } else if (arg === "--cicd-summary" && next) {
       args.cicdSummary = next;
       index += 1;
+    } else if (arg === "--release-signals" && next) {
+      args.releaseSignals = next;
+      index += 1;
     } else if (arg === "--github-repo" && next) {
       args.githubRepo = next;
       index += 1;
@@ -57,7 +61,7 @@ function parseArgs(argv: string[]): CliArgs {
 }
 
 function printUsage(): void {
-  console.error("Usage: npm run review -- --repo /path/to/repo --skill vault-secret-readiness-review [--build-summary /path/to/build-summary.json] [--base-branch main] [--cicd-summary /path/to/cicd-summary.json] [--github-repo owner/repo --github-pr 123 --github-token-env GITHUB_TOKEN] [--github-actions-context] [--github-comment-draft]");
+  console.error("Usage: npm run review -- --repo /path/to/repo --skill vault-secret-readiness-review [--build-summary /path/to/build-summary.json] [--base-branch main] [--cicd-summary /path/to/cicd-summary.json] [--release-signals /path/to/release-signals.json] [--github-repo owner/repo --github-pr 123 --github-token-env GITHUB_TOKEN] [--github-actions-context] [--github-comment-draft]");
 }
 
 async function main(): Promise<void> {
@@ -75,6 +79,7 @@ async function main(): Promise<void> {
     buildSummaryPath: args.buildSummary,
     baseBranch: args.baseBranch,
     cicdSummaryPath: args.cicdSummary,
+    releaseSignalsPath: args.releaseSignals,
     githubRepo: args.githubRepo,
     githubPr: args.githubPr,
     githubTokenEnv: args.githubTokenEnv,

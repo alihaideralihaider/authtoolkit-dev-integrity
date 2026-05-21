@@ -12,6 +12,7 @@ import type { PolicyAwareIntegrityResult } from "./policyAwareIntegrity.ts";
 import type { PostureAwareIntegrityResult } from "./postureAwareIntegrity.ts";
 import type { PrIntegrityResult } from "./prIntegrity.ts";
 import type { RecoveryAwareIntegrityResult } from "./recoveryAwareIntegrity.ts";
+import type { ReleaseSignals } from "./releaseSignals.ts";
 import type { ReleaseReadinessResult } from "./releaseReadiness.ts";
 import type { RuntimeIntegrityResult } from "./runtimeIntegrity.ts";
 
@@ -41,6 +42,7 @@ export type WorkflowRoutingSummaryInput = {
   impactAwareIntegrity: ImpactAwareIntegrityResult;
   postureAwareIntegrity: PostureAwareIntegrityResult;
   cicdContext?: CicdContext;
+  releaseSignals?: ReleaseSignals;
   githubChecksContext?: GitHubChecksContext;
   githubActionsContext?: GitHubActionsContext;
 };
@@ -102,6 +104,10 @@ function activeWorkflowSet(input: WorkflowRoutingSummaryInput): { workflows: Set
   if (input.cicdContext && ["failed", "cancelled", "skipped", "warning"].includes(input.cicdContext.pipelineStatus)) {
     addWorkflow(workflows, reasons, "evidence-review", "Evidence workflow is active because CI/CD rerun or completion evidence is required.");
     addWorkflow(workflows, reasons, "release-review", "Release workflow is active because CI/CD context is not passing.");
+  }
+  if (input.releaseSignals && ["failure", "cancelled", "skipped"].includes(input.releaseSignals.signalConclusion)) {
+    addWorkflow(workflows, reasons, "evidence-review", "Evidence workflow is active because release signal rerun or completion evidence is required.");
+    addWorkflow(workflows, reasons, "release-review", "Release workflow is active because release signal confidence is not passing.");
   }
   if (input.githubChecksContext && input.githubChecksContext.failedChecks > 0) {
     addWorkflow(workflows, reasons, "evidence-review", "Evidence workflow is active because GitHub checks failed.");
@@ -190,6 +196,8 @@ function evidenceNeedsFor(input: WorkflowRoutingSummaryInput): string[] {
   if (input.policyAwareIntegrity.requiredApprovals.includes("owner approval")) needs.push("owner approval");
   if (input.releaseReadiness.canaryRecommendations.length) needs.push("canary validation");
   if (input.cicdContext && ["failed", "warning", "cancelled", "skipped"].includes(input.cicdContext.pipelineStatus)) needs.push("CI/CD rerun evidence");
+  if (input.releaseSignals?.signalConclusion === "failure") needs.push("release signal rerun evidence");
+  if (input.releaseSignals && ["cancelled", "skipped"].includes(input.releaseSignals.signalConclusion)) needs.push("release signal completion evidence");
   if (input.githubChecksContext?.failedChecks) needs.push("GitHub check rerun evidence");
   if (input.githubChecksContext?.pendingChecks) needs.push("GitHub pending check completion evidence");
   if (input.githubChecksContext?.failedCheckNames.some((name) => /coverage/i.test(name))) needs.push("coverage evidence");

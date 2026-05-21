@@ -20,6 +20,9 @@ export type ReportCatalogEntry = {
   cicdProvider: string;
   pipelineStatus: string;
   pipelineRunId: string;
+  releaseSignalProvider: string;
+  releaseSignalConclusion: string;
+  releaseSignalRunId: string;
   githubRepo: string;
   githubPrNumber: string;
   githubFailedChecks: number;
@@ -66,6 +69,9 @@ function loadCatalog(repoRoot: string): ReportCatalogEntry[] {
         cicdProvider: entry.cicdProvider || "unknown",
         pipelineStatus: entry.pipelineStatus || "unknown",
         pipelineRunId: entry.pipelineRunId || "unknown",
+        releaseSignalProvider: entry.releaseSignalProvider || "unknown",
+        releaseSignalConclusion: entry.releaseSignalConclusion || "unknown",
+        releaseSignalRunId: entry.releaseSignalRunId || "unknown",
         githubRepo: entry.githubRepo || "unknown",
         githubPrNumber: entry.githubPrNumber || "unknown",
         githubFailedChecks: entry.githubFailedChecks || 0,
@@ -102,6 +108,9 @@ function isCatalogEntry(value: unknown): value is ReportCatalogEntry {
     && (entry.cicdProvider === undefined || typeof entry.cicdProvider === "string")
     && (entry.pipelineStatus === undefined || typeof entry.pipelineStatus === "string")
     && (entry.pipelineRunId === undefined || typeof entry.pipelineRunId === "string")
+    && (entry.releaseSignalProvider === undefined || typeof entry.releaseSignalProvider === "string")
+    && (entry.releaseSignalConclusion === undefined || typeof entry.releaseSignalConclusion === "string")
+    && (entry.releaseSignalRunId === undefined || typeof entry.releaseSignalRunId === "string")
     && (entry.githubRepo === undefined || typeof entry.githubRepo === "string")
     && (entry.githubPrNumber === undefined || typeof entry.githubPrNumber === "string")
     && (entry.githubFailedChecks === undefined || typeof entry.githubFailedChecks === "number")
@@ -129,7 +138,7 @@ function buildMarkdownCatalog(entries: ReportCatalogEntry[]): string {
 
     return [
       `| ${markdownCell(entry.generatedAt)} | ${markdownCell(shortRepoName(entry.repoPath))} | ${markdownCell(entry.selectedSkill)} | ${markdownCell(entry.controlRoomStatus)} | ${markdownCell(entry.overallIntegrityDecision)} | ${markdownCell(entry.operationalTrustLevel)} | ${markdownCell(entry.workflowPriority)} | ${markdownCell(entry.reportPath)} |`,
-      `|  | workflows: ${markdownCell(workflows)} | branch: ${markdownCell(entry.currentBranch)} | base: ${markdownCell(entry.baseBranch)} | PR: ${markdownCell(entry.prReadinessLabel)} | branch diff: ${entry.commitsAheadOfBase} commits/${entry.filesChangedAgainstBase} files | GitHub checks: ${entry.githubFailedChecks} failed/${entry.githubPendingChecks} pending; Actions: ${entry.githubActionsFailedRuns} failed/${entry.githubActionsPendingRuns} pending | timeline: ${markdownCell(entry.timelinePath)} |`,
+      `|  | workflows: ${markdownCell(workflows)} | branch: ${markdownCell(entry.currentBranch)} | base: ${markdownCell(entry.baseBranch)} | PR: ${markdownCell(entry.prReadinessLabel)} | release signal: ${markdownCell(entry.releaseSignalProvider)}/${markdownCell(entry.releaseSignalConclusion)} | GitHub checks: ${entry.githubFailedChecks} failed/${entry.githubPendingChecks} pending; Actions: ${entry.githubActionsFailedRuns} failed/${entry.githubActionsPendingRuns} pending | timeline: ${markdownCell(entry.timelinePath)} |`,
     ];
   });
 
@@ -164,6 +173,9 @@ export function updateReportCatalog(input: UpdateReportCatalogInput): void {
     cicdProvider: input.result.cicdContext.cicdProvider,
     pipelineStatus: input.result.cicdContext.pipelineStatus,
     pipelineRunId: input.result.cicdContext.pipelineRunId,
+    releaseSignalProvider: input.result.releaseSignals.releaseSignalProvider,
+    releaseSignalConclusion: input.result.releaseSignals.signalConclusion,
+    releaseSignalRunId: input.result.releaseSignals.runId,
     githubRepo: input.result.githubChecksContext.githubRepo,
     githubPrNumber: input.result.githubChecksContext.githubPrNumber,
     githubFailedChecks: input.result.githubChecksContext.failedChecks,

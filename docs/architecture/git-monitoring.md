@@ -96,6 +96,8 @@ GitHub Actions Context reads workflow run/job metadata read-only and maps it int
 
 CI/CD Context consumes local redacted pipeline summaries and adjusts evidence, release, and workflow expectations without provider APIs.
 
+Release Signals captures small provider-neutral build/workflow signals and maps them into release confidence without becoming a CI/CD dashboard.
+
 GitHub PR Comment Draft generates a local reviewable PR comment body without posting to GitHub.
 
 Release Workflow Plan turns release, runtime, recovery, CI/CD, and evidence signals into a local release checklist.

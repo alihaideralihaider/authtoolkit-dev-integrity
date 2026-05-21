@@ -181,6 +181,26 @@ ${list(result.releaseWorkflowPlan.requiredReleaseEvidence)}
 
 ${list(result.releaseWorkflowPlan.releaseOwnerAttention)}
 
+## Release Signals
+
+- Provider: ${result.releaseSignals.releaseSignalProvider}
+- Workflow name: ${result.releaseSignals.workflowName}
+- Run ID: ${result.releaseSignals.runId}
+- Run URL: ${result.releaseSignals.runUrl}
+- Commit SHA: ${result.releaseSignals.commitSha}
+- Branch: ${result.releaseSignals.branch}
+- Status: ${result.releaseSignals.signalStatus}
+- Conclusion: ${result.releaseSignals.signalConclusion}
+- Started at: ${result.releaseSignals.startedAt}
+- Completed at: ${result.releaseSignals.completedAt}
+- Duration: ${result.releaseSignals.durationSummary}
+- Logs redacted: ${result.releaseSignals.logsRedacted}
+- Trust summary: ${result.releaseSignals.releaseSignalTrustSummary}
+
+### Release Signal Warnings
+
+${list(result.releaseSignals.releaseSignalWarnings)}
+
 ## Operational Timeline Summary
 
 - Recent trend: ${operationalTimelineSummary.recentTrendSummary}

@@ -1,0 +1,13 @@
+{
+  "provider": "github-actions",
+  "workflowName": "build-and-test",
+  "runId": "sample-run-001",
+  "runUrl": "https://example.com/redacted-run-url",
+  "commitSha": "sample",
+  "branch": "main",
+  "status": "completed",
+  "conclusion": "success",
+  "startedAt": "2026-05-21T00:00:00Z",
+  "completedAt": "2026-05-21T00:04:00Z",
+  "logsRedacted": true
+}
