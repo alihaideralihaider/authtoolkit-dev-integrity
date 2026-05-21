@@ -23,6 +23,7 @@ import { buildPrContext } from "./prContext.ts";
 import { buildSummaryFromCicdContext, evaluateCicdContext, loadCicdSummary } from "./cicdContext.ts";
 import { buildReleaseWorkflowPlan } from "./releaseWorkflowPlan.ts";
 import { buildBranchComparison } from "./branchComparison.ts";
+import { collectGitHubChecksContext } from "./githubChecksContext.ts";
 import { confidenceWithBuildAwareness, evaluateBuildAwareIntegrity, loadBuildSummary } from "./buildAwareIntegrity.ts";
 import { selectReviewPacks, selectReviews } from "./reviewSelector.ts";
 import type { ClassifiedFile, RiskCategory, Severity } from "./riskClassifier.ts";
@@ -47,6 +48,7 @@ import type { PrContext } from "./prContext.ts";
 import type { CicdContext } from "./cicdContext.ts";
 import type { ReleaseWorkflowPlan } from "./releaseWorkflowPlan.ts";
 import type { BranchComparison } from "./branchComparison.ts";
+import type { GitHubChecksContext } from "./githubChecksContext.ts";
 import type { RiskCombination } from "./riskCombinationDetector.ts";
 import type { DiffAwareIntegrityResult } from "./diffAwareIntegrity.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
@@ -60,6 +62,7 @@ export type ReviewResult = {
   diffNameOnly: string;
   gitContext: GitContext;
   branchComparison: BranchComparison;
+  githubChecksContext: GitHubChecksContext;
   changedFiles: ClassifiedFile[];
   riskCategories: RiskCategory[];
   highestSeverity: Severity;
@@ -100,6 +103,9 @@ type RunReviewInput = {
   buildSummaryPath?: string;
   baseBranch?: string;
   cicdSummaryPath?: string;
+  githubRepo?: string;
+  githubPr?: string;
+  githubTokenEnv?: string;
 };
 
 const envNamePattern = /\b[A-Z][A-Z0-9_]{2,}\b/g;
@@ -219,7 +225,7 @@ function buildLayerSummaries(input: {
   };
 }
 
-export function runReview(input: RunReviewInput): ReviewResult {
+export async function runReview(input: RunReviewInput): Promise<ReviewResult> {
   const repoPath = normalizeRepoPath(input.repoPath);
   assertDirectory(repoPath, "Repo path");
 
@@ -234,6 +240,11 @@ export function runReview(input: RunReviewInput): ReviewResult {
     repoPath,
     gitStatus: gitMonitor.gitStatus,
     baseBranch: input.baseBranch,
+  });
+  const githubChecksContext = await collectGitHubChecksContext({
+    githubRepo: input.githubRepo,
+    githubPr: input.githubPr,
+    githubTokenEnv: input.githubTokenEnv,
   });
   const timestamp = new Date().toISOString();
   const changedFiles = classifyChangedFiles(gitMonitor.changedFiles);
@@ -455,6 +466,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     impactAwareIntegrity,
     postureAwareIntegrity,
     cicdContext,
+    githubChecksContext,
   });
   const releaseWorkflowPlan = buildReleaseWorkflowPlan({
     releaseReadiness,
@@ -466,6 +478,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     evidenceAwareIntegrity,
     workflowRoutingSummary,
     controlRoomOverview,
+    githubChecksContext,
   });
   const prContext = buildPrContext({
     gitContext,
@@ -476,6 +489,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     integrityDecisionSummary,
     workflowRoutingSummary,
     cicdContext,
+    githubChecksContext,
   });
 
   return {
@@ -487,6 +501,7 @@ export function runReview(input: RunReviewInput): ReviewResult {
     diffNameOnly: gitMonitor.diffNameOnly,
     gitContext,
     branchComparison,
+    githubChecksContext,
     changedFiles,
     riskCategories,
     highestSeverity: maxSeverity,

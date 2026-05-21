@@ -382,6 +382,42 @@ ${list(result.cicdContext.safeArtifactRefs)}
 
 ${list(result.cicdContext.cicdWarnings)}
 
+## GitHub Checks Context
+
+- Repo: ${result.githubChecksContext.githubRepo}
+- PR number: ${result.githubChecksContext.githubPrNumber}
+- PR title: ${result.githubChecksContext.prTitle}
+- PR URL: ${result.githubChecksContext.prUrl}
+- PR state: ${result.githubChecksContext.prState}
+- Base ref: ${result.githubChecksContext.baseRef}
+- Head ref: ${result.githubChecksContext.headRef}
+- Head SHA: ${result.githubChecksContext.headSha}
+- Mergeable state: ${result.githubChecksContext.mergeableState}
+- Review decision: ${result.githubChecksContext.reviewDecision}
+- Total checks: ${result.githubChecksContext.totalChecks}
+- Passed checks: ${result.githubChecksContext.passedChecks}
+- Failed checks: ${result.githubChecksContext.failedChecks}
+- Pending checks: ${result.githubChecksContext.pendingChecks}
+- Skipped checks: ${result.githubChecksContext.skippedChecks}
+- Required checks unknown: ${result.githubChecksContext.requiredChecksUnknown}
+- Trust summary: ${result.githubChecksContext.githubChecksTrustSummary}
+
+### Failed Checks
+
+${list(result.githubChecksContext.failedCheckNames)}
+
+### Pending Checks
+
+${list(result.githubChecksContext.pendingCheckNames)}
+
+### Successful Checks
+
+${list(result.githubChecksContext.successfulCheckNames)}
+
+### GitHub Checks Warnings
+
+${list(result.githubChecksContext.githubChecksWarnings)}
+
 ## Architecture-Aware Integrity
 
 - Blast radius: ${result.architectureAwareIntegrity.blastRadius}

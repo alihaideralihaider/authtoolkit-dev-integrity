@@ -1,6 +1,7 @@
 import type { BranchComparison } from "./branchComparison.ts";
 import type { CicdContext } from "./cicdContext.ts";
 import type { GitContext } from "./gitContext.ts";
+import type { GitHubChecksContext } from "./githubChecksContext.ts";
 import type { IntegrityDecisionSummaryResult } from "./integrityDecisionSummary.ts";
 import type { ClassifiedFile, RiskCategory } from "./riskClassifier.ts";
 import type { ReviewPack } from "./reviewSelector.ts";
@@ -17,6 +18,7 @@ export type PrContextInput = {
   integrityDecisionSummary: IntegrityDecisionSummaryResult;
   workflowRoutingSummary: WorkflowRoutingSummaryResult;
   cicdContext: CicdContext;
+  githubChecksContext?: GitHubChecksContext;
 };
 
 export type PrContext = {
@@ -71,6 +73,8 @@ function riskSummary(input: PrContextInput): string[] {
     ...(input.suggestedReviewPacks.length ? [`Suggested review packs: ${input.suggestedReviewPacks.join(", ")}`] : ["Suggested review packs: none"]),
     `CI/CD status: ${input.cicdContext.pipelineStatus}`,
     `CI/CD trust: ${input.cicdContext.cicdTrustSummary}`,
+    ...(input.githubChecksContext ? [`GitHub checks: ${input.githubChecksContext.passedChecks} passed, ${input.githubChecksContext.failedChecks} failed, ${input.githubChecksContext.pendingChecks} pending`] : []),
+    ...(input.githubChecksContext ? [`GitHub trust: ${input.githubChecksContext.githubChecksTrustSummary}`] : []),
     `Branch comparison: ${input.branchComparison.commitsAheadOfBase} commits ahead, ${input.branchComparison.filesChangedAgainstBase} files changed against base`,
     ...input.integrityDecisionSummary.primaryRiskDrivers.map((driver) => `Primary risk driver: ${driver}`),
   ]);

@@ -4,6 +4,7 @@ import type { BuildAwareIntegrityResult } from "./buildAwareIntegrity.ts";
 import type { CicdContext } from "./cicdContext.ts";
 import type { ControlRoomOverviewResult } from "./controlRoomOverview.ts";
 import type { EvidenceAwareIntegrityResult } from "./evidenceAwareIntegrity.ts";
+import type { GitHubChecksContext } from "./githubChecksContext.ts";
 import type { ImpactAwareIntegrityResult } from "./impactAwareIntegrity.ts";
 import type { IntegrityDecisionSummaryResult } from "./integrityDecisionSummary.ts";
 import type { PolicyAwareIntegrityResult } from "./policyAwareIntegrity.ts";
@@ -39,6 +40,7 @@ export type WorkflowRoutingSummaryInput = {
   impactAwareIntegrity: ImpactAwareIntegrityResult;
   postureAwareIntegrity: PostureAwareIntegrityResult;
   cicdContext?: CicdContext;
+  githubChecksContext?: GitHubChecksContext;
 };
 
 export type WorkflowRoutingSummaryResult = {
@@ -98,6 +100,16 @@ function activeWorkflowSet(input: WorkflowRoutingSummaryInput): { workflows: Set
   if (input.cicdContext && ["failed", "cancelled", "skipped", "warning"].includes(input.cicdContext.pipelineStatus)) {
     addWorkflow(workflows, reasons, "evidence-review", "Evidence workflow is active because CI/CD rerun or completion evidence is required.");
     addWorkflow(workflows, reasons, "release-review", "Release workflow is active because CI/CD context is not passing.");
+  }
+  if (input.githubChecksContext && input.githubChecksContext.failedChecks > 0) {
+    addWorkflow(workflows, reasons, "evidence-review", "Evidence workflow is active because GitHub checks failed.");
+    addWorkflow(workflows, reasons, "release-review", "Release workflow is active because GitHub checks are not passing.");
+  }
+  if (input.githubChecksContext && input.githubChecksContext.pendingChecks > 0) {
+    addWorkflow(workflows, reasons, "release-review", "Release workflow is active because GitHub checks are pending.");
+  }
+  if (input.githubChecksContext && /review_required|changes_requested|required/i.test(input.githubChecksContext.reviewDecision)) {
+    addWorkflow(workflows, reasons, "merge-review", "Merge review is active because GitHub review state is not approved.");
   }
   if (
     input.agentAwareIntegrity.agentRiskPosture === "agent-assisted" ||
@@ -166,6 +178,10 @@ function evidenceNeedsFor(input: WorkflowRoutingSummaryInput): string[] {
   if (input.policyAwareIntegrity.requiredApprovals.includes("owner approval")) needs.push("owner approval");
   if (input.releaseReadiness.canaryRecommendations.length) needs.push("canary validation");
   if (input.cicdContext && ["failed", "warning", "cancelled", "skipped"].includes(input.cicdContext.pipelineStatus)) needs.push("CI/CD rerun evidence");
+  if (input.githubChecksContext?.failedChecks) needs.push("GitHub check rerun evidence");
+  if (input.githubChecksContext?.pendingChecks) needs.push("GitHub pending check completion evidence");
+  if (input.githubChecksContext?.failedCheckNames.some((name) => /coverage/i.test(name))) needs.push("coverage evidence");
+  if (input.githubChecksContext?.failedCheckNames.some((name) => /security|semgrep|wiz/i.test(name))) needs.push("security review notes");
   return unique(needs);
 }
 
