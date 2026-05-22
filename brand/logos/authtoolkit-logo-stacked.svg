@@ -1,0 +1,9 @@
+<svg width="320" height="240" viewBox="0 0 320 240" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">AuthToolkit stacked logo</title>
+  <desc id="desc">Stacked AuthToolkit logo for square placements.</desc>
+  <rect x="104" y="20" width="112" height="112" rx="30" fill="#F0FAEA"/>
+  <path d="M160 42L190 53.5V77C190 97.1 177.5 112.3 160 118C142.5 112.3 130 97.1 130 77V53.5L160 42Z" fill="#041B4D"/>
+  <path d="M160 61C153.4 61 148 66.4 148 73C148 78.3 151.4 82.8 156.2 84.3V93H163.8V84.3C168.6 82.8 172 78.3 172 73C172 66.4 166.6 61 160 61ZM160 68.5C162.5 68.5 164.5 70.5 164.5 73C164.5 75.5 162.5 77.5 160 77.5C157.5 77.5 155.5 75.5 155.5 73C155.5 70.5 157.5 68.5 160 68.5Z" fill="#7ED321"/>
+  <text x="62" y="178" font-family="Inter, Poppins, Arial, sans-serif" font-size="42" font-weight="800" fill="#041B4D">Auth</text>
+  <text x="170" y="178" font-family="Inter, Poppins, Arial, sans-serif" font-size="42" font-weight="800" fill="#7ED321">Toolkit</text>
+</svg>

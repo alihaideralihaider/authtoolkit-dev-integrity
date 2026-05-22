@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "api:local": "node --experimental-strip-types src/localApiRunner.ts",
     "dashboard": "npx serve .",
     "review": "node --experimental-strip-types src/cli.ts"
   },

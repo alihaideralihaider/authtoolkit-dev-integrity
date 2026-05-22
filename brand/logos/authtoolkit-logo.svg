@@ -1,0 +1,11 @@
+<svg width="420" height="96" viewBox="0 0 420 96" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">AuthToolkit logo</title>
+  <desc id="desc">AuthToolkit wordmark with a navy infrastructure shield mark and green Toolkit text.</desc>
+  <g transform="translate(16 16)">
+    <path d="M32 2L58 12V31C58 47.5 47.4 59.7 32 64C16.6 59.7 6 47.5 6 31V12L32 2Z" fill="#041B4D"/>
+    <path d="M32 17C25.4 17 20 22.4 20 29C20 34.3 23.4 38.8 28.2 40.3V48H35.8V40.3C40.6 38.8 44 34.3 44 29C44 22.4 38.6 17 32 17ZM32 24.5C34.5 24.5 36.5 26.5 36.5 29C36.5 31.5 34.5 33.5 32 33.5C29.5 33.5 27.5 31.5 27.5 29C27.5 26.5 29.5 24.5 32 24.5Z" fill="#7ED321"/>
+    <path d="M12 21H20M44 21H52M12 38H21M43 38H52" stroke="#7ED321" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <text x="96" y="59" font-family="Inter, Poppins, Arial, sans-serif" font-size="38" font-weight="800" letter-spacing="0" fill="#041B4D">Auth</text>
+  <text x="195" y="59" font-family="Inter, Poppins, Arial, sans-serif" font-size="38" font-weight="800" letter-spacing="0" fill="#7ED321">Toolkit</text>
+</svg>

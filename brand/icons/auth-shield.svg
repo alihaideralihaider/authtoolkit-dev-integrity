@@ -1,0 +1,5 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title">
+  <title id="title">Authentication shield icon</title>
+  <path d="M32 7L52 15V31C52 45 43.5 55 32 59C20.5 55 12 45 12 31V15L32 7Z" fill="#F0FAEA" stroke="#041B4D" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M24 32L30 38L42 25" stroke="#7ED321" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

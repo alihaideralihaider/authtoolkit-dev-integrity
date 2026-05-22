@@ -3,8 +3,8 @@
   "source": "github-app",
   "mode": "production-strict",
   "repo": {
-    "name": "sample-repo",
-    "path": "/path/to/repo",
+    "name": "authtoolkit-dev-integrity",
+    "path": ".",
     "provider": "github",
     "remoteUrl": "redacted-or-none"
   },

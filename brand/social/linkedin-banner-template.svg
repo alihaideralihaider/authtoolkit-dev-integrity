@@ -1,0 +1,28 @@
+<svg width="1584" height="396" viewBox="0 0 1584 396" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">AuthToolkit LinkedIn banner template</title>
+  <desc id="desc">LinkedIn banner template with AuthToolkit brand, workflow pattern, and headline space.</desc>
+  <rect width="1584" height="396" fill="#F7FBF8"/>
+  <rect x="0" y="0" width="1584" height="396" fill="#F0FAEA"/>
+  <path d="M1030 0H1584V396H900C1012 318 1000 96 1030 0Z" fill="#041B4D"/>
+  <g stroke="#D4E5D9" stroke-width="1.6" stroke-linecap="round">
+    <path d="M96 284H270C306 284 306 236 342 236H534"/>
+    <path d="M666 126H820C856 126 856 178 892 178H1056"/>
+  </g>
+  <g fill="#FFFFFF" stroke="#B9CCBF" stroke-width="1.5">
+    <rect x="76" y="264" width="40" height="40" rx="12"/>
+    <rect x="514" y="216" width="40" height="40" rx="12"/>
+    <rect x="646" y="106" width="40" height="40" rx="12"/>
+  </g>
+  <circle cx="342" cy="236" r="6" fill="#7ED321"/>
+  <circle cx="892" cy="178" r="6" fill="#7ED321"/>
+  <g transform="translate(84 72)">
+    <path d="M30 5L54 14V33C54 49 44.3 60.7 30 66C15.7 60.7 6 49 6 33V14L30 5Z" fill="#041B4D"/>
+    <path d="M30 20C24.2 20 19.5 24.7 19.5 30.5C19.5 34.9 22.4 38.8 26.5 40.1V48.5H33.5V40.1C37.6 38.8 40.5 34.9 40.5 30.5C40.5 24.7 35.8 20 30 20ZM30 27C31.9 27 33.5 28.6 33.5 30.5C33.5 32.4 31.9 34 30 34C28.1 34 26.5 32.4 26.5 30.5C26.5 28.6 28.1 27 30 27Z" fill="#7ED321"/>
+    <text x="80" y="46" font-family="Inter, Poppins, Arial, sans-serif" font-size="40" font-weight="800" fill="#041B4D">Auth</text>
+    <text x="182" y="46" font-family="Inter, Poppins, Arial, sans-serif" font-size="40" font-weight="800" fill="#7ED321">Toolkit</text>
+  </g>
+  <text x="84" y="210" font-family="Inter, Poppins, Arial, sans-serif" font-size="48" font-weight="800" fill="#041B4D">Infrastructure for authentication,</text>
+  <text x="84" y="268" font-family="Inter, Poppins, Arial, sans-serif" font-size="48" font-weight="800" fill="#041B4D">recovery, and API workflows.</text>
+  <text x="1120" y="184" font-family="Inter, Poppins, Arial, sans-serif" font-size="28" font-weight="700" fill="#FFFFFF">Clean SaaS systems</text>
+  <text x="1120" y="226" font-family="Inter, Poppins, Arial, sans-serif" font-size="24" font-weight="500" fill="#CFE5D6">for developer teams</text>
+</svg>

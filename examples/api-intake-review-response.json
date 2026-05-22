@@ -2,7 +2,7 @@
   "requestId": "sample-request-001",
   "accepted": true,
   "status": "ready-for-local-review",
-  "recommendedCommand": "npm run review -- --repo /path/to/repo --skill saana-plan --base-branch main --release-signals examples/sample-release-signals.json",
+  "recommendedCommand": "npm run review -- --repo . --skill saana-plan --base-branch main --release-signals examples/sample-release-signals.json",
   "expectedArtifacts": [
     "reports/catalog.json",
     "reports/timeline-summary.md",

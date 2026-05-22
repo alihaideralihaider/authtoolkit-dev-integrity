@@ -1,0 +1,43 @@
+<svg width="1440" height="720" viewBox="0 0 1440 720" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">AuthToolkit light infrastructure pattern</title>
+  <desc id="desc">Subtle node and workflow line pattern for white or mint backgrounds.</desc>
+  <rect width="1440" height="720" fill="#FFFFFF"/>
+  <g stroke="#D9E7DD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M90 132H248C280 132 280 180 312 180H482"/>
+    <path d="M580 112H742C779 112 779 166 816 166H1018"/>
+    <path d="M180 372H346C383 372 383 318 420 318H638"/>
+    <path d="M776 402H944C980 402 980 456 1016 456H1266"/>
+    <path d="M102 588H306C344 588 344 536 382 536H604"/>
+    <path d="M892 606H1074C1112 606 1112 552 1150 552H1348"/>
+  </g>
+  <g fill="#FFFFFF" stroke="#B9C8BE" stroke-width="1.5">
+    <rect x="70" y="112" width="40" height="40" rx="12"/>
+    <rect x="462" y="160" width="40" height="40" rx="12"/>
+    <rect x="560" y="92" width="40" height="40" rx="12"/>
+    <rect x="998" y="146" width="40" height="40" rx="12"/>
+    <rect x="160" y="352" width="40" height="40" rx="12"/>
+    <rect x="618" y="298" width="40" height="40" rx="12"/>
+    <rect x="756" y="382" width="40" height="40" rx="12"/>
+    <rect x="1246" y="436" width="40" height="40" rx="12"/>
+    <rect x="82" y="568" width="40" height="40" rx="12"/>
+    <rect x="584" y="516" width="40" height="40" rx="12"/>
+    <rect x="872" y="586" width="40" height="40" rx="12"/>
+    <rect x="1328" y="532" width="40" height="40" rx="12"/>
+  </g>
+  <g fill="#7ED321">
+    <circle cx="312" cy="180" r="5"/>
+    <circle cx="816" cy="166" r="5"/>
+    <circle cx="420" cy="318" r="5"/>
+    <circle cx="1016" cy="456" r="5"/>
+    <circle cx="382" cy="536" r="5"/>
+    <circle cx="1150" cy="552" r="5"/>
+  </g>
+  <g stroke="#041B4D" stroke-width="1.8" stroke-linecap="round" opacity="0.55">
+    <path d="M88 126V138M82 132H94"/>
+    <path d="M480 174H484M476 184H488"/>
+    <path d="M576 104L584 112L576 120"/>
+    <path d="M1012 160H1024M1012 172H1024"/>
+    <path d="M178 366V378M172 372H184"/>
+    <path d="M632 310L644 318L632 326"/>
+  </g>
+</svg>

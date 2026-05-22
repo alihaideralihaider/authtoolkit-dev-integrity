@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AuthToolkit Dev Integrity</title>
+    <meta name="description" content="Reviewer confidence for AI-generated PRs. Local-first change control for modern engineering teams.">
+    <link rel="stylesheet" href="landing.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">
+        <span class="brand-mark">AT</span>
+        <span>AuthToolkit Dev Integrity</span>
+      </a>
+      <nav aria-label="Primary">
+        <a href="#workflow">Workflow</a>
+        <a href="#trust">Local-first</a>
+        <a href="/tools/dev-integrity-dashboard/">Dashboard</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="pill">Early access for pilot teams</div>
+          <p class="positioning-kicker">AI-native change control for modern engineering teams.</p>
+          <h1>Reviewer confidence for AI-generated PRs.</h1>
+          <p class="hero-subhead">Dev Integrity reviews release risk, evidence gaps, workflow posture, and confidence before teams approve, merge, or ship.</p>
+          <p class="positioning">AI coding agents can generate code. Dev Integrity helps decide whether that code is safe to approve, merge, or release.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#pilot">Request a pilot</a>
+            <a class="button secondary" href="/tools/dev-integrity-dashboard/">View local dashboard</a>
+          </div>
+          <p class="fine-print">Local mode keeps code on your machine. No code leaves your machine in local mode.</p>
+        </div>
+
+        <div class="hero-visual" aria-label="Dev Integrity dashboard preview">
+          <div class="terminal-bar">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="preview-grid">
+            <div class="preview-card wide blocked">
+              <span>Release Confidence</span>
+              <strong>0%</strong>
+              <em>Blocked under Production Strict</em>
+            </div>
+            <div class="preview-card">
+              <span>Control Room</span>
+              <strong>RED</strong>
+              <em>Evidence required</em>
+            </div>
+            <div class="preview-card">
+              <span>Workflow</span>
+              <strong>Critical</strong>
+              <em>Review routing active</em>
+            </div>
+            <div class="preview-list">
+              <span>Top blockers</span>
+              <p>No passing build evidence attached.</p>
+              <p>No rollback evidence attached.</p>
+              <p>No release owner confirmation.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="problem">
+        <div class="section-heading">
+          <p class="eyebrow">Problem</p>
+          <h2>Blind PR approvals are getting riskier.</h2>
+        </div>
+        <div class="risk-grid">
+          <article>Vibe-coded changes</article>
+          <article>Agent-written code</article>
+          <article>Passing tests but unsafe releases</article>
+          <article>Missing rollback evidence</article>
+          <article>Unclear reviewer confidence</article>
+        </div>
+      </section>
+
+      <section class="section split">
+        <div>
+          <p class="eyebrow">What It Does</p>
+          <h2>Change control for AI-assisted engineering.</h2>
+          <p>Dev Integrity turns local repo changes and release context into reviewable evidence before merge or release.</p>
+        </div>
+        <div class="feature-list">
+          <div><strong>Scans repo changes</strong><span>Git-aware review over local changes and branch comparison.</span></div>
+          <div><strong>Generates release confidence</strong><span>Explains strict release posture without hidden scoring.</span></div>
+          <div><strong>Shows blockers and evidence needs</strong><span>Highlights missing build, runtime, recovery, and reviewer evidence.</span></div>
+          <div><strong>Creates markdown reports</strong><span>Human-readable artifacts for review, audit, and handoff.</span></div>
+          <div><strong>Powers a local dashboard</strong><span>Reads generated artifacts without a database or hosted service.</span></div>
+          <div><strong>Supports API intake and local execution</strong><span>Intake, dry-run, and controlled local review execution.</span></div>
+        </div>
+      </section>
+
+      <section class="section trust" id="trust">
+        <div class="section-heading">
+          <p class="eyebrow">Local-First Trust</p>
+          <h2>Built for early pilots without SaaS assumptions.</h2>
+        </div>
+        <div class="trust-grid">
+          <article><strong>Runs locally</strong><span>Review execution starts on your machine.</span></article>
+          <article><strong>No arbitrary command execution</strong><span>Local API execution uses internally generated review commands only.</span></article>
+          <article><strong>No GitHub writes by default</strong><span>Drafts and context stay reviewable before posting anywhere.</span></article>
+          <article><strong>No secrets stored</strong><span>Examples use redacted paths and summaries.</span></article>
+          <article><strong>Dashboard reads local artifacts</strong><span>No database is required for the local Control Room.</span></article>
+        </div>
+      </section>
+
+      <section class="section workflow" id="workflow">
+        <div class="section-heading">
+          <p class="eyebrow">Product Workflow</p>
+          <h2>From external context to human review.</h2>
+        </div>
+        <ol class="flow">
+          <li>External tool / CLI / GitHub context</li>
+          <li>API Intake</li>
+          <li>Dry Run</li>
+          <li>Controlled Review Execution</li>
+          <li>Reports</li>
+          <li>Dashboard</li>
+          <li>Human Review</li>
+        </ol>
+      </section>
+
+      <section class="section screenshots">
+        <div class="section-heading">
+          <p class="eyebrow">Dashboard Preview</p>
+          <h2>Operational surfaces, not metric walls.</h2>
+        </div>
+        <div class="screenshot-grid">
+          <article>
+            <span>Overview</span>
+            <strong>Release gate, blockers, workflows, latest review.</strong>
+          </article>
+          <article>
+            <span>Release Gates</span>
+            <strong>Confidence band, required evidence, signal summary.</strong>
+          </article>
+          <article>
+            <span>Reviews</span>
+            <strong>Repo-aware catalog of generated markdown reports.</strong>
+          </article>
+        </div>
+      </section>
+
+      <section class="pilot" id="pilot">
+        <div>
+          <p class="eyebrow">Pilot Offer</p>
+          <h2>Free repo/release-risk scan for AI-assisted teams and vibe-coded projects.</h2>
+          <p>Use Dev Integrity to see where release evidence, workflow posture, and reviewer confidence are missing before your next merge.</p>
+        </div>
+        <a class="button primary" href="mailto:pilot@authtoolkit.com?subject=Dev%20Integrity%20Pilot">Get a free Dev Integrity scan</a>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>AuthToolkit Dev Integrity</span>
+      <span>Early access. Local-first. Not full SaaS yet.</span>
+    </footer>
+  </body>
+</html>

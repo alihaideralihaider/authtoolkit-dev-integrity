@@ -1,0 +1,9 @@
+<svg width="560" height="120" viewBox="0 0 560 120" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">AuthToolkit horizontal logo</title>
+  <desc id="desc">Horizontal AuthToolkit logo for headers, documents, and product chrome.</desc>
+  <rect x="8" y="8" width="104" height="104" rx="28" fill="#F0FAEA"/>
+  <path d="M60 25L88 36V59C88 77.5 76.4 91.2 60 96C43.6 91.2 32 77.5 32 59V36L60 25Z" fill="#041B4D"/>
+  <path d="M60 43C53.9 43 49 47.9 49 54C49 58.9 52.1 63.1 56.5 64.6V73H63.5V64.6C67.9 63.1 71 58.9 71 54C71 47.9 66.1 43 60 43ZM60 50C62.2 50 64 51.8 64 54C64 56.2 62.2 58 60 58C57.8 58 56 56.2 56 54C56 51.8 57.8 50 60 50Z" fill="#7ED321"/>
+  <text x="136" y="72" font-family="Inter, Poppins, Arial, sans-serif" font-size="46" font-weight="800" fill="#041B4D">Auth</text>
+  <text x="256" y="72" font-family="Inter, Poppins, Arial, sans-serif" font-size="46" font-weight="800" fill="#7ED321">Toolkit</text>
+</svg>

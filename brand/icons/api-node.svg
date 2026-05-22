@@ -1,0 +1,9 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title">
+  <title id="title">API node icon</title>
+  <rect x="22" y="22" width="20" height="20" rx="6" fill="#F0FAEA" stroke="#041B4D" stroke-width="3"/>
+  <circle cx="10" cy="32" r="5" fill="#FFFFFF" stroke="#041B4D" stroke-width="3"/>
+  <circle cx="54" cy="32" r="5" fill="#FFFFFF" stroke="#041B4D" stroke-width="3"/>
+  <circle cx="32" cy="10" r="5" fill="#FFFFFF" stroke="#041B4D" stroke-width="3"/>
+  <circle cx="32" cy="54" r="5" fill="#FFFFFF" stroke="#041B4D" stroke-width="3"/>
+  <path d="M15 32H22M42 32H49M32 15V22M32 42V49" stroke="#7ED321" stroke-width="3" stroke-linecap="round"/>
+</svg>

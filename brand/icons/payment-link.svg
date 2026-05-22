@@ -1,0 +1,8 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title">
+  <title id="title">Payment link icon</title>
+  <rect x="10" y="16" width="44" height="32" rx="9" fill="#F0FAEA" stroke="#041B4D" stroke-width="3"/>
+  <path d="M10 26H54" stroke="#041B4D" stroke-width="3"/>
+  <path d="M20 39H30" stroke="#041B4D" stroke-width="3" stroke-linecap="round"/>
+  <path d="M39 39H45" stroke="#7ED321" stroke-width="4" stroke-linecap="round"/>
+  <path d="M42 9L49 16L42 23" stroke="#7ED321" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -40,6 +40,8 @@ This repository is the standalone foundation for the Dev Integrity Agent, Integr
 
 API Intake Contract v1 defines the first framework for external tools to submit review context into Dev Integrity without creating a hosted API, database, auth layer, webhook processor, or execution worker. It is a future integration bridge for GitHub, Slack, Jira, CLIs, and external code agents while keeping local review execution as the source of truth. See `docs/architecture/api-intake-contract.md`.
 
+Local API Runner v1 makes that contract testable on localhost. It accepts intake JSON and returns a recommended local review command, but it does not execute reviews, modify repos, store tokens, call external APIs, or run as a hosted service. See `docs/architecture/local-api-runner.md`.
+
 ## Run A Review
 
 The local CLI accepts a repo path and selected skill, then writes a markdown integrity report into `reports/`.
@@ -116,6 +118,60 @@ http://localhost:3000/tools/dev-integrity-dashboard/
 
 The dashboard reads `reports/catalog.json`, `reports/timeline-summary.md`, and linked local report markdown. It is a read-only artifact viewer: no external APIs, no database, no GitHub writes, no deployment, and no target repo modification.
 
+## Run The Local API Runner
+
+Start the localhost-only intake runner:
+
+```sh
+npm run api:local
+```
+
+Health check:
+
+```sh
+curl http://localhost:8787/health
+```
+
+Submit a valid intake request:
+
+```sh
+curl -X POST http://localhost:8787/review/intake \
+  -H "Content-Type: application/json" \
+  --data @examples/api-intake-review-request.json
+```
+
+Preview the exact command without executing it:
+
+```sh
+curl -X POST http://localhost:8787/review/dry-run \
+  -H "Content-Type: application/json" \
+  --data @examples/api-intake-review-request.json
+```
+
+Execute the internally generated local review command:
+
+```sh
+curl -X POST http://localhost:8787/review/execute \
+  -H "Content-Type: application/json" \
+  --data @examples/api-intake-review-request.json
+```
+
+Submit an invalid intake request:
+
+```sh
+curl -X POST http://localhost:8787/review/intake \
+  -H "Content-Type: application/json" \
+  --data '{}'
+```
+
+Fetch the example request:
+
+```sh
+curl http://localhost:8787/review/example
+```
+
+The local API runner binds to `127.0.0.1` only. It never runs arbitrary shell commands, never uses user-provided command strings, does not modify target repositories, does not write GitHub/Slack/Jira data, does not store tokens, does not use a database, and does not call external APIs. `/review/execute` can run only the internally generated `npm run review -- ...` command with `spawn()` and `shell: false`.
+
 ## Read Control Room Status
 
 Each report includes an `Integrity Control Room Overview` near the top.
@@ -142,7 +198,7 @@ See `docs/examples/sample-integrity-report-summary.md` for a compact sample.
 
 Key documentation lives in:
 
-- `docs/architecture/`: engine, awareness stack, API Intake Contract, Git Context, Branch Comparison, PR Context, CI/CD Context, Release Signals, Release Gate Decision, Release Gate Scoring, GitHub Checks Context, GitHub Actions Context, Release Workflow Plan, GitHub PR Comment Draft, Local Dashboard, decision summary, control room, report catalog, operational timeline summary, system blueprint, and `docs/architecture/project-map.md` for contributor orientation.
+- `docs/architecture/`: engine, awareness stack, API Intake Contract, Local API Runner, Git Context, Branch Comparison, PR Context, CI/CD Context, Release Signals, Release Gate Decision, Release Gate Scoring, GitHub Checks Context, GitHub Actions Context, Release Workflow Plan, GitHub PR Comment Draft, Local Dashboard, decision summary, control room, report catalog, operational timeline summary, system blueprint, and `docs/architecture/project-map.md` for contributor orientation.
 - `docs/skills/`: review skill definitions and checklists.
 - `docs/runbooks/`: operational runbooks for onboarding, pre-deploy checks, post-deploy canary, incidents, and recovery.
 - `docs/releases/`: project checkpoints, including `docs/releases/v1-foundation-checkpoint.md`.

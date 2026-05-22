@@ -1,0 +1,7 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title">
+  <title id="title">Magic link icon</title>
+  <path d="M25 39L39 25" stroke="#7ED321" stroke-width="4" stroke-linecap="round"/>
+  <path d="M28 20L31 17C36 12 44 12 49 17C54 22 54 30 49 35L45 39" stroke="#041B4D" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M36 44L33 47C28 52 20 52 15 47C10 42 10 34 15 29L19 25" stroke="#041B4D" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M48 11V6M55 18H60M50 16L56 10" stroke="#7ED321" stroke-width="3" stroke-linecap="round"/>
+</svg>

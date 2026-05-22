@@ -1,0 +1,29 @@
+<svg width="960" height="480" viewBox="0 0 960 480" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">AuthToolkit workflow pattern</title>
+  <desc id="desc">Workflow lane background with rounded cards, connectors, and green checkpoints.</desc>
+  <rect width="960" height="480" rx="0" fill="#F0FAEA"/>
+  <g stroke="#D6E5DB" stroke-width="1.5">
+    <path d="M0 96H960M0 240H960M0 384H960"/>
+  </g>
+  <g stroke="#B9CCBF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M110 144H254C290 144 290 240 326 240H470C506 240 506 336 542 336H742"/>
+    <path d="M110 336H230C268 336 268 240 306 240"/>
+  </g>
+  <g fill="#FFFFFF" stroke="#B7C8BE" stroke-width="1.5">
+    <rect x="70" y="112" width="80" height="64" rx="18"/>
+    <rect x="430" y="208" width="80" height="64" rx="18"/>
+    <rect x="702" y="304" width="80" height="64" rx="18"/>
+    <rect x="70" y="304" width="80" height="64" rx="18"/>
+  </g>
+  <g stroke="#041B4D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M104 136H118M104 152H128"/>
+    <path d="M460 228L478 240L460 252"/>
+    <path d="M734 332L742 340L758 324"/>
+    <path d="M104 328H122M104 344H130"/>
+  </g>
+  <g fill="#7ED321">
+    <circle cx="326" cy="240" r="6"/>
+    <circle cx="542" cy="336" r="6"/>
+    <circle cx="306" cy="240" r="6"/>
+  </g>
+</svg>

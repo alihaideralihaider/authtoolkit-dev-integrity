@@ -1,0 +1,6 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title">
+  <title id="title">OTP verification icon</title>
+  <rect x="12" y="14" width="40" height="36" rx="10" fill="#F0FAEA" stroke="#041B4D" stroke-width="3"/>
+  <path d="M22 32H22.1M32 32H32.1M42 32H42.1" stroke="#041B4D" stroke-width="6" stroke-linecap="round"/>
+  <path d="M42 43L47 48L56 38" stroke="#7ED321" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
