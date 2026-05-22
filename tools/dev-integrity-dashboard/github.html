@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <base href="./">
-    <title>Integrity Control Room</title>
+    <title>GitHub | Integrity Control Room</title>
     <link rel="stylesheet" href="styles.css">
   </head>
-  <body data-page="overview">
+  <body data-page="github">
     <header class="app-header">
       <div>
         <p class="eyebrow">Dev Integrity</p>
-        <h1>Control Room</h1>
+        <h1>GitHub</h1>
       </div>
       <span class="badge">local read-only</span>
     </header>
@@ -29,33 +29,41 @@
       <section id="missing" class="panel hidden">
         <h2>Artifacts Missing</h2>
         <p>Run a review first, then refresh this dashboard.</p>
-        <pre>npm run review -- --repo . --skill saana-plan --base-branch main --release-signals examples/sample-release-signals.json</pre>
       </section>
-
-      <section id="overview-decisions" class="decision-grid"></section>
-      <section id="overview-scoring-guidance" class="guidance-panel"></section>
 
       <section class="content-grid">
         <article class="panel">
-          <h2>Top Blockers</h2>
-          <div id="overview-blockers"></div>
+          <h2>Git Context</h2>
+          <div id="github-context"></div>
         </article>
         <article class="panel">
-          <h2>Top Warnings</h2>
-          <div id="overview-warnings"></div>
+          <h2>Branch Comparison</h2>
+          <div id="github-branch"></div>
         </article>
         <article class="panel">
-          <h2>Active Workflows</h2>
-          <div id="overview-workflows"></div>
+          <h2>GitHub Checks Summary</h2>
+          <div id="github-checks"></div>
         </article>
         <article class="panel">
-          <h2>Latest Review Summary</h2>
-          <div id="overview-latest"></div>
+          <h2>GitHub Actions Summary</h2>
+          <div id="github-actions"></div>
+        </article>
+        <article class="panel">
+          <h2>Failed Checks / Jobs</h2>
+          <div id="github-failed"></div>
+        </article>
+        <article class="panel">
+          <h2>Pending Checks / Jobs</h2>
+          <div id="github-pending"></div>
+        </article>
+        <article class="panel wide">
+          <h2>Release Signal Linkage</h2>
+          <div id="github-release-linkage"></div>
         </article>
       </section>
     </main>
 
-    <footer>Reads local generated artifacts only. No backend, database, external APIs, or hosted deployment.</footer>
+    <footer>GitHub state is read from the generated report catalog only.</footer>
     <script src="shared.js"></script>
     <script src="dashboard.js"></script>
   </body>

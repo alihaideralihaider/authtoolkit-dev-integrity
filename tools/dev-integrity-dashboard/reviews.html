@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <base href="./">
-    <title>Integrity Control Room</title>
+    <title>Reviews | Integrity Control Room</title>
     <link rel="stylesheet" href="styles.css">
   </head>
-  <body data-page="overview">
+  <body data-page="reviews">
     <header class="app-header">
       <div>
         <p class="eyebrow">Dev Integrity</p>
-        <h1>Control Room</h1>
+        <h1>Reviews</h1>
       </div>
       <span class="badge">local read-only</span>
     </header>
@@ -29,33 +29,33 @@
       <section id="missing" class="panel hidden">
         <h2>Artifacts Missing</h2>
         <p>Run a review first, then refresh this dashboard.</p>
-        <pre>npm run review -- --repo . --skill saana-plan --base-branch main --release-signals examples/sample-release-signals.json</pre>
       </section>
 
-      <section id="overview-decisions" class="decision-grid"></section>
-      <section id="overview-scoring-guidance" class="guidance-panel"></section>
-
-      <section class="content-grid">
-        <article class="panel">
-          <h2>Top Blockers</h2>
-          <div id="overview-blockers"></div>
-        </article>
-        <article class="panel">
-          <h2>Top Warnings</h2>
-          <div id="overview-warnings"></div>
-        </article>
-        <article class="panel">
-          <h2>Active Workflows</h2>
-          <div id="overview-workflows"></div>
-        </article>
-        <article class="panel">
-          <h2>Latest Review Summary</h2>
-          <div id="overview-latest"></div>
-        </article>
+      <section class="panel">
+        <div class="section-heading">
+          <h2>Recent Reports</h2>
+          <span id="review-count" class="muted"></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Generated</th>
+                <th>Repo</th>
+                <th>Trust</th>
+                <th>Decision</th>
+                <th>Workflow Priority</th>
+                <th>Release Gate</th>
+                <th>Markdown Report</th>
+              </tr>
+            </thead>
+            <tbody id="reviews-table"></tbody>
+          </table>
+        </div>
       </section>
     </main>
 
-    <footer>Reads local generated artifacts only. No backend, database, external APIs, or hosted deployment.</footer>
+    <footer>Click a report row to open the generated markdown report.</footer>
     <script src="shared.js"></script>
     <script src="dashboard.js"></script>
   </body>

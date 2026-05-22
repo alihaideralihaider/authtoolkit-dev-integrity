@@ -1,0 +1,36 @@
+{
+  "requestId": "sample-request-001",
+  "source": "github-app",
+  "mode": "production-strict",
+  "repo": {
+    "name": "sample-repo",
+    "path": "/path/to/repo",
+    "provider": "github",
+    "remoteUrl": "redacted-or-none"
+  },
+  "git": {
+    "baseBranch": "main",
+    "headBranch": "feature/example",
+    "commitSha": "sample",
+    "prNumber": "123",
+    "prUrl": "https://example.com/redacted-pr-url"
+  },
+  "ticket": {
+    "provider": "jira",
+    "key": "PROJ-123",
+    "url": "https://example.com/redacted-ticket-url",
+    "summary": "sample ticket"
+  },
+  "signals": {
+    "releaseSignalsPath": "examples/sample-release-signals.json",
+    "cicdSummaryPath": "examples/sample-cicd-summary.json",
+    "githubChecks": "read-only-optional",
+    "githubActions": "read-only-optional"
+  },
+  "requestedOutputs": [
+    "markdown-report",
+    "catalog-entry",
+    "dashboard-update",
+    "pr-comment-draft"
+  ]
+}

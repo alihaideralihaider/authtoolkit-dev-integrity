@@ -38,6 +38,8 @@ The current implementation is intentionally small:
 
 This repository is the standalone foundation for the Dev Integrity Agent, Integrity Engine, and Control Room platform. It is documentation-first today and intended to become API-first product infrastructure that can support SaanaOS, Kepler, AuthToolkit, and future projects.
 
+API Intake Contract v1 defines the first framework for external tools to submit review context into Dev Integrity without creating a hosted API, database, auth layer, webhook processor, or execution worker. It is a future integration bridge for GitHub, Slack, Jira, CLIs, and external code agents while keeping local review execution as the source of truth. See `docs/architecture/api-intake-contract.md`.
+
 ## Run A Review
 
 The local CLI accepts a repo path and selected skill, then writes a markdown integrity report into `reports/`.
@@ -140,7 +142,7 @@ See `docs/examples/sample-integrity-report-summary.md` for a compact sample.
 
 Key documentation lives in:
 
-- `docs/architecture/`: engine, awareness stack, Git Context, Branch Comparison, PR Context, CI/CD Context, Release Signals, Release Gate Decision, Release Gate Scoring, GitHub Checks Context, GitHub Actions Context, Release Workflow Plan, GitHub PR Comment Draft, Local Dashboard, decision summary, control room, report catalog, operational timeline summary, system blueprint, and `docs/architecture/project-map.md` for contributor orientation.
+- `docs/architecture/`: engine, awareness stack, API Intake Contract, Git Context, Branch Comparison, PR Context, CI/CD Context, Release Signals, Release Gate Decision, Release Gate Scoring, GitHub Checks Context, GitHub Actions Context, Release Workflow Plan, GitHub PR Comment Draft, Local Dashboard, decision summary, control room, report catalog, operational timeline summary, system blueprint, and `docs/architecture/project-map.md` for contributor orientation.
 - `docs/skills/`: review skill definitions and checklists.
 - `docs/runbooks/`: operational runbooks for onboarding, pre-deploy checks, post-deploy canary, incidents, and recovery.
 - `docs/releases/`: project checkpoints, including `docs/releases/v1-foundation-checkpoint.md`.

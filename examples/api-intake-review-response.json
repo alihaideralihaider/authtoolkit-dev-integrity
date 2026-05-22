@@ -1,0 +1,16 @@
+{
+  "requestId": "sample-request-001",
+  "accepted": true,
+  "status": "ready-for-local-review",
+  "recommendedCommand": "npm run review -- --repo /path/to/repo --skill saana-plan --base-branch main --release-signals examples/sample-release-signals.json",
+  "expectedArtifacts": [
+    "reports/catalog.json",
+    "reports/timeline-summary.md",
+    "reports/<timestamp>-saana-plan.md"
+  ],
+  "safetyNotes": [
+    "No code is modified by intake.",
+    "No external API writes are performed.",
+    "Review execution remains local-first."
+  ]
+}

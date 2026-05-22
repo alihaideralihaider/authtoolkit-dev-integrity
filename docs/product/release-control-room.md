@@ -188,8 +188,11 @@ Future integration paths, not active build priorities:
 - Jira context
 - Slack release notifications
 - Jenkins later only if enterprise need appears
+- API Intake Contract v1 for GitHub, Slack, Jira, CLI, and code-agent review context
 
 Integrations are delivery mechanisms. The release confidence model should remain deterministic, explainable, and independent of any single provider.
+
+API intake is the future bridge between external tools and local review execution. It lets integrations describe repo, PR, ticket, and signal context in a normalized request without granting write authority, storing tokens, running a hosted multi-tenant API, or modifying target repositories. Webhook intake, auth, tenant isolation, and provider-specific write flows remain future work.
 
 ## Founder Reminder
 

@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <base href="./">
-    <title>Integrity Control Room</title>
+    <title>Timeline | Integrity Control Room</title>
     <link rel="stylesheet" href="styles.css">
   </head>
-  <body data-page="overview">
+  <body data-page="timeline">
     <header class="app-header">
       <div>
         <p class="eyebrow">Dev Integrity</p>
-        <h1>Control Room</h1>
+        <h1>Timeline</h1>
       </div>
       <span class="badge">local read-only</span>
     </header>
@@ -29,33 +29,33 @@
       <section id="missing" class="panel hidden">
         <h2>Artifacts Missing</h2>
         <p>Run a review first, then refresh this dashboard.</p>
-        <pre>npm run review -- --repo . --skill saana-plan --base-branch main --release-signals examples/sample-release-signals.json</pre>
       </section>
 
-      <section id="overview-decisions" class="decision-grid"></section>
-      <section id="overview-scoring-guidance" class="guidance-panel"></section>
-
-      <section class="content-grid">
+      <section class="content-grid timeline-grid">
         <article class="panel">
-          <h2>Top Blockers</h2>
-          <div id="overview-blockers"></div>
+          <h2>Confidence Trend</h2>
+          <div id="timeline-trend"></div>
         </article>
         <article class="panel">
-          <h2>Top Warnings</h2>
-          <div id="overview-warnings"></div>
+          <h2>Repeated Blockers</h2>
+          <div id="timeline-blockers"></div>
         </article>
         <article class="panel">
-          <h2>Active Workflows</h2>
-          <div id="overview-workflows"></div>
+          <h2>Repeated Workflows</h2>
+          <div id="timeline-workflows"></div>
         </article>
         <article class="panel">
-          <h2>Latest Review Summary</h2>
-          <div id="overview-latest"></div>
+          <h2>Repeated Risk Drivers</h2>
+          <div id="timeline-risks"></div>
+        </article>
+        <article class="panel wide">
+          <h2>Timeline Summary Markdown</h2>
+          <pre id="timeline-markdown" class="markdown-panel"></pre>
         </article>
       </section>
     </main>
 
-    <footer>Reads local generated artifacts only. No backend, database, external APIs, or hosted deployment.</footer>
+    <footer>Timeline content comes from <code>reports/timeline-summary.md</code>.</footer>
     <script src="shared.js"></script>
     <script src="dashboard.js"></script>
   </body>
