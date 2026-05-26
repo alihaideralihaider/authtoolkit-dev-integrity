@@ -1,0 +1,42 @@
+name: integrity-gates
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "release/*"
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      # Pin actions by commit SHA before using this workflow in production.
+      - name: Checkout
+        uses: actions/checkout@<pin-by-sha>
+        with:
+          fetch-depth: 0
+
+      - name: Enforce signed latest commit
+        run: |
+          git log -1 --pretty=%G? | grep -E 'G|U' || (echo "Unsigned or unverifiable commit"; exit 1)
+
+      - name: Detect lockfile changes
+        run: |
+          if git diff --name-only HEAD~1 HEAD | grep -E 'package-lock.json|pnpm-lock.yaml|yarn.lock'; then
+            echo "Lockfile changed; dependency audit required."
+          else
+            echo "No lockfile changes detected."
+          fi
+
+      - name: Install without lifecycle scripts
+        run: npm ci --ignore-scripts
+
+      - name: Dependency audit
+        run: npm audit --audit-level=high
+
+      - name: Disallow install lifecycle scripts
+        run: node scripts/assert-no-postinstall.js
