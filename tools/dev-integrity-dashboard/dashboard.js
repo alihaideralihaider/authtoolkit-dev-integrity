@@ -197,6 +197,7 @@ function renderScoringGuidance(targetId, entry, blockers) {
 
 function renderOverview(artifacts) {
   const entry = latest(artifacts);
+  const latestRun = artifacts.runState?.runs?.[0] || null;
   const blockers = sectionItems(artifacts.timeline, "Repeated Blocking Factors");
   const warnings = sectionItems(artifacts.timeline, "Repeated Risk Drivers");
   const workflows = Array.isArray(entry.activeWorkflows) ? entry.activeWorkflows : [];
@@ -242,6 +243,19 @@ function renderOverview(artifacts) {
     ["Timeline focus", escapeHtml(trends.focus)],
     ["Report", reportLink(entry)],
   ]);
+  const runStateTarget = document.getElementById("overview-run-state");
+  if (runStateTarget) {
+    runStateTarget.innerHTML = latestRun ? kv([
+      ["Run", escapeHtml(text(latestRun.run_id))],
+      ["Project", escapeHtml(text(latestRun.project_name))],
+      ["Stage", status(latestRun.stage)],
+      ["Status", status(latestRun.status)],
+      ["Unresolved findings", escapeHtml(text(latestRun.unresolved_finding_count, "0"))],
+      ["Confidence before", escapeHtml(formatPercent(latestRun.confidence_before))],
+      ["Confidence after", escapeHtml(formatPercent(latestRun.confidence_after))],
+      ["Last event", escapeHtml(text(latestRun.last_event?.message, "No events yet."))],
+    ]) : emptyState("No run-state records found. Use npm run run-state -- create ...");
+  }
 }
 
 function renderReviews(artifacts) {

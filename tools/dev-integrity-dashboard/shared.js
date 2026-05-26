@@ -1,5 +1,6 @@
 const artifactPaths = {
   catalog: "../../reports/catalog.json",
+  runState: "../../reports/state/index.json",
   timeline: "../../reports/timeline-summary.md",
 };
 
@@ -228,8 +229,10 @@ async function fetchJson(path) {
 async function loadArtifacts() {
   const artifacts = {
     catalog: [],
+    runState: { runs: [] },
     timeline: "",
     catalogError: null,
+    runStateError: null,
     timelineError: null,
   };
 
@@ -244,6 +247,13 @@ async function loadArtifacts() {
   } catch (error) {
     artifacts.timelineError = error;
     artifacts.timeline = "reports/timeline-summary.md is missing. Run a review first.";
+  }
+
+  try {
+    artifacts.runState = await fetchJson(artifactPaths.runState);
+  } catch (error) {
+    artifacts.runStateError = error;
+    artifacts.runState = { runs: [] };
   }
 
   return artifacts;

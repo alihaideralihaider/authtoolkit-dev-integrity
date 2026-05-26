@@ -1,0 +1,58 @@
+{
+  "run_id": "run_demo_001",
+  "project_id": "devproj_demo",
+  "project_name": "Pilot Dev Integrity Project",
+  "repo_name": "missed-call-platform",
+  "branch": "main",
+  "commit_sha": "local-preview",
+  "status": "active",
+  "stage": "recheck_completed",
+  "created_at": "2026-05-26T00:00:00.000Z",
+  "updated_at": "2026-05-26T00:15:00.000Z",
+  "confidence_before": 62,
+  "confidence_after": 81,
+  "findings": [
+    {
+      "finding_id": "finding_auth_admin_boundary",
+      "severity": "blocker",
+      "category": "auth",
+      "title": "Admin route needs explicit auth boundary",
+      "description": "A route with service-role access needs tenant-scoped or platform-admin authorization evidence.",
+      "affected_file": "worker/web/app/api/admin/example/route.ts",
+      "status": "resolved",
+      "suggested_fix": "Add the existing restaurant admin access helper or platform admin guard.",
+      "evidence_required": "Show route-level access check and successful build."
+    },
+    {
+      "finding_id": "finding_env_inventory",
+      "severity": "warning",
+      "category": "env-vars",
+      "title": "Environment inventory needs pilot placeholders",
+      "description": "Required local/pilot environment variables should be documented with sanitized placeholders.",
+      "affected_file": ".env.example",
+      "status": "open",
+      "suggested_fix": "Add sanitized placeholder values and comments for required env vars.",
+      "evidence_required": "Updated .env.example with no real secrets."
+    }
+  ],
+  "events": [
+    {
+      "event_id": "evt_demo_created",
+      "run_id": "run_demo_001",
+      "type": "run.created",
+      "message": "Integrity review run created.",
+      "created_at": "2026-05-26T00:00:00.000Z",
+      "metadata": {}
+    },
+    {
+      "event_id": "evt_demo_rechecked",
+      "run_id": "run_demo_001",
+      "type": "run.rechecked",
+      "message": "Recheck completed after auth boundary fix.",
+      "created_at": "2026-05-26T00:15:00.000Z",
+      "metadata": {
+        "confidence_after": 81
+      }
+    }
+  ]
+}

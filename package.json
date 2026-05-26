@@ -6,7 +6,8 @@
   "scripts": {
     "api:local": "node --experimental-strip-types src/localApiRunner.ts",
     "dashboard": "npx serve .",
-    "review": "node --experimental-strip-types src/cli.ts"
+    "review": "node --experimental-strip-types src/cli.ts",
+    "run-state": "node --experimental-strip-types src/runStateCli.ts"
   },
   "engines": {
     "node": ">=22"

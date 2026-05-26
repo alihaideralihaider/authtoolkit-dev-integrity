@@ -102,6 +102,75 @@ The runner is local-first. It does not call external AI APIs, does not modify th
 
 Generated reports are indexed in `reports/catalog.md` so recent review results can be scanned without opening every report file manually. Recent operational posture is summarized in `reports/timeline-summary.md`.
 
+## Track Integrity Run State Locally
+
+Integrity Run State v1 adds a small local JSON state layer for review runs. It is useful when a review needs to remember its current stage, open findings, resolved findings, timeline events, and confidence movement after a recheck.
+
+Run-state files are written under `reports/state/`:
+
+- `reports/state/runs/<run_id>.json`
+- `reports/state/index.json`
+
+Create a run:
+
+```sh
+npm run run-state -- create \
+  --project-id devproj_local \
+  --project-name "Pilot Dev Integrity Project" \
+  --repo-name missed-call-platform \
+  --branch main \
+  --commit-sha local-preview \
+  --confidence-before 62
+```
+
+Add a finding:
+
+```sh
+npm run run-state -- add-finding \
+  --run-id <run_id> \
+  --severity warning \
+  --category auth \
+  --title "Admin route needs explicit auth boundary" \
+  --affected-file worker/web/app/api/admin/example/route.ts \
+  --suggested-fix "Use the existing restaurant admin access helper." \
+  --evidence-required "Route-level auth check and successful build."
+```
+
+Append an event:
+
+```sh
+npm run run-state -- append-event \
+  --run-id <run_id> \
+  --type evidence.collected \
+  --message "Auth boundary evidence collected."
+```
+
+Mark a finding resolved:
+
+```sh
+npm run run-state -- resolve-finding \
+  --run-id <run_id> \
+  --finding-id <finding_id>
+```
+
+Record a recheck on the same run:
+
+```sh
+npm run run-state -- recheck \
+  --run-id <run_id> \
+  --confidence-after 82 \
+  --stage recheck_completed \
+  --status completed
+```
+
+List local run summaries:
+
+```sh
+npm run run-state -- list
+```
+
+This is local-first persistence only. It does not add a database, external API integration, hosted execution, GitHub writes, Jira/Slack integration, or a new dashboard backend. See `examples/integrity-run-state-example.json` for the record shape.
+
 ## Run The Local Dashboard
 
 After generating review artifacts, run:
@@ -116,7 +185,7 @@ Open the local dashboard path shown by `serve`, usually:
 http://localhost:3000/tools/dev-integrity-dashboard/
 ```
 
-The dashboard reads `reports/catalog.json`, `reports/timeline-summary.md`, and linked local report markdown. It is a read-only artifact viewer: no external APIs, no database, no GitHub writes, no deployment, and no target repo modification.
+The dashboard reads `reports/catalog.json`, `reports/timeline-summary.md`, optional `reports/state/index.json`, and linked local report markdown. It is a read-only artifact viewer: no external APIs, no database, no GitHub writes, no deployment, and no target repo modification.
 
 ## Run The Local API Runner
 
